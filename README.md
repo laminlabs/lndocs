@@ -11,3 +11,5 @@ And then build your documentation by calling the tool in the root of your projec
 ```
 lndocs
 ```
+
+The basis for this is largely Sphinx. More explanation to come.
