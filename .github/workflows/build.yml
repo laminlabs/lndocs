@@ -40,20 +40,3 @@ jobs:
       - name: Build
         run: |
           nox -s build
-      - name: Change base URL to project-slug # for Netlify URL prettification
-        if: github.event_name == 'push'
-        run: |
-          mv _build/html _build/html_tmp
-          mkdir _build/html
-          mv _build/html_tmp _build/html/lndocs
-      - name: Deploy docs
-        id: netlify
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: "_build/html"
-          production-deploy: ${{ github.event_name == 'push' }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          enable-commit-comment: false
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
