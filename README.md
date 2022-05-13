@@ -1,3 +1,15 @@
 # lndocs: Lamin site generator
 
-Read the [docs](https://lamin.ai/lndocs).
+This is a command line tool. Install via:
+
+```
+pip install git+https://github.com/laminlabs/lndocs.git
+```
+
+And then build your documentation by calling the tool in the root of your project repository.
+
+```
+lndocs
+```
+
+The basis for this is largely Sphinx. More explanation to come.

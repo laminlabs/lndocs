@@ -1,8 +1,0 @@
-# Tasks
-
-```{toctree}
-:glob:
-:reversed:
-
-*
-```
