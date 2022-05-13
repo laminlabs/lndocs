@@ -1,5 +1,10 @@
 import argparse
 import os
+from pathlib import Path
+
+from dirsync import sync
+
+HERE = Path(__file__).parent
 
 
 def main():
@@ -8,4 +13,5 @@ def main():
     aa("--docs", type=str, default="docs", help="directory with docs sources")
     aa("--site", type=str, default="_build/html", help="output directory")
     args = parser.parse_args()
+    sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
     os.system(f"sphinx-build {args.docs} {args.site}")

@@ -8,6 +8,11 @@ authors = [{name = "Lamin Labs", email = "laminlabs@gmail.com"}]
 readme = "README.md"
 dynamic = ["version", "description"]
 dependencies = [
+    "ablog",
+    "dirsync",
+    "myst_nb",
+    "sphinxext-opengraph",
+    "sphinx-autodoc-typehints",
 ]
 
 [project.urls]

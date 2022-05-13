@@ -1,0 +1,5 @@
+{% set page_toc = generate_toc_html() %} {%- if page_toc | length >= 1 %}
+<br />
+{%- endif %}
+
+<nav id="bd-toc-nav">{{ page_toc }}</nav>

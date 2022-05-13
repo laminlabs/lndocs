@@ -1,0 +1,194 @@
+/* this is 80% to match date & author font in blog */
+.footnote p,
+.footnote dt {
+  font-size: 80%;
+}
+
+.fn-backref {
+  font-weight: normal;
+  padding-left: 0.2rem;
+}
+
+dl.footnote > dd,
+dl.citation > dd {
+  margin-bottom: -0.8em;
+}
+
+.login-button {
+  display: inline-block;
+  border-color: #ebedf0;
+  border-style: solid;
+  border-radius: 0.4rem;
+  padding: 0.375rem 1.5rem;
+  font-weight: bold;
+}
+
+#theme-switch a {
+  color: var(--ifm-color-emphasis-900);
+}
+
+#theme-switch {
+  border-color: #ebedf0;
+  border-style: solid;
+  border-radius: 0.4rem;
+  margin-right: unset;
+}
+
+nav {
+  padding: 0px;
+}
+
+.navbar-toggler {
+  border: unset;
+}
+
+.navbar-light {
+  box-shadow: none; /* unset default shadow */
+}
+
+.navbar-brand img {
+  flex: 0 0 auto;
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
+.navbar-brand p {
+  margin-bottom: 0;
+  padding: 0 0.15rem;
+  color: var(--ifm-color-emphasis-900);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.navbar-light .navbar-nav li a.nav-link {
+  padding: 0 0.5rem;
+  color: var(--ifm-color-emphasis-900);
+  font-size: 1rem;
+  font-weight: var(--ifm-font-weight-semibold);
+}
+
+.navbar-light .navbar-nav > .active > .nav-link {
+  color: unset;
+  font-weight: unset;
+}
+
+.navbar {
+  box-shadow: none; /* unset default shadow */
+  border-bottom-style: solid; /* replace with border */
+  border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
+}
+
+.bd-sidebar {
+  border-right: none;
+  height: unset;
+}
+
+.bd-toc {
+  height: unset;
+}
+
+.footer {
+  border-top-style: solid;
+  border-top-color: var(--pst-color-border); /* this will be visible in dark */
+  margin-top: 2rem;
+}
+
+.body {
+  font: inherit;
+}
+
+a {
+  color: var(--ifm-link-color);
+}
+
+hr.footnotes {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: var(--pst-color-border);
+  margin-top: 2rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: unset;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* reduced margin top */
+h5,
+h6 {
+  margin-top: 1.5rem;
+}
+
+html[data-theme="dark"] {
+  --pst-color-background: #18191a; /* --ifm-background-color */
+  --pst-color-background-up: #242526; /* --ifm-background-surface-color for navbar */
+  --ifm-color-primary: #25c2a0;
+  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary-darker: #1fa588;
+  --ifm-color-primary-darkest: #1a8870;
+  --ifm-color-primary-light: #29d5b0;
+  --ifm-color-primary-lighter: #32d8b4;
+  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-emphasis-900: var(--ifm-color-gray-100);
+  --pst-color-primary: var(--ifm-color-primary);
+  --pst-color-info: var(--ifm-color-primary);
+  --pst-color-link: var(--ifm-color-primary);
+  --pst-color-link-hover: var(--ifm-color-primary-darkest);
+  --pst-color-target: var(--ifm-color-primary-lightest);
+  --pst-color-headerlink: var(--ifm-color-primary);
+  /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
+}
+
+html[data-theme="light"] {
+  --pst-color-background: #fff;
+  --pst-color-background-up: #fff; /* no distinction here in light mode */
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-emphasis-900: var(--ifm-color-gray-900);
+  --pst-color-primary: var(--ifm-color-primary);
+  --pst-color-info: var(--ifm-color-primary);
+  --pst-color-link: var(--ifm-color-primary);
+  --pst-color-link-hover: var(--ifm-color-primary-darkest);
+  --pst-color-target: var(--ifm-color-primary-lightest);
+  --pst-color-headerlink: var(--ifm-color-primary);
+  --pst-color-border: rgba(0, 0, 0, 0.1);
+}
+
+html {
+  font: var(--ifm-font-size-base) / var(--ifm-line-height-base)
+    var(--ifm-font-family-base);
+}
+
+:root {
+  --ifm-color-gray-100: #f5f6f7;
+  --ifm-color-gray-900: #1c1e21;
+  --ifm-link-color: var(--ifm-color-primary);
+  --ifm-font-size-base: 100%;
+  --ifm-line-height-base: 1.65;
+  --ifm-font-family-base: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --ifm-font-weight-semibold: 400;
+}
