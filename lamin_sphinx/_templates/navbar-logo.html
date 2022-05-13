@@ -1,0 +1,32 @@
+{% if logo %} {% if not theme_logo_link %}
+<a class="navbar-brand" href="{{ pathto(master_doc) }}">
+  <img
+    src="{{ pathto('_static/' + logo, 1) }}"
+    class="navbar__logo"
+    alt="logo"
+  />
+  <p class="navbar__title">{{ project }}</p>
+</a>
+{% elif theme_logo_link[:4] == 'http' %}
+<a class="navbar-brand" href="{{ theme_logo_link }}">
+  <img
+    src="{{ pathto('_static/' + logo, 1) }}"
+    class="navbar__logo"
+    alt="logo"
+  />
+  <p class="navbar__title">{{ project }}</p>
+</a>
+{% else %}
+<a class="navbar-brand" href="{{ pathto(theme_logo_link) }}">
+  <img
+    src="{{ pathto('_static/' + logo, 1) }}"
+    class="navbar__logo"
+    alt="logo"
+  />
+  <p class="navbar__title">{{ project }}</p>
+</a>
+{% endif %} {% else %}
+<a class="navbar-brand" href="{{ pathto(master_doc) }}">
+  <p class="navbar__title">{{ project }}</p>
+</a>
+{% endif %}
