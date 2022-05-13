@@ -12,11 +12,5 @@ def lint(session: nox.Session) -> None:
 
 @nox.session
 def build(session):
-    session.install(".[dev, test]")
-    session.run(
-        "pytest",
-        "--nbmake",
-        "--overwrite",
-    )  # write output instead of capturing it (more verbose)
-    session.install("-r", "docs/lamin_sphinx/requirements.txt")
-    session.run(*"sphinx-build -b html docs _build/html".split())
+    session.install(".[dev,test]")
+    session.run("pytest")
