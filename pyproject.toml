@@ -23,7 +23,7 @@ test = [
 ]
 
 [project.scripts]
-nbproject = "lndocs.__main__:main"
+lndocs = "lndocs.__main__:main"
 
 [tool.black]
 preview = true
@@ -31,5 +31,4 @@ preview = true
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
-    "docs/guides",
 ]
