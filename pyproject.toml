@@ -8,11 +8,10 @@ authors = [{name = "Lamin Labs", email = "laminlabs@gmail.com"}]
 readme = "README.md"
 dynamic = ["version", "description"]
 dependencies = [
-    "nbproject",
 ]
 
 [project.urls]
-Home = "https://github.com/laminlabs/cookiecutter-py"
+Home = "https://github.com/laminlabs/lndocs"
 
 [project.optional-dependencies]
 dev = [
@@ -21,8 +20,10 @@ dev = [
 ]
 test = [
     "pytest>=6.0",
-    "nbmake",
 ]
+
+[project.scripts]
+nbproject = "lndocs.__main__:main"
 
 [tool.black]
 preview = true
