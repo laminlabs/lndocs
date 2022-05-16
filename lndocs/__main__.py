@@ -12,6 +12,11 @@ def main():
     aa = parser.add_argument
     aa("--docs", type=str, default="docs", help="directory with docs sources")
     aa("--site", type=str, default="_build/html", help="output directory")
+    aa("--live", action="store_true", help="use autobuild")
     args = parser.parse_args()
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
-    os.system(f"sphinx-build {args.docs} {args.site}")
+    if args.live:
+        build_command = "sphinx-autobuild"
+    else:
+        build_command = "sphinx-build"
+    os.system(f"{build_command} {args.docs} {args.site}")
