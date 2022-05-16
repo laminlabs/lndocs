@@ -83,6 +83,5 @@ nitpicky = True  # report broken links
 
 
 def setup(app: Sphinx):
-    # Don’t allow broken links. DO NOT CHANGE THIS LINE, fix problems instead.
-    app.warningiserror = False
+    app.warningiserror = True
     app.add_css_file("custom.css")
