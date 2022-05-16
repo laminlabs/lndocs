@@ -1,8 +1,11 @@
 import argparse
 import os
+import sys
 from pathlib import Path
 
 from dirsync import sync
+
+from lndocs._generate_conf import generate_conf
 
 HERE = Path(__file__).parent
 
@@ -15,6 +18,13 @@ def main():
     aa("--live", action="store_true", help="use autobuild")
     args = parser.parse_args()
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
+
+    if not Path(args.docs).exists():
+        sys.exit(f"The source directory {args.docs} does not exist!")
+
+    if not Path(Path(args.docs) / "conf.py").exists():
+        generate_conf(args.docs)
+
     if args.live:
         build_command = "sphinx-autobuild"
     else:
