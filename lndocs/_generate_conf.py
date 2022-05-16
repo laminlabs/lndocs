@@ -21,13 +21,18 @@ def generate_conf(directory):
     # see the cookiecutter.json!
     if "project_slug" not in variables:
         variables["project_slug"] = variables["project_name"].lower().replace(" ", "-")
+    if "repository_name" not in variables:  # this differs from cookiecutter!
+        variables["repository_name"] = variables["project_slug"]
     if "package_name" not in variables:
         variables["package_name"] = variables["project_slug"].lower().replace("-", "_")
 
-    # prefix with `lamin_`
+    # prefix with `lamin_` and logg out
     variables_template = {}
+    print("generating docs using:")
     for key, value in variables.items():
+        print(f"    {key}: {value}")
         variables_template["lamin_" + key] = variables[key]
+    print("\n")
 
     outputText = template.render(variables_template)
 
