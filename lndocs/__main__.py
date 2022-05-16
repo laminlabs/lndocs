@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 from pathlib import Path
 
 from dirsync import sync
@@ -19,7 +20,7 @@ def main():
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
 
     if not Path(args.docs).exists():
-        os.exit("The source directory does not exist!")
+        sys.exit(f"The source directory {args.docs} does not exist!")
 
     if not Path(Path(args.docs) / "conf.py").exists():
         generate_conf(args.docs)
