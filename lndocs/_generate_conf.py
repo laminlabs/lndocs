@@ -11,7 +11,7 @@ def generate_conf(directory):
     TEMPLATE_FILE = "_template_conf.py"
     template = templateEnv.get_template(TEMPLATE_FILE)
 
-    with open("./lamin-project.yml") as f:
+    with open("./lamin-project.yaml") as f:
         try:
             variables = yaml.safe_load(f)
         except yaml.YAMLError as exc:
