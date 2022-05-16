@@ -19,8 +19,9 @@ def generate_conf(directory):
             quit()
 
     # see the cookiecutter.json!
-    if "package_name" not in variables:
+    if "project_slug" not in variables:
         variables["project_slug"] = variables["project_name"].lower().replace(" ", "-")
+    if "package_name" not in variables:
         variables["package_name"] = variables["project_slug"].lower().replace("-", "_")
 
     # prefix with `lamin_`

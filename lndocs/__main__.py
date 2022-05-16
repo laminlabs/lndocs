@@ -21,7 +21,7 @@ def main():
     if not Path(args.docs).exists():
         os.exit("The source directory does not exist!")
 
-    if not Path(args.docs / "conf.py").exists():
+    if not Path(Path(args.docs) / "conf.py").exists():
         generate_conf(args.docs)
 
     if args.live:
