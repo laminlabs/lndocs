@@ -11,7 +11,7 @@ from lamin_sphinx import html_context  # noqa
 project = "{{ lamin_project_name }}"
 html_title = "{{ lamin_project_name }} | Lamin Labs"
 release = {{ lamin_package_name }}.__version__
-html_context["github_repo"] = "{{ lamin_repo_slug }}"  # noqa
+html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 
 ogp_site_url = "https://lamin.ai/{{ lamin_project_slug }}"
 
