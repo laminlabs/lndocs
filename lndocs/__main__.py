@@ -1,7 +1,7 @@
 import argparse
-import os
 import sys
 from pathlib import Path
+from subprocess import call
 
 from dirsync import sync
 
@@ -40,4 +40,4 @@ def main():
         build_command = "sphinx-autobuild"
     else:
         build_command = "sphinx-build"
-    os.system(f"{build_command} {args.docs} {args.site}")
+    return call(f"{build_command} {args.docs} {args.site}", shell=True)
