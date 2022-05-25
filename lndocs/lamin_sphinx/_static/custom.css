@@ -43,6 +43,9 @@ nav {
 }
 
 .navbar-light {
+  background: var(
+    --pst-color-navbar-background
+  ) !important; /* Overrides bootstrap */
   box-shadow: none; /* unset default shadow */
 }
 
