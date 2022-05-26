@@ -6,7 +6,6 @@
 /* this is 87.5% to match pre in pydata-sphinx */
 div.cell_output table {
   font-size: 87.5%;
-  font-family: var(--pst-font-family-monospace);
   color: var(--pst-color-text-base);
 }
 
