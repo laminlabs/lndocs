@@ -1,3 +1,30 @@
+/* ------ */
+/* Tables */
+/* ------ */
+/* all of the following overwrites mystnb.css styling */
+
+/* this is 87.5% to match pre in pydata-sphinx */
+div.cell_output table {
+  font-size: 87.5%;
+  color: var(--pst-color-text-base);
+}
+
+/* decrease padding in output tables */
+div.cell_output tr,
+div.cell_output th,
+div.cell_output td {
+  padding: 0.3em 0.3em;
+}
+
+/* fix background of odd rows in dark mode */
+div.cell_output tbody tr:nth-child(odd) {
+  background: var(--pst-color-navbar-background);
+}
+
+/* --------- */
+/* Footnotes */
+/* --------- */
+
 /* this is 80% to match date & author font in blog */
 .footnote p,
 .footnote dt {
