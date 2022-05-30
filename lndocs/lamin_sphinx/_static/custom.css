@@ -1,4 +1,13 @@
 /* ------ */
+/* API */
+/* ------ */
+
+dt:target,
+span.highlighted {
+  background-color: unset;
+}
+
+/* ------ */
 /* Tables */
 /* ------ */
 /* all of the following overwrites mystnb.css styling */
