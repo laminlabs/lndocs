@@ -126,10 +126,10 @@ nav {
   height: unset;
 }
 
-.footer {
-  border-top-style: solid;
-  border-top-color: var(--pst-color-border); /* this will be visible in dark */
-  margin-top: 2rem;
+footer {
+  width: 100%;
+  border-top: 1px solid var(--pst-color-footer-border);
+  padding: 10px;
 }
 
 .body {
