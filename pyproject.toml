@@ -13,6 +13,7 @@ dependencies = [
     "myst_nb",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
+    "pydata-sphinx-theme==0.9.0rc1",
 ]
 
 [project.urls]
