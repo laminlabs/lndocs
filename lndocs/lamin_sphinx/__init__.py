@@ -64,6 +64,7 @@ myst_enable_extensions = [
     "deflist",
     "colon_fence",
 ]
+myst_title_to_header = True  # allow frontmatter titles
 
 # Generate the API documentation
 autosummary_generate = True
