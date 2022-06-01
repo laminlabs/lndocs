@@ -60,7 +60,7 @@ dl.citation > dd {
 }
 
 #theme-switch a {
-  color: var(--ifm-color-emphasis-900);
+  color: var(--color-emphasis-900);
 }
 
 #theme-switch {
@@ -94,16 +94,16 @@ nav {
 .navbar-brand p {
   margin-bottom: 0;
   padding: 0 0.15rem;
-  color: var(--ifm-color-emphasis-900);
+  color: var(--color-emphasis-900);
   font-weight: bold;
   font-size: 1rem;
 }
 
 .navbar-light .navbar-nav li a.nav-link {
   padding: 0 0.5rem;
-  color: var(--ifm-color-emphasis-900);
+  color: var(--color-emphasis-900);
   font-size: 1rem;
-  font-weight: var(--ifm-font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 
 .navbar-light .navbar-nav > .active > .nav-link {
@@ -137,7 +137,7 @@ nav {
 }
 
 a {
-  color: var(--ifm-link-color);
+  color: var(--link-color);
 }
 
 hr.footnotes {
@@ -176,58 +176,57 @@ h6 {
 }
 
 html[data-theme="dark"] {
-  --pst-color-background: #18191a; /* --ifm-background-color */
-  --pst-color-background-up: #242526; /* --ifm-background-surface-color for navbar */
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --ifm-color-emphasis-900: var(--ifm-color-gray-100);
-  --pst-color-primary: var(--ifm-color-primary);
-  --pst-color-info: var(--ifm-color-primary);
-  --pst-color-link: var(--ifm-color-primary);
-  --pst-color-link-hover: var(--ifm-color-primary-darkest);
-  --pst-color-target: var(--ifm-color-primary-lightest);
-  --pst-color-headerlink: var(--ifm-color-primary);
+  --pst-color-background: #18191a; /* --background-color */
+  --pst-color-background-up: #242526; /* --background-surface-color for navbar */
+  --color-primary: #25c2a0;
+  --color-primary-dark: #21af90;
+  --color-primary-darker: #1fa588;
+  --color-primary-darkest: #1a8870;
+  --color-primary-light: #29d5b0;
+  --color-primary-lighter: #32d8b4;
+  --color-primary-lightest: #4fddbf;
+  --color-emphasis-900: var(--color-gray-100);
+  --pst-color-primary: var(--color-primary);
+  --pst-color-info: var(--color-primary);
+  --pst-color-link: var(--color-primary);
+  --pst-color-link-hover: var(--color-primary-darkest);
+  --pst-color-target: var(--color-primary-lightest);
+  --pst-color-headerlink: var(--color-primary);
   /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
 }
 
 html[data-theme="light"] {
   --pst-color-background: #fff;
   --pst-color-background-up: #fff; /* no distinction here in light mode */
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-color-emphasis-900: var(--ifm-color-gray-900);
-  --pst-color-primary: var(--ifm-color-primary);
-  --pst-color-info: var(--ifm-color-primary);
-  --pst-color-link: var(--ifm-color-primary);
-  --pst-color-link-hover: var(--ifm-color-primary-darkest);
-  --pst-color-target: var(--ifm-color-primary-lightest);
-  --pst-color-headerlink: var(--ifm-color-primary);
+  --color-primary: #2e8555;
+  --color-primary-dark: #29784c;
+  --color-primary-darker: #277148;
+  --color-primary-darkest: #205d3b;
+  --color-primary-light: #33925d;
+  --color-primary-lighter: #359962;
+  --color-primary-lightest: #3cad6e;
+  --color-emphasis-900: var(--color-gray-900);
+  --pst-color-primary: var(--color-primary);
+  --pst-color-info: var(--color-primary);
+  --pst-color-link: var(--color-primary);
+  --pst-color-link-hover: var(--color-primary-darkest);
+  --pst-color-target: var(--color-primary-lightest);
+  --pst-color-headerlink: var(--color-primary);
   --pst-color-border: rgba(0, 0, 0, 0.1);
 }
 
 html {
-  font: var(--ifm-font-size-base) / var(--ifm-line-height-base)
-    var(--ifm-font-family-base);
+  font: var(--font-size-base) / var(--line-height-base) var(--font-family-base);
 }
 
 :root {
-  --ifm-color-gray-100: #f5f6f7;
-  --ifm-color-gray-900: #1c1e21;
-  --ifm-link-color: var(--ifm-color-primary);
-  --ifm-font-size-base: 100%;
-  --ifm-line-height-base: 1.65;
-  --ifm-font-family-base: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+  --color-gray-100: #f5f6f7;
+  --color-gray-900: #1c1e21;
+  --link-color: var(--color-primary);
+  --font-size-base: 100%;
+  --line-height-base: 1.65;
+  --font-family-base: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
     Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --ifm-font-weight-semibold: 400;
+  --font-weight-semibold: 400;
 }
