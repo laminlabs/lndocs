@@ -27,7 +27,7 @@ div.cell_output td {
 
 /* fix background of odd rows in dark mode */
 div.cell_output tbody tr:nth-child(odd) {
-  background: var(--pst-color-navbar-background);
+  background: var(--pst-color-background-up);
 }
 
 /* --------- */
@@ -80,7 +80,7 @@ nav {
 
 .navbar-light {
   background: var(
-    --pst-color-navbar-background
+    --pst-color-background-up
   ) !important; /* Overrides bootstrap */
   box-shadow: none; /* unset default shadow */
 }
@@ -128,7 +128,7 @@ nav {
 
 footer {
   width: 100%;
-  border-top: 1px solid var(--pst-color-footer-border);
+  border-top: 1px solid var(--pst-color-border);
   padding: 10px;
 }
 
