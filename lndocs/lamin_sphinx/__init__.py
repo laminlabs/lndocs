@@ -31,7 +31,7 @@ exclude_patterns = [
     "profile",
     "private",
 ]
-
+default_role = "literal"
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
