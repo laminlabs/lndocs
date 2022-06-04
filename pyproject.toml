@@ -13,6 +13,7 @@ dependencies = [
     "myst_nb",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
+    "sphinxcontrib-bibtex",
     "pydata-sphinx-theme==0.9.0rc1",
 ]
 

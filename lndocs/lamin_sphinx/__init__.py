@@ -16,6 +16,7 @@ extensions = [
     "myst_nb",
     "ablog",
     "sphinxext.opengraph",
+    "sphinxcontrib.bibtex",
 ]
 
 templates_path = ["../lamin_sphinx/_templates"]
@@ -81,6 +82,9 @@ ogp_image = "https://lamin.ai/_static/img/logo.png"
 nb_execution_mode = "off"
 
 nitpicky = True  # report broken links
+
+bibtex_bibfiles = ["references.bib"]
+bibtex_default_style = "unsrt"
 
 
 def setup(app: Sphinx):
