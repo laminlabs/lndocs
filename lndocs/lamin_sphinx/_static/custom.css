@@ -122,6 +122,10 @@ nav {
   height: unset;
 }
 
+.bd-content {
+  padding: 3rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
+}
+
 .bd-toc {
   height: unset;
 }
