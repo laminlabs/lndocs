@@ -1,6 +1,15 @@
-/* ------ */
+/* --------- */
+/* Notebooks */
+/* --------- */
+
+.docutils.container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* --- */
 /* API */
-/* ------ */
+/* --- */
 
 dt:target,
 span.highlighted {
