@@ -19,15 +19,19 @@ span.highlighted {
 /* ------ */
 /* Tables */
 /* ------ */
-/* all of the following overwrites mystnb.css styling */
+/* all of the following overwrites mystnb.css styling and also affects regular tables */
 
 /* this is 87.5% to match pre in pydata-sphinx */
+table,
 div.cell_output table {
   font-size: 87.5%;
   color: var(--pst-color-text-base);
 }
 
 /* decrease padding in output tables */
+tr,
+th,
+td,
 div.cell_output tr,
 div.cell_output th,
 div.cell_output td {
@@ -35,8 +39,14 @@ div.cell_output td {
 }
 
 /* fix background of odd rows in dark mode */
+tbody tr:nth-child(odd),
 div.cell_output tbody tr:nth-child(odd) {
   background: var(--pst-color-background-up);
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 1px solid var(--pst-color-border);
 }
 
 /* --------- */
