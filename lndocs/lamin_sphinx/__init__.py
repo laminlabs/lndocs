@@ -67,8 +67,6 @@ myst_enable_extensions = [
 ]
 myst_title_to_header = True  # allow frontmatter titles
 
-# Generate the API documentation
-autosummary_generate = True
 autodoc_member_order = "bysource"
 napoleon_google_docstring = True
 napoleon_include_init_with_doc = False
@@ -85,6 +83,11 @@ nitpicky = True  # report broken links
 
 bibtex_bibfiles = ["references.bib"]
 bibtex_default_style = "unsrt"
+
+
+nitpick_ignore = [
+    ("py:class", "pandas.core.frame.DataFrame"),
+]
 
 
 def setup(app: Sphinx):
