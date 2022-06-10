@@ -15,7 +15,3 @@ release = {{ lamin_package_name }}.__version__
 html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 
 ogp_site_url = "https://lamin.ai/{{ lamin_project_slug }}"
-
-def setup(app: Sphinx):
-    app.warningiserror = False  # change to True once auto-summary is fixed!
-    app.add_css_file("custom.css")
