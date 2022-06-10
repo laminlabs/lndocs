@@ -83,6 +83,8 @@ nitpicky = True  # report broken links
 
 nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
+    ("py:data", "typing.Optional"),
+    ("py:data", "typing.Literal"),
 ]
 
 
