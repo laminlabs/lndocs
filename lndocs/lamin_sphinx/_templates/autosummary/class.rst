@@ -14,7 +14,7 @@
    {% endif %}
    {%- endfor %}
 
-   {% if attributes %}
+   {% if count %}
    .. rubric:: {{ _('Attributes') }}
 
    {% for item in attributes %}
