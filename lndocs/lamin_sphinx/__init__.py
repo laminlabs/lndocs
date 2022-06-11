@@ -83,11 +83,21 @@ nitpicky = True  # report broken links
 
 nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
+    ("py:class", "pathlib.Path"),
+    ("py:class", "Model"),
+    ("py:class", "sqlmodel.main.SQLModel"),
+    ("py:class", "MetaData"),
+    ("py:class", "DictStrAny"),
+    ("py:class", "unicode"),
+    ("py:class", "typing.DictStrAny"),
+    ("py:class", "typing.unicode"),
     ("py:data", "typing.Optional"),
     ("py:data", "typing.Literal"),
+    ("py:data", "typing.Union"),
+    ("py:data", "typing.Any"),
 ]
 
 
 def setup(app: Sphinx):
-    app.warningiserror = True
+    app.warningiserror = False
     app.add_css_file("custom.css")
