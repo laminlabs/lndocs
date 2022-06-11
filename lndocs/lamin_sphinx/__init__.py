@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from sphinx.application import Sphinx
@@ -99,5 +100,5 @@ nitpick_ignore = [
 
 
 def setup(app: Sphinx):
-    app.warningiserror = False
+    app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
     app.add_css_file("custom.css")
