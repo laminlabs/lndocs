@@ -16,6 +16,7 @@ def main():
     aa("--docs", type=str, default="docs", help="directory with docs sources")
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
+    aa("--show", action="store_true", help="launch server & show")
     args = parser.parse_args()
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
 
@@ -40,4 +41,11 @@ def main():
         build_command = "sphinx-autobuild"
     else:
         build_command = "sphinx-build"
-    return call(f"{build_command} {args.docs} {args.site}", shell=True)
+
+    build_status = call(f"{build_command} {args.docs} {args.site}", shell=True)
+
+    if not args.show:
+        return build_status
+    else:
+        if build_status == 0:
+            call("cd _build/html; python -m http.server", shell=True)
