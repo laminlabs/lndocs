@@ -84,8 +84,13 @@ nitpicky = True  # report broken links
 nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "pathlib.Path"),
+    ("py:class", "Model"),
+    ("py:class", "typing.DictStrAny"),
+    ("py:class", "typing.unicode"),
     ("py:data", "typing.Optional"),
     ("py:data", "typing.Literal"),
+    ("py:data", "typing.Union"),
+    ("py:data", "typing.Any"),
 ]
 
 
