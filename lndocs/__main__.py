@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from subprocess import call
 
+import yaml  # type: ignore
 from dirsync import sync
 
 from lndocs._generate_conf import generate_conf
@@ -10,16 +11,29 @@ from lndocs._generate_conf import generate_conf
 HERE = Path(__file__).parent
 
 
+def conf():
+    with open("./lamin-project.yaml") as f:
+        try:
+            return yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            print(exc)
+            quit()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin website.")
     aa = parser.add_argument
+    aa("--show", action="store_true", help="launch server & show")
     aa("--docs", type=str, default="docs", help="directory with docs sources")
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
-    aa("--show", action="store_true", help="launch server & show")
     args = parser.parse_args()
     if not Path(args.docs).exists():
-        sys.exit(f"The source directory {args.docs} does not exist!")
+        sys.exit(
+            f"The source directory {args.docs} does not exist! Change to repo root!"
+        )
+    if not Path("./lamin-project.yaml").exists():
+        sys.exit("The ./lamin-project.yaml conf file does not exist!")
 
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
     # check whether we need to generate the conf.py for Sphinx
@@ -42,6 +56,11 @@ def main():
         build_command = "sphinx-build"
 
     build_status = call(f"{build_command} {args.docs} {args.site}", shell=True)
+
+    # delete auto-generated files
+    package_name = conf()["package_name"]
+    for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
+        generated.unlink()
 
     if not args.show:
         return build_status
