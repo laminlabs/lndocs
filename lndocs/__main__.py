@@ -18,11 +18,10 @@ def main():
     aa("--live", action="store_true", help="use autobuild")
     aa("--show", action="store_true", help="launch server & show")
     args = parser.parse_args()
-    sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
-
     if not Path(args.docs).exists():
         sys.exit(f"The source directory {args.docs} does not exist!")
 
+    sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
     # check whether we need to generate the conf.py for Sphinx
     # input for it is the lamin-project.yaml file
     generate_conf_check = False
