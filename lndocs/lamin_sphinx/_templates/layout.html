@@ -35,6 +35,13 @@ _webpack.head_js_preload() }} {%- endblock %} {%- block extrahead %}
 ></script>
 <script>
   netlifyIdentity.on("close", () => (location.href = "/login"));
+  async function refresh() {
+    for (let i = 0; i < 1000; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 15 * 60000));
+      netlifyIdentity.refresh().then((jwt) => console.log(jwt));
+    }
+  }
+  refresh();
 </script>
 {%- endblock %} {# Silence the sidebar's, relbar's #} {% block header %}{%
 endblock %} {% block relbar1 %}{% endblock %} {% block relbar2 %}{% endblock %}
