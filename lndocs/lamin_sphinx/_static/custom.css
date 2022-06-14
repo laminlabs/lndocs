@@ -1,3 +1,11 @@
+/* ------------ */
+/* API and code */
+/* ------------ */
+
+.sig-name {
+  font-size: 1rem;
+}
+
 /* --------- */
 /* Notebooks */
 /* --------- */
@@ -69,6 +77,53 @@ dl.citation > dd {
   margin-bottom: -0.8em;
 }
 
+hr.footnotes {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: var(--pst-color-border);
+  margin-top: 2rem;
+}
+
+/* ------- */
+/* Headers   */
+/* ------- */
+
+a.headerlink {
+  color: var(--color-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: unset;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* reduced margin top */
+h5,
+h6 {
+  margin-top: 1.5rem;
+}
+
+/* ------ */
+/* Navbar */
+/* ------ */
+
 .login-button {
   display: inline-block;
   border-color: #ebedf0;
@@ -136,6 +191,10 @@ nav {
   border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
 }
 
+/* ---- */
+/* Body */
+/* ---- */
+
 .bd-sidebar {
   border-right: none;
   height: unset;
@@ -163,40 +222,9 @@ a {
   color: var(--link-color);
 }
 
-hr.footnotes {
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: var(--pst-color-border);
-  margin-top: 2rem;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: unset;
-  font-weight: bold;
-}
-
-h1 {
-  font-size: 3rem;
-}
-
-h2 {
-  font-size: 2rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-}
-
-/* reduced margin top */
-h5,
-h6 {
-  margin-top: 1.5rem;
-}
+/* ------ */
+/* Colors */
+/* ------ */
 
 html[data-theme="dark"] {
   --pst-color-background: #18191a; /* --background-color */
@@ -214,8 +242,8 @@ html[data-theme="dark"] {
   --pst-color-link: var(--color-primary);
   --pst-color-link-hover: var(--color-primary-darkest);
   --pst-color-target: var(--color-primary-lightest);
-  --pst-color-headerlink: var(--color-primary);
   /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
+  --pst-color-inline-code: #66d9ef; /* pygments monokai */
 }
 
 html[data-theme="light"] {
@@ -234,8 +262,8 @@ html[data-theme="light"] {
   --pst-color-link: var(--color-primary);
   --pst-color-link-hover: var(--color-primary-darkest);
   --pst-color-target: var(--color-primary-lightest);
-  --pst-color-headerlink: var(--color-primary);
   --pst-color-border: rgba(0, 0, 0, 0.1);
+  --pst-color-inline-code: #204a87; /* pygments tango */
 }
 
 html {
