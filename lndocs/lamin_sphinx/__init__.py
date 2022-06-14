@@ -42,6 +42,8 @@ html_theme_options = {
     "navbar_end": ["theme-switcher"],
     "navbar_align": "left",
     "footer_items": ["copyright"],
+    "pygment_light_style": "tango",  # https://help.farbox.com/pygments.html
+    "pygment_dark_style": "monokai",
 }
 
 html_context = {
