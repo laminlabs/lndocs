@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 from sphinx.application import Sphinx
+from zmq import has
 
 author = "Lamin Labs"
 copyright = f"{datetime.now():%Y}, {author}"
@@ -118,10 +119,19 @@ def visit_footnote_reference(self, node):
     # corresponding footnote and retrieve the text
     title = "See bottom of page."
     for node_ in node.document.children[0].children:
+        # check whether a node is a footnote
         if isinstance(node_, footnote):
             if node["refid"] in set(node_.attributes["ids"]):
                 title = node_.children[1].rawsource
                 break
+        else:
+            # repeat the same one level deeper in the tree
+            if hasattr(node_, "children"):
+                for node__ in node_.children:
+                    if isinstance(node__, footnote):
+                        if node["refid"] in set(node__.attributes["ids"]):
+                            title = node__.children[1].rawsource
+                            break
     if title == "See bottom of page.":
         print(f"WARNING: footnote text for footnote {node['refid']} not found")
     self.body.append(
