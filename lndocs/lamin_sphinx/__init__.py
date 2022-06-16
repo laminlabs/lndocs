@@ -104,6 +104,35 @@ nitpick_ignore = [
 ]
 
 
+# -------------------------------------------------------------------------------------
+# this whole block enables a footnote tooltip by setting the title element
+
+from docutils.nodes import footnote  # type: ignore  # noqa
+from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
+
+
+def visit_footnote_reference(self, node):
+    href = "#" + node["refid"]
+    classes = "footnote-reference " + self.settings.footnote_references
+    # walk through all nodes of the current document to find the
+    # corresponding footnote and retrieve the text
+    title = "See bottom of page."
+    for node_ in node.document.children[0].children:
+        if isinstance(node_, footnote):
+            if node["refid"] in set(node_.attributes["ids"]):
+                title = node_.children[1].rawsource
+                break
+    if title == "See bottom of page.":
+        print(f"WARNING: footnote text for footnote {node['refid']} not found")
+    self.body.append(
+        self.starttag(node, "a", "", CLASS=classes, href=href, title=title)
+    )
+
+
+HTMLTranslator.visit_footnote_reference = visit_footnote_reference
+# -------------------------------------------------------------------------------------
+
+
 def setup(app: Sphinx):
     app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
     app.add_css_file("custom.css")
