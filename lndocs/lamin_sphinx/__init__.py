@@ -102,6 +102,8 @@ nitpick_ignore = [
     ("py:data", "typing.Literal"),
     ("py:data", "typing.Union"),
     ("py:data", "typing.Any"),
+    ("py:obj", "bionty.Gene"),
+    ("py:obj", "bionty.Species"),
 ]
 
 
