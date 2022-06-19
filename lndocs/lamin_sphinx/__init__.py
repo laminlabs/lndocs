@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
+from textwrap import dedent
 
+import yaml  # type: ignore
 from sphinx.application import Sphinx
 from zmq import has
 
@@ -142,6 +144,82 @@ def visit_footnote_reference(self, node):
 
 
 HTMLTranslator.visit_footnote_reference = visit_footnote_reference
+
+# -------------------------------------------------------------------------------------
+# This block renders the author front matter
+
+authors = {
+    "falexwolf": ("Alex Wolf", "https://falexwolf.me"),
+    "sunnyosun": ("Sunny Sun", "https://github.com/sunnyosun"),
+    "koncopd": ("Sergei Rybakov", "https://github.com/koncopd"),
+}
+
+from myst_parser.docutils_renderer import (  # noqa
+    DocutilsRenderer,
+    SyntaxTreeNode,
+    token_line,
+)
+
+
+# from https://github.com/executablebooks/MyST-Parser/blob/4bf38aca204b9643ca5dc84b30bdcad209519428/myst_parser/mdit_to_docutils/base.py#L792  # noqa
+def render_front_matter(self, token: SyntaxTreeNode) -> None:
+    """Pass document front matter data."""
+    position = token_line(token, default=0)
+
+    if isinstance(token.content, str):
+        try:
+            data = yaml.safe_load(token.content)
+        except (yaml.parser.ParserError, yaml.scanner.ScannerError):
+            self.create_warning(
+                "Malformed YAML",
+                line=position,
+                append_to=self.current_node,
+                subtype="topmatter",
+            )
+            return
+    else:
+        data = token.content
+
+    if not isinstance(data, dict):
+        self.create_warning(
+            f"YAML is not a dict: {type(data)}",
+            line=position,
+            append_to=self.current_node,
+            subtype="topmatter",
+        )
+        return
+
+    fields = {
+        k: v
+        for k, v in data.items()
+        if k not in ("myst", "mystnb", "substitutions", "html_meta")
+    }
+    if fields:
+        field_list = self.dict_to_fm_field_list(
+            fields, language_code=self.document.settings.language_code
+        )
+        self.current_node.append(field_list)
+
+    if data.get("title") and self.md_config.title_to_header:
+        self.nested_render_text(f"# {data['title']}", 0)
+
+    # end of copy, the rest here is our code to add authors
+    if data.get("author"):
+        data["author"] = data["author"].split(", ")
+        author_html = ", ".join(
+            [f'<a href="{authors[k][1]}">{authors[k][0]}</a>' for k in data["author"]]
+        )
+        date_author = dedent(
+            f"""
+        <ul class="ablog-archive" style="padding-left: 0px">
+          <li>{data['date']} ·</li>
+          <li>{author_html}</li>
+        </ul>
+        """
+        )
+        self.nested_render_text(f"{date_author}", 0)
+
+
 # -------------------------------------------------------------------------------------
 
 
