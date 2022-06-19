@@ -220,6 +220,8 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         self.nested_render_text(f"{date_author}", 0)
 
 
+DocutilsRenderer.render_front_matter = render_front_matter
+
 # -------------------------------------------------------------------------------------
 
 
