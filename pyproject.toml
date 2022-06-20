@@ -10,7 +10,8 @@ dynamic = ["version", "description"]
 dependencies = [
     "ablog",
     "dirsync",
-    "myst_nb",
+    "myst-parser==0.18.0",
+    "myst-nb==0.16.0",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
     "pydata-sphinx-theme==0.9.0",
