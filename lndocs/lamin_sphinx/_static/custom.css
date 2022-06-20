@@ -191,6 +191,12 @@ nav {
   border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
 }
 
+@media (max-width: 1199.98px) {
+  .navbar #navbar-center > * {
+    margin-top: 0em;
+  }
+}
+
 /* ---- */
 /* Body */
 /* ---- */
