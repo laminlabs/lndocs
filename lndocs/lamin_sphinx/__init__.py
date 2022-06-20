@@ -74,11 +74,9 @@ myst_title_to_header = True  # allow frontmatter titles
 
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-napoleon_google_docstring = True
-napoleon_include_init_with_doc = False
-napoleon_use_rtype = True  # a separate entry helps readability
-napoleon_use_param = True
-todo_include_todos = False
+napoleon_numpy_docstring = False
+napoleon_use_rtype = True
+napoleon_use_param = False
 
 ogp_image = "https://lamin.ai/_static/img/logo.png"
 
