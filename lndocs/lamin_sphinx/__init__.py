@@ -55,7 +55,9 @@ html_context = {
     "github_version": "main",
 }
 
-html_logo = "../lamin_sphinx/_static/img/logo.svg"
+html_logo = (
+    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+)
 html_favicon = "../lamin_sphinx/_static/img/favicon.ico"
 html_static_path = ["../lamin_sphinx/_static"]
 
