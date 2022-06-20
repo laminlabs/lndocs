@@ -154,7 +154,7 @@ authors = {
     "koncopd": ("Sergei Rybakov", "https://github.com/koncopd"),
 }
 
-from myst_parser.docutils_renderer import (  # noqa
+from myst_parser.mdit_to_docutils.base import (  # noqa
     DocutilsRenderer,
     SyntaxTreeNode,
     token_line,
