@@ -6,6 +6,15 @@
   font-size: 1rem;
 }
 
+/* this is a ligher version of the tango solution */
+html[data-theme="dark"] .highlight .o {
+  color: #f67107;
+}
+
+html[data-theme="dark"] .highlight .kn {
+  color: #f67107;
+}
+
 /* --------- */
 /* Notebooks */
 /* --------- */
