@@ -215,6 +215,11 @@ nav {
   height: unset;
 }
 
+nav.bd-links .active:hover > a,
+nav.bd-links .active > a {
+  font-weight: 400; /* do not have bold entries */
+}
+
 .bd-content {
   padding: 3rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
 }
