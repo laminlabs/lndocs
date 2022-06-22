@@ -62,7 +62,8 @@ html_favicon = "../lamin_sphinx/_static/img/favicon.ico"
 html_static_path = ["../lamin_sphinx/_static"]
 
 html_sidebars = {
-    "*": ["sidebar-nav-bs"],
+    "index": [],
+    "[!index]*": ["sidebar-nav-bs"],
     "**/*": ["sidebar-nav-bs"],
 }
 
