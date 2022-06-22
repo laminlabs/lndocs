@@ -112,6 +112,33 @@ nitpick_ignore = [
 # -------------------------------------------------------------------------------------
 # this whole block enables a footnote tooltip by setting the title element
 
+from io import StringIO  # type: ignore  # noqa
+
+from markdown import Markdown  # type: ignore  # noqa
+
+
+def unmark_element(element, stream=None):
+    if stream is None:
+        stream = StringIO()
+    if element.text:
+        stream.write(element.text)
+    for sub in element:
+        unmark_element(sub, stream)
+    if element.tail:
+        stream.write(element.tail)
+    return stream.getvalue()
+
+
+# patching Markdown
+Markdown.output_formats["plain"] = unmark_element
+__md = Markdown(output_format="plain")
+__md.stripTopLevelTags = False
+
+
+def unmark(text):
+    return __md.convert(text)
+
+
 from docutils.nodes import footnote  # type: ignore  # noqa
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
 
@@ -138,6 +165,8 @@ def visit_footnote_reference(self, node):
                             break
     if title == "See bottom of page.":
         print(f"WARNING: footnote text for footnote {node['refid']} not found")
+    else:  # remove markup
+        title = unmark(title)
     self.body.append(
         self.starttag(node, "a", "", CLASS=classes, href=href, title=title)
     )
