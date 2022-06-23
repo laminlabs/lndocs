@@ -63,6 +63,7 @@ html_static_path = ["../lamin_sphinx/_static"]
 
 html_sidebars = {
     "index": [],
+    "impressum": [],
     "[!index]*": ["sidebar-nav-bs"],
     "**/*": ["sidebar-nav-bs"],
 }
