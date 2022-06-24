@@ -93,6 +93,7 @@ nitpicky = True  # report broken links
 nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "datetime.datetime"),
+    ("py:class", "pydantic.main.BaseModel"),
     ("py:class", "enum.Enum"),
     ("py:class", "pathlib.Path"),
     ("py:class", "Model"),
