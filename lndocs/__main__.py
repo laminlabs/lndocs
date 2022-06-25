@@ -11,7 +11,7 @@ from lndocs._generate_conf import generate_conf
 HERE = Path(__file__).parent
 
 
-def lamin_project():
+def get_lamin_project():
     with open("./lamin-project.yaml") as f:
         try:
             return yaml.safe_load(f)
@@ -58,9 +58,11 @@ def main():
     build_status = call(f"{build_command} {args.docs} {args.site}", shell=True)
 
     # delete auto-generated files
-    package_name = lamin_project()["package_name"]
-    for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
-        generated.unlink()
+    lamin_project = get_lamin_project()
+    if "package_name" in lamin_project:
+        package_name = lamin_project["package_name"]
+        for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
+            generated.unlink()
 
     if not args.show:
         return build_status
