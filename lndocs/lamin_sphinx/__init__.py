@@ -94,6 +94,8 @@ nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "datetime.datetime"),
     ("py:class", "pydantic.main.BaseModel"),
+    ("py:class", "cloudpathlib.cloudpath.CloudPath"),
+    ("py:class", "anndata._core.anndata.AnnData"),
     ("py:class", "enum.Enum"),
     ("py:class", "pathlib.Path"),
     ("py:class", "Model"),
