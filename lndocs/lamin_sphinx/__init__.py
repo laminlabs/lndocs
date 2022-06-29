@@ -39,7 +39,7 @@ default_role = "literal"
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
-    "show_prev_next": False,
+    "show_prev_next": True,
     "use_edit_page_button": False,  # currently unused
     "search_bar_text": "Search",  # currently unused
     "navbar_end": ["theme-switcher"],
