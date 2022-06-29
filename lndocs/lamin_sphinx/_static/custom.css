@@ -2,6 +2,14 @@
 /* API and code */
 /* ------------ */
 
+code {
+  background-color: var(--pst-color-background-up);
+  color: var(--pst-color-text-base); /* var(--pst-color-inline-code); */
+  border: 0.1rem solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.1rem;
+}
+
 .sig-name {
   font-size: 1rem;
 }
@@ -13,6 +21,15 @@ html[data-theme="dark"] .highlight .o {
 
 html[data-theme="dark"] .highlight .kn {
   color: #f67107;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+  background-color: var(--pst-color-background-up);
 }
 
 /* --------- */
