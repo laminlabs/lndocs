@@ -70,6 +70,24 @@ div.cell_output tbody tr:nth-child(odd) {
 /* Footnotes */
 /* --------- */
 
+/* The top border is as for footnotes. */
+
+.prev-next-area {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: var(--pst-color-border);
+  margin-top: 2rem;
+}
+
+.prev-next-area a p.prev-next-title {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+/* --------- */
+/* Footnotes */
+/* --------- */
+
 /* this is 80% to match date & author font in blog */
 .footnote p,
 .footnote dt {
