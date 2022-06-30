@@ -127,6 +127,7 @@ hr.footnotes {
   border-top-style: solid;
   border-top-color: var(--pst-color-border);
   margin-top: 2rem;
+  padding-top: 0.3rem;
 }
 
 /* ------- */
