@@ -32,9 +32,7 @@ h6 code {
   background-color: var(--pst-color-background-up);
 }
 
-/* .cell_output {
-  margin-top: 0em;
-} */
+/* have code cells with less margin */
 
 .cell_output .output.text_plain,
 .cell_output .output.traceback,
@@ -44,8 +42,14 @@ h6 code {
   border: 0px;
 }
 
+/* counteract the statement below */
+
+.highlight-default.notranslate {
+  margin: 1em 0;
+}
+
 div[class*="highlight-"] {
-  margin: 0 0;
+  margin: 0 0; /* was 1em 0 */
 }
 
 /* --------- */
