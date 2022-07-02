@@ -61,11 +61,13 @@ html_logo = (
 html_favicon = "../lamin_sphinx/_static/img/favicon.ico"
 html_static_path = ["../lamin_sphinx/_static"]
 
+# order matters below!
+# https://stackoverflow.com/questions/45112812/sphinx-exclude-one-page-from-html-sidebars # noqa
 html_sidebars = {
+    "*": ["sidebar-nav-bs"],
+    "**/*": ["sidebar-nav-bs"],
     "index": [],
     "impressum": [],
-    "[!index]*": ["sidebar-nav-bs"],
-    "**/*": ["sidebar-nav-bs"],
 }
 
 # Other configurations
