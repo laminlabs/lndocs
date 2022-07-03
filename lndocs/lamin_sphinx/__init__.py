@@ -198,7 +198,8 @@ from myst_parser.mdit_to_docutils.base import (  # noqa
 )
 
 
-# from https://github.com/executablebooks/MyST-Parser/blob/4bf38aca204b9643ca5dc84b30bdcad209519428/myst_parser/mdit_to_docutils/base.py#L792  # noqa
+# from myst_parser 0.18.0
+# https://github.com/executablebooks/MyST-Parser/blob/391a8cd1097db16f122ce4736e8924ecfb23e621/myst_parser/mdit_to_docutils/base.py#L792-L831  # noqa
 def render_front_matter(self, token: SyntaxTreeNode) -> None:
     """Pass document front matter data."""
     position = token_line(token, default=0)
@@ -237,24 +238,36 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         )
         self.current_node.append(field_list)
 
+    # end of copy of this function, the rest here is our code
     if data.get("title") and self.md_config.title_to_header:
         self.nested_render_text(f"# {data['title']}", 0)
 
-    # end of copy, the rest here is our code to add authors
+    def format_authors():
+        if data.get("affiliation"):
+            affiliation = data["affiliation"]
+        else:
+            affiliation = {}
+
+        def format_title(k):
+            return f'title="{affiliation[k]}"' if affiliation else ""
+
+        return ", ".join(
+            [
+                f'<a href="{authors[k][1]}" {format_title(k)}>{authors[k][0]}</a>'
+                for k in data["author"].split(", ")
+            ]
+        )
+
     if data.get("author"):
-        data["author"] = data["author"].split(", ")
-        author_html = ", ".join(
-            [f'<a href="{authors[k][1]}">{authors[k][0]}</a>' for k in data["author"]]
-        )
-        date_author = dedent(
-            f"""
-        <ul class="ablog-archive" style="padding-left: 0px">
-          <li>{data['date']} ·</li>
-          <li>{author_html}</li>
-        </ul>
-        """
-        )
-        self.nested_render_text(f"{date_author}", 0)
+        html = f"{data['date']}"
+        if data.get("number"):
+            html += f" · #{data['number']}"
+        html += f" · {format_authors()}"
+        if data.get("software"):
+            software = f"<a href={data['software']}>Software</a>"
+            html += f" → {software}"
+        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""  # noqa
+        self.nested_render_text(f"{html}", 0)
 
 
 DocutilsRenderer.render_front_matter = render_front_matter
