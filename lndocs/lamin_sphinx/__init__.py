@@ -316,6 +316,7 @@ class AutoLink(NamedTuple):
 
 def register_links(app: Sphinx, config: Config):
     app.add_role("ct", AutoLink("ct", "#{}", "[{}]"))
+    app.add_role("cp", AutoLink("cp", "#{}", "{}"))
 
 
 # -------------------------------------------------------------------------------------
