@@ -272,6 +272,10 @@ nav {
   height: unset;
 }
 
+.toc-entry > .nav-link.active {
+  font-weight: 400; /* do not have bold entries */
+}
+
 nav.bd-links .active:hover > a,
 nav.bd-links .active > a {
   font-weight: 400; /* do not have bold entries */
