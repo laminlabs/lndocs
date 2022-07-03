@@ -258,8 +258,14 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
             ]
         )
 
+    def format_date():
+        if isinstance(data["date"], str):
+            return data["date"].split(" ")[0]  # do not display time!
+        else:
+            return data["date"]
+
     if data.get("author"):
-        html = f"{data['date']}"
+        html = f"{format_date()}"
         if data.get("number"):
             html += f" · #{data['number']}"
         html += f" · {format_authors()}"
