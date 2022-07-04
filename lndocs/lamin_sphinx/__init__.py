@@ -239,6 +239,27 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         self.current_node.append(field_list)
 
     # end of copy of this function, the rest here is our code
+    def format_date():
+        if isinstance(data["date"], str):
+            return data["date"].split(" ")[0]  # do not display time!
+        else:
+            return data["date"]
+
+    html = ""
+    # some posts might not have software, hence the · at the end
+    if data.get("software"):
+        software = f"<a href={data['software']}>Software</a> · "
+        html += f"{software}"
+    # if something has twitter, it will also have a linkedin post!
+    if data.get("twitter"):
+        html += f"<a href={data['twitter']}>Twitter</a> · "
+    if data.get("linkedin"):
+        html += f"<a href={data['linkedin']}>LinkedIn</a> · "
+    if data.get("github"):
+        html += f"<a href={data['github']}>GitHub</a>"
+    html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""  # noqa
+    self.nested_render_text(f"{html}", 0)
+
     if data.get("title") and self.md_config.title_to_header:
         self.nested_render_text(f"# {data['title']}", 0)
 
@@ -258,20 +279,12 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
             ]
         )
 
-    def format_date():
-        if isinstance(data["date"], str):
-            return data["date"].split(" ")[0]  # do not display time!
-        else:
-            return data["date"]
-
     if data.get("author"):
-        html = f"{format_date()}"
+        html = ""
         if data.get("number"):
-            html += f" · #{data['number']}"
-        html += f" · {format_authors()}"
-        if data.get("software"):
-            software = f"<a href={data['software']}>Software</a>"
-            html += f" → {software}"
+            html += f"#{data['number']} · "
+        html += f"{format_date()} · "
+        html += f"{format_authors()}"
         html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""  # noqa
         self.nested_render_text(f"{html}", 0)
 
