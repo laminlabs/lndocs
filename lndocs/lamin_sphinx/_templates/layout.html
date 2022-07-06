@@ -38,14 +38,18 @@ _webpack.head_js_preload() }} {%- endblock %} {%- block extrahead %}
   src="https://identity.netlify.com/v1/netlify-identity-widget.js"
 ></script>
 <script>
+  netlifyIdentity.on("login", () => refresh_identity());
   netlifyIdentity.on("close", () => (location.href = "/login"));
-  async function refresh() {
+  function refresh_identity() {
+    netlifyIdentity.refresh().then((jwt) => console.log(jwt));
+  }
+  async function refresh_repeat() {
     for (let i = 0; i < 1000; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 15 * 60000));
-      netlifyIdentity.refresh().then((jwt) => console.log(jwt));
+      await new Promise((resolve) => setTimeout(resolve, 20 * 60000));
+      refresh_identity();
     }
   }
-  refresh();
+  refresh_repeat();
 </script>
 {%- endblock %} {# Silence the sidebar's, relbar's #} {% block header %}{%
 endblock %} {% block relbar1 %}{% endblock %} {% block relbar2 %}{% endblock %}
