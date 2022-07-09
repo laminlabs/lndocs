@@ -22,7 +22,7 @@ def update_index_file(filepath):
     # fmt: off
     content = content\
         .replace("](", f"]({filepath.parent.stem}/")\
-        .replace("}`", f"]({filepath.parent.stem}/")
+        .replace("}`", "}" + f"`{filepath.parent.stem}/")
     # fmt: on
     # revert for all http links
     content = content.replace(f"]({filepath.parent.stem}/http", "](http")
