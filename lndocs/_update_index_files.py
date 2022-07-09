@@ -19,9 +19,13 @@ def update_index_file(filepath):
 
     Path(filepath).unlink()
 
-    content = content.replace("](", f"]({filepath.parent.stem}/").replace(
-        "}`", f"]({filepath.parent.stem}/"
-    )
+    # fmt: off
+    content = content\
+        .replace("](", f"]({filepath.parent.stem}/")\
+        .replace("}`", f"]({filepath.parent.stem}/")
+    # fmt: on
+    # revert for all http links
+    content = content.replace(f"]({filepath.parent.stem}/http", "](http")
 
     # parse out indexed file list
     if "```{toctree}" in content:
