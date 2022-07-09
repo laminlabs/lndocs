@@ -19,7 +19,9 @@ def update_index_file(filepath):
 
     Path(filepath).unlink()
 
-    content = content.replace("](", f"]({filepath.parent.stem}/")
+    content = content.replace("](", f"]({filepath.parent.stem}/").replace(
+        "}`", f"]({filepath.parent.stem}/"
+    )
 
     # parse out indexed file list
     if "```{toctree}" in content:
