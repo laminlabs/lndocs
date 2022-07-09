@@ -61,7 +61,7 @@ def main():
     # all of what follows here is about getting rid of the back-slash for index files
     # on URLs
     docs_dir = args.docs
-    if not args.live:
+    if not args.live and lamin_project["project_slug"] != "":
         docs_dir = Path(f"_{args.docs}_tmp/")
         sync(
             args.docs,
