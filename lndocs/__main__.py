@@ -73,6 +73,8 @@ def main():
             docs_dir / "conf.py"
         )
         for path in docs_dir.glob("**/*"):
+            if path.suffix not in {".md", ".ipynb"}:
+                continue
             if path.is_file():
                 replace_index_targets(path)
             if str(path).endswith("index.md"):
