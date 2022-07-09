@@ -8,6 +8,8 @@ from dirsync import sync
 
 from lndocs._generate_conf import generate_conf
 
+from ._update_index_files import replace_index_targets, update_index_file
+
 HERE = Path(__file__).parent
 
 
@@ -34,6 +36,7 @@ def main():
         )
     if not Path("./lamin-project.yaml").exists():
         sys.exit("The ./lamin-project.yaml conf file does not exist!")
+    lamin_project = get_lamin_project()
 
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
     # check whether we need to generate the conf.py for Sphinx
@@ -55,10 +58,31 @@ def main():
     else:
         build_command = "sphinx-build"
 
-    build_status = call(f"{build_command} {args.docs} {args.site}", shell=True)
+    # all of what follows here is about getting rid of the back-slash for index files
+    # on URLs
+    docs_dir = args.docs
+    if not args.live:
+        docs_dir = Path(f"_{args.docs}_tmp/")
+        sync(
+            args.docs,
+            Path(docs_dir) / lamin_project["project_slug"],
+            "sync",
+            create=True,
+        )
+        (docs_dir / lamin_project["project_slug"] / "conf.py").rename(
+            docs_dir / "conf.py"
+        )
+        for path in docs_dir.glob("**/*"):
+            if path.is_file():
+                replace_index_targets(path)
+            if str(path).endswith("index.md"):
+                update_index_file(path)
+        (docs_dir / f"{lamin_project['project_slug']}.md").rename(docs_dir / "index.md")
+    # end of _docs_tmp
+
+    build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
 
     # delete auto-generated files
-    lamin_project = get_lamin_project()
     if "package_name" in lamin_project:
         package_name = lamin_project["package_name"]
         for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
