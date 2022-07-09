@@ -40,7 +40,7 @@ def update_index_file(filepath):
             [f"{filepath.parent.stem}/{file}" for file in toctree_split]
         )
 
-    content = content.replace(toctree, toctree_new)
+        content = content.replace(toctree, toctree_new)
 
     with open(f"{filepath.parent}.md", "w") as f:
         f.write(content)

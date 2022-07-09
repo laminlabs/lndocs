@@ -16,4 +16,4 @@ html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 # We're actually using this for the link behind the brand of the page!
 html_theme_options["logo"] = {"link": "{{ lamin_project_slug }}"}  # noqa
 
-ogp_site_url = "https://lamin.ai/{{ lamin_project_slug }}"
+ogp_site_url = "https://lamin.ai/docs/{{ lamin_project_slug }}"
