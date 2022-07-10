@@ -199,11 +199,11 @@ h6 {
   font-weight: bold;
 }
 
-#theme-switch a {
+#my-theme-switch a {
   color: var(--color-emphasis-900);
 }
 
-#theme-switch {
+#my-theme-switch {
   border-color: #ebedf0;
   border-style: solid;
   border-radius: 0.4rem;
