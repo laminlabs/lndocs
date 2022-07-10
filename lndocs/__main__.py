@@ -59,9 +59,9 @@ def main():
         build_command = "sphinx-build"
 
     # all of what follows here is about getting rid of the back-slash for index files
-    # on URLs
+    # on URLs for the dedicated docs pages
     docs_dir = args.docs
-    if not args.live and lamin_project["project_slug"] != "":
+    if not args.live and lamin_project["project_slug"] not in {"", "notes", "reports"}:
         docs_dir = Path(f"_{args.docs}_tmp/")
         sync(
             args.docs,
