@@ -195,19 +195,8 @@ h6 {
   border-color: #ebedf0;
   border-style: solid;
   border-radius: 0.4rem;
-  padding: 0.375rem 1.5rem;
+  padding: 0.375rem 1.2rem;
   font-weight: bold;
-}
-
-#my-theme-switch a {
-  color: var(--color-emphasis-900);
-}
-
-#my-theme-switch {
-  border-color: #ebedf0;
-  border-style: solid;
-  border-radius: 0.4rem;
-  margin-right: unset;
 }
 
 nav {
