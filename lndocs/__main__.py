@@ -91,6 +91,9 @@ def main():
             generated.unlink()
 
     if not args.show:
+        if lamin_project["project_slug"] == "":  # deploy a copy of _static on Netlify
+            site = Path(args.site)
+            sync(site / "_static", site / "docs/_static", "sync", create=True)
         return build_status
     else:
         if build_status == 0:
