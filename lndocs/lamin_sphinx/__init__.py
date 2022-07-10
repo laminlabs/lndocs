@@ -157,9 +157,16 @@ def visit_footnote_reference(self, node):
     # walk through all nodes of the current document to find the
     # corresponding footnote and retrieve the text
     title = "See bottom of page."
-    for node_ in node.document.children[0].children:
+    content = (
+        node.document.children[0]
+        if len(node.document.children[0]) > 1
+        else node.document.children[1]
+    )
+    for node_ in content.children:
         # check whether a node is a footnote
         if isinstance(node_, footnote):
+            print(node)
+            print(node_.attributes["ids"])
             if node["refid"] in set(node_.attributes["ids"]):
                 title = node_.children[1].rawsource
                 break
