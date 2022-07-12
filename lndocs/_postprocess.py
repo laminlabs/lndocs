@@ -1,13 +1,18 @@
 from pathlib import Path
 
 
-def replace_index_targets(filepath):
-
+def replace_index_targets(filepath, project_slug):
     with open(filepath) as f:
         content = f.read()
-
     content = content.replace("/index", "")
+    with open(filepath, "w") as f:
+        f.write(content)
 
+
+def replace_image_targets(filepath, project_slug):
+    with open(filepath) as f:
+        content = f.read()
+    content = content.replace("_images/", f"{project_slug}/_images/")
     with open(filepath, "w") as f:
         f.write(content)
 

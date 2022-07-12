@@ -1,4 +1,5 @@
 import argparse
+import shutil
 import sys
 from pathlib import Path
 from subprocess import call
@@ -8,7 +9,11 @@ from dirsync import sync
 
 from lndocs._generate_conf import generate_conf
 
-from ._update_index_files import replace_index_targets, update_index_file
+from ._postprocess import (
+    replace_image_targets,
+    replace_index_targets,
+    update_index_file,
+)
 
 HERE = Path(__file__).parent
 
@@ -61,7 +66,13 @@ def main():
     # all of what follows here is about getting rid of the back-slash for index files
     # on URLs for the dedicated docs pages
     docs_dir = args.docs
-    if not args.live and lamin_project["project_slug"] not in {"", "notes", "reports"}:
+    check_postprocess = not args.live and lamin_project["project_slug"] not in {
+        "",
+        "notes",
+        "reports",
+    }
+    notebooks = []
+    if check_postprocess:
         docs_dir = Path(f"_{args.docs}_tmp/")
         sync(
             args.docs,
@@ -75,8 +86,12 @@ def main():
         for path in docs_dir.glob("**/*"):
             if path.suffix not in {".md", ".ipynb"}:
                 continue
+            if ".ipynb_checkpoints/" in str(path):
+                continue
+            if path.suffix == ".ipynb":
+                notebooks.append(path)
             if path.is_file():
-                replace_index_targets(path)
+                replace_index_targets(path, lamin_project["project_slug"])
             if str(path).endswith("index.md"):
                 update_index_file(path)
         (docs_dir / f"{lamin_project['project_slug']}.md").rename(docs_dir / "index.md")
@@ -90,9 +105,22 @@ def main():
         for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
             generated.unlink()
 
+    site = Path(args.site)
+
+    # move images to accessible location
+    # the root isn't part of the deployed website!
+    if check_postprocess:
+        for path in notebooks:
+            path_html = (
+                str(path).replace(str(docs_dir), str(site)).replace(".ipynb", ".html")
+            )
+            replace_image_targets(path_html, lamin_project["project_slug"])
+        shutil.move(
+            site / "_images", site / f"{lamin_project['project_slug']}/_images/"
+        )
+
     if not args.show:
         if lamin_project["project_slug"] == "":  # deploy a copy of _static on Netlify
-            site = Path(args.site)
             sync(site / "_static", site / "docs/_static", "sync", create=True)
         return build_status
     else:
