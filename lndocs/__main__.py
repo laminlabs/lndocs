@@ -109,7 +109,7 @@ def main():
 
     # move Jupyter-generated images to accessible location
     # as the root isn't part of the deployed website!
-    if check_postprocess and (site / "_images").exists:
+    if check_postprocess and (site / "_images").exists():
         for path in notebooks:
             path_html = (
                 str(path).replace(str(docs_dir), str(site)).replace(".ipynb", ".html")
