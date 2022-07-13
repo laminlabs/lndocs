@@ -107,9 +107,9 @@ def main():
 
     site = Path(args.site)
 
-    # move images to accessible location
-    # the root isn't part of the deployed website!
-    if check_postprocess:
+    # move Jupyter-generated images to accessible location
+    # as the root isn't part of the deployed website!
+    if check_postprocess and (site / "_images").exists:
         for path in notebooks:
             path_html = (
                 str(path).replace(str(docs_dir), str(site)).replace(".ipynb", ".html")
