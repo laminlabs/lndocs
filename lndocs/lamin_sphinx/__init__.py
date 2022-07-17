@@ -195,7 +195,8 @@ HTMLTranslator.visit_footnote_reference = visit_footnote_reference
 authors = {
     "falexwolf": ("Alex Wolf", "https://falexwolf.me"),
     "sunnyosun": ("Sunny Sun", "https://github.com/sunnyosun"),
-    "koncopd": ("Sergei Rybakov", "https://github.com/koncopd"),
+    "Koncopd": ("Sergei Rybakov", "https://github.com/koncopd"),
+    "Zethson": ("Lukas Heumos", "https://github.com/Zethson"),
 }
 
 from myst_parser.mdit_to_docutils.base import (  # noqa
