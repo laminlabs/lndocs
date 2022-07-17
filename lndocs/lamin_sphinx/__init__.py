@@ -255,16 +255,16 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
 
     html = ""
     # some posts might not have software, hence the · at the end
-    if data.get("software"):
-        software = f"<a href={data['software']}>Software</a> · "
-        html += f"{software}"
+    if data.get("docs"):
+        docs = f"<a href={data['docs']}>Docs</a> · "
+        html += f"{docs}"
+    if data.get("repo"):
+        html += f"<a href={data['repo']}>Repo</a> · "
     # if something has twitter, it will also have a linkedin post!
-    if data.get("twitter"):
-        html += f"<a href={data['twitter']}>Twitter</a> · "
+    if data.get("tweet"):
+        html += f"<a href={data['tweet']}>Tweet</a> · "
     if data.get("linkedin"):
-        html += f"<a href={data['linkedin']}>LinkedIn</a> · "
-    if data.get("github"):
-        html += f"<a href={data['github']}>GitHub</a>"
+        html += f"<a href={data['linkedin']}>LinkedIn</a>"
     float_right = ""
     if data.get("number"):
         doi = ""
