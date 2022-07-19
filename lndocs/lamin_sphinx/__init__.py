@@ -256,7 +256,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     html = ""
     # some posts might not have software, hence the · at the end
     if data.get("docs"):
-        docs = f"<a href={data['docs']}>Documentation</a> · "
+        docs = f"<a href={data['docs']}>Docs</a> · "
         html += f"{docs}"
     if data.get("repo"):
         html += f"<a href={data['repo']}>Repository</a> · "
