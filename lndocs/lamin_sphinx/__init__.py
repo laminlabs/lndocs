@@ -195,7 +195,7 @@ HTMLTranslator.visit_footnote_reference = visit_footnote_reference
 authors = {
     "falexwolf": ("Alex Wolf", "https://falexwolf.me"),
     "sunnyosun": ("Sunny Sun", "https://github.com/sunnyosun"),
-    "Koncopd": ("Sergei Rybakov", "https://github.com/koncopd"),
+    "Koncopd": ("Sergei Rybakov", "https://github.com/Koncopd"),
     "Zethson": ("Lukas Heumos", "https://github.com/Zethson"),
 }
 
@@ -256,10 +256,10 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     html = ""
     # some posts might not have software, hence the · at the end
     if data.get("docs"):
-        docs = f"<a href={data['docs']}>Docs</a> · "
+        docs = f"<a href={data['docs']}>Documentation</a> · "
         html += f"{docs}"
     if data.get("repo"):
-        html += f"<a href={data['repo']}>Repo</a> · "
+        html += f"<a href={data['repo']}>Repository</a> · "
     # if something has twitter, it will also have a linkedin post!
     if data.get("tweet"):
         html += f"<a href={data['tweet']}>Tweet</a> · "
