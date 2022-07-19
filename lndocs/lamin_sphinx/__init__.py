@@ -265,12 +265,11 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         html += f"<a href={data['tweet']}>Tweet</a> · "
     if data.get("linkedin"):
         html += f"<a href={data['linkedin']}>LinkedIn</a>"
+    if data.get("doi"):
+        html += f' · <a href=https://doi.org/{data["doi"]}>doi</a>'
     float_right = ""
     if data.get("number"):
-        doi = ""
-        if data.get("doi"):
-            doi = f' · <a href=https://doi.org/{data["doi"]}>doi</a>'
-        float_right += f'<li> ⸻ #{data["number"]}{doi}</li>'
+        float_right += f'<li> ⸻ #{data["number"]}</li>'
     html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
     self.nested_render_text(f"{html}", 0)
 
