@@ -263,6 +263,12 @@ nav {
 
 .toc-entry > .nav-link.active {
   font-weight: 400; /* do not have bold entries */
+  background-color: transparent;
+  border-left: unset;
+}
+
+.section-nav {
+  border-left: unset;
 }
 
 nav.bd-links .active:hover > a,
