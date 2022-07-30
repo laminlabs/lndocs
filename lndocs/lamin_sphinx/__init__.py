@@ -68,6 +68,7 @@ html_sidebars = {
     "**/*": ["sidebar-nav-bs"],
     "index": [],
     "impressum": [],
+    "products": [],
 }
 
 # Other configurations
