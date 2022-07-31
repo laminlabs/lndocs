@@ -69,6 +69,7 @@ html_sidebars = {
     "index": [],
     "impressum": [],
     "products": [],
+    "docs": [],
 }
 
 # Other configurations
