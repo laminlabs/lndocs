@@ -96,6 +96,7 @@ nitpicky = True  # report broken links
 
 nitpick_ignore = [
     ("py:class", "pandas.core.frame.DataFrame"),
+    ("py:class", "sqlmodel.orm.session.Session"),
     ("py:class", "numpy.ndarray"),
     ("py:class", "datetime.datetime"),
     ("py:class", "pydantic.main.BaseModel"),
