@@ -66,11 +66,16 @@ def main():
     # all of what follows here is about getting rid of the back-slash for index files
     # on URLs for the dedicated docs pages
     docs_dir = args.docs
-    check_postprocess = not args.live and lamin_project["project_slug"] not in {
-        "",
-        "notes",
-        "reports",
-    }
+    check_postprocess = (
+        not args.live
+        and lamin_project["project_slug"]
+        not in {
+            "",
+            "notes",
+            "reports",
+        }
+        and generate_conf_check
+    )
     notebooks = []
     if check_postprocess:
         docs_dir = Path(f"_{args.docs}_tmp/")
