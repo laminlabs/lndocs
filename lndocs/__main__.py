@@ -43,7 +43,7 @@ def main():
         sys.exit("The ./lamin-project.yaml conf file does not exist!")
     lamin_project = get_lamin_project()
 
-    sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True)
+    sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True, ctime=True)
     # check whether we need to generate the conf.py for Sphinx
     # input for it is the lamin-project.yaml file
     generate_conf_check = False
