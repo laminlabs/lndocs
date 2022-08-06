@@ -67,6 +67,8 @@ def main():
     docs_dir = args.docs
     check_postprocess = not args.live and lamin_project["project_slug"] not in {
         "",
+        "notes",
+        "reports",
     }
     notebooks = []
     if check_postprocess:
