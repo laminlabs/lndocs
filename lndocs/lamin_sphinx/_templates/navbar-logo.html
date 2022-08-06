@@ -1,6 +1,6 @@
 {% if not theme_logo.get("link") %} {% set href = pathto(root_doc) %} {% else %}
-{# Logo link is to internal page #} {% set href = pathto(theme_logo.get("link"))
-%} {% endif %}
+{# Logo link is to internal page #} {% set href = theme_logo.get("link") %} {%
+endif %}
 
 <div class="navbar-brand">
   <a href="/"><img src="{{ logo }}" class="navbar__logo" alt="logo" /></a>
