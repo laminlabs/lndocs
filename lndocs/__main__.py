@@ -1,5 +1,4 @@
 import argparse
-import shutil
 import sys
 from pathlib import Path
 from subprocess import call
@@ -66,16 +65,9 @@ def main():
     # all of what follows here is about getting rid of the back-slash for index files
     # on URLs for the dedicated docs pages
     docs_dir = args.docs
-    check_postprocess = (
-        not args.live
-        and lamin_project["project_slug"]
-        not in {
-            "",
-            "notes",
-            "reports",
-        }
-        and generate_conf_check
-    )
+    check_postprocess = not args.live and lamin_project["project_slug"] not in {
+        "",
+    }
     notebooks = []
     if check_postprocess:
         docs_dir = Path(f"_{args.docs}_tmp/")
@@ -120,8 +112,11 @@ def main():
                 str(path).replace(str(docs_dir), str(site)).replace(".ipynb", ".html")
             )
             replace_image_targets(path_html, lamin_project["project_slug"])
-        shutil.move(
-            site / "_images", site / f"{lamin_project['project_slug']}/_images/"
+        sync(
+            site / "_images/",
+            site / lamin_project["project_slug"] / "_images/",
+            "sync",
+            create=True,
         )
 
     if not args.show:
