@@ -1,5 +1,5 @@
-from lndocs import __version__
+import lndocs  # noqa
 
 
-def test_version():
-    assert __version__ == "0.1a1"
+def test_dummy():
+    pass
