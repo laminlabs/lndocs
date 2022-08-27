@@ -36,5 +36,5 @@ class AutoLink(NamedTuple):
 
 def register_cite(app: Sphinx, config: Config):
     # This follows the convention of natbib's \citet (Text) and \citep (Parantheses/Brackets)  # noqa
-    app.add_role("ct", AutoLink("cp", "#{}", "{}"))
-    app.add_role("cp", AutoLink("ct", "#{}", "[{}]"))
+    app.add_role("ct", AutoLink("ct", "#{}", "{}"))
+    app.add_role("cp", AutoLink("cp", "#{}", "[{}]"))
