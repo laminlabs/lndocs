@@ -18,7 +18,6 @@ def replace_image_targets(filepath, project_slug):
 
 
 def update_index_file(filepath):
-
     with open(filepath) as f:
         content = f.read()
 
