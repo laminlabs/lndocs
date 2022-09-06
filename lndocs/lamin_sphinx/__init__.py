@@ -56,7 +56,9 @@ html_context = {
 html_logo = (
     "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
 )
-html_favicon = "../lamin_sphinx/_static/img/favicon.ico"
+html_favicon = (
+    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico"
+)
 html_static_path = ["../lamin_sphinx/_static"]
 
 # order matters below!
@@ -84,7 +86,9 @@ napoleon_numpy_docstring = False
 napoleon_use_rtype = True
 napoleon_use_param = False
 
-ogp_image = "https://lamin.ai/_static/img/logo.png"
+ogp_image = (
+    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+)
 
 # myst_nb options
 nb_execution_mode = "off"
