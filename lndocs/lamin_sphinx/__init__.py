@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+import sphinx.ext.autosummary.generate
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
 from sphinx.application import Sphinx
 
@@ -100,8 +101,12 @@ from ._authors import authors  # noqa
 from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
 from ._nitpick_ignore import nitpick_ignore  # noqa
+from ._sort_autosummary import generate_autosummary_content  # noqa
 
 HTMLTranslator.visit_footnote_reference = visit_footnote_reference
+sphinx.ext.autosummary.generate.generate_autosummary_content = (
+    generate_autosummary_content  # noqa
+)
 
 
 def setup(app: Sphinx):
