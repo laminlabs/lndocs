@@ -84,6 +84,16 @@ def main():
             if ".ipynb_checkpoints/" in str(path):
                 continue
             if path.suffix == ".ipynb":
+                # test whether prefix is capital letter or digit and if so,
+                # strip them for pretty & persistent urls we need the prefixes
+                # on notebooks to allow users to navigate downloaded notebooks
+                # that should display in order in a file browser
+                prefix = path.stem[0]
+                if prefix.isdigit() or prefix.isupper() and "-" in path.stem:
+                    new_stem = "-".join(path.stem.split("-")[1:])
+                    new_path = path.with_stem(new_stem)
+                    path.rename(new_path)
+                    path = new_path
                 notebooks.append(path)
             if path.is_file():
                 replace_index_targets(path, lamin_project["project_slug"])
