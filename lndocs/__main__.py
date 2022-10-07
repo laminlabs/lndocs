@@ -91,7 +91,8 @@ def main():
                 prefix = path.stem[0]
                 if prefix.isdigit() or prefix.isupper() and "-" in path.stem:
                     new_stem = "-".join(path.stem.split("-")[1:])
-                    new_path = path.with_stem(new_stem)
+                    # path.with_stem() is >3.9
+                    new_path = path.with_name(f"{new_stem}{path.suffix}")
                     path.rename(new_path)
                     path = new_path
                 notebooks.append(path)
