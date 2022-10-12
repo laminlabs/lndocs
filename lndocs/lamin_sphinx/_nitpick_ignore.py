@@ -2,6 +2,7 @@ nitpick_ignore = [
     ("py:class", "lnschema_core._core.dobject"),
     ("py:class", "lnschema_core._core.dtransform"),
     ("py:class", "lnschema_core._core.jupynb"),
+    ("py:class", "bionty._table.EntityTable"),
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "sqlmodel.orm.session.Session"),
     ("py:class", "numpy.ndarray"),
