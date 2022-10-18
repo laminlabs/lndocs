@@ -1,5 +1,6 @@
 import argparse
 import sys
+from datetime import datetime
 from pathlib import Path
 from subprocess import call
 
@@ -24,6 +25,15 @@ def get_lamin_project():
         except yaml.YAMLError as exc:
             print(exc)
             quit()
+
+
+# https://stackoverflow.com/questions/41129921
+def datetime_valid(s: str):
+    try:
+        datetime.fromisoformat(s)
+    except ValueError:
+        return False
+    return True
 
 
 def main():
@@ -85,11 +95,15 @@ def main():
                 continue
             if path.suffix == ".ipynb":
                 # test whether prefix is capital letter or digit and if so,
-                # strip them for pretty & persistent urls we need the prefixes
+                # strip them for pretty & persistent urls
+                # we need the prefixes
                 # on notebooks to allow users to navigate downloaded notebooks
                 # that should display in order in a file browser
+                # ignore dates!
                 prefix = path.stem[0]
-                if prefix.isdigit() or prefix.isupper() and "-" in path.stem:
+                if not datetime_valid(path.stem[:10]) and (
+                    prefix.isdigit() or prefix.isupper() and "-" in path.stem
+                ):
                     new_stem = "-".join(path.stem.split("-")[1:])
                     # path.with_stem() is >3.9
                     new_path = path.with_name(f"{new_stem}{path.suffix}")
