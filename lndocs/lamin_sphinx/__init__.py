@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
     "myst_nb",
@@ -89,6 +90,10 @@ napoleon_use_param = False
 
 ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+)
+
+intersphinx_mapping = dict(
+    docs=("https://lamin.ai/docs", None),
 )
 
 # myst_nb options
