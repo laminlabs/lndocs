@@ -16,6 +16,8 @@ def fix_og_url(context: Dict[str, Any], config: Dict[str, Any]):
     old_url = urljoin(
         config["ogp_site_url"], context["pagename"] + context["file_suffix"]
     )
+    if "ogp_site_url" not in config or config["ogp_site_url"] is None:
+        raise RuntimeError("Please define ogp_site_url in conf.py.")
     new_url = config["ogp_site_url"] + "/" + context["pagename"]
     context["metatags"] = context["metatags"].replace(
         make_tag("og:url", old_url), make_tag("og:url", new_url)
