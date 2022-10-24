@@ -1,13 +1,38 @@
 from typing import Any, Dict
+from urllib.parse import urljoin
 
 import docutils.nodes as nodes  # type: ignore
 from sphinx.application import Sphinx
 from sphinxext.opengraph import make_tag  # see below for implementation
 
+from ._authors import authors
+
 # def make_tag(property: str, content: str) -> str:
-#     # Parse quotation, so they won't break html tags if smart quotes are disabled
 #     content = content.replace('"', "&quot;")
 #     return f'<meta property="{property}" content="{content}" />'
+
+
+def fix_og_url(context: Dict[str, Any], config: Dict[str, Any]):
+    old_url = urljoin(
+        config["ogp_site_url"], context["pagename"] + context["file_suffix"]
+    )
+    new_url = config["ogp_site_url"] + "/" + context["pagename"]
+    context["metatags"] = context["metatags"].replace(
+        make_tag("og:url", old_url), make_tag("og:url", new_url)
+    )
+
+
+def fix_og_type(context: Dict[str, Any], config: Dict[str, Any]):
+    context["metatags"] = context["metatags"].replace(
+        make_tag("og:type", "website"), make_tag("og:type", "article")
+    )
+
+
+def add_authors(context, fields):
+    if "author" in fields:
+        for key in fields["author"].split(", "):
+            # does not work with tag dict as key is the same for all authors
+            context["metatags"] += "\n" + make_tag("citation_author", authors[key][0])
 
 
 def add_scholar_tags(
@@ -22,14 +47,28 @@ def add_scholar_tags(
         fields = {}
     tags = {}
 
+    fix_og_url(context, config)
+    tags[
+        "twitter:image"
+    ] = "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
+
     # add citation tags and overwrite ogp tags
     if "doi" in fields:
         tags["citation_title"] = fields["title"]
-        context["metatags"] = context["metatags"].replace(
-            make_tag("og:type", "website"), make_tag("og:type", "article")
-        )
+        fix_og_type(context, config)
+        add_authors(context, fields)
+        tags["citation_publication_date"] = fields["date"].replace("-", "/")
+        tags["citation_journal_title"] = "Lamin Reports"
+        tags["citation_publisher"] = "Lamin Labs"
+        tags["citation_article_type"] = "Article"
+        tags["citation_language"] = "en"
+        tags["citation_firstpage"] = fields["number"]
+        tags["citation_doi"] = fields["doi"]
+        tags["DOI"] = fields["doi"]
 
-    context["metatags"] += "\n".join([make_tag(k, v) for k, v in tags.items()]) + "\n"
+    context["metatags"] += (
+        "\n" + "\n".join([make_tag(k, v) for k, v in tags.items()]) + "\n"
+    )
 
 
 def html_lamin_page_context(
