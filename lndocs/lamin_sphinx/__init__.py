@@ -89,7 +89,7 @@ napoleon_use_rtype = True
 napoleon_use_param = False
 
 ogp_image = (
-    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+    "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
 intersphinx_mapping = dict(
