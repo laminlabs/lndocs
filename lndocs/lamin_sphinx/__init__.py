@@ -105,6 +105,7 @@ from . import _front_matter  # noqa
 from ._authors import authors  # noqa
 from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
+from ._html_tags import html_lamin_page_context  # noqa
 from ._nitpick_ignore import nitpick_ignore  # noqa
 from ._sort_autosummary import generate_autosummary_content  # noqa
 
@@ -117,4 +118,5 @@ sphinx.ext.autosummary.generate.generate_autosummary_content = (
 def setup(app: Sphinx):
     app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
     app.add_css_file("custom.css")
+    app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
