@@ -141,6 +141,8 @@ def main():
             "sync",
             create=True,
         )
+    print(check_postprocess)
+    print((site / "objects.inv").exists())
     if check_postprocess:
         (site / "objects.inv").rename(
             site / lamin_project["project_slug"] / "objects.inv"

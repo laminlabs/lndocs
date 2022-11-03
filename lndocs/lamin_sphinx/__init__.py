@@ -94,7 +94,7 @@ ogp_image = (
 
 intersphinx_mapping = dict(
     docs=("https://lamin.ai/docs", None),
-    lnschema_core=("https://lamin.ai/docs/lnschema-core", None),
+    # lnschema_core=("https://lamin.ai/docs/lnschema-core", None),
 )
 
 # myst_nb options
