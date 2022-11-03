@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "lnschema_core.dev.sqlmodel.SQLModelModule"),
     ("py:class", "lnschema_core.dev.sqlmodel.SQLModelPrefix"),
     ("py:class", "lnschema_core._core.dobject"),
     ("py:class", "lnschema_core._core.dtransform"),
