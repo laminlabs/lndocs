@@ -12,6 +12,7 @@ nitpick_ignore = [
     ("py:class", "bionty._celltype._core.CellType"),
     ("py:class", "bionty._disease._core.Disease"),
     ("py:class", "bionty._tissue._core.Tissue"),
+    ("py:class", "pronto.ontology.Ontology"),
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "sqlmodel.orm.session.Session"),
     ("py:class", "numpy.ndarray"),
