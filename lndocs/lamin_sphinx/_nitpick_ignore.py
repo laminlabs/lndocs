@@ -4,6 +4,7 @@ nitpick_ignore = [
     ("py:class", "lnschema_core._core.dobject"),
     ("py:class", "lnschema_core._core.dtransform"),
     ("py:class", "lnschema_core._core.jupynb"),
+    ("py:class", "lnschema_wetlab._core.Biosample"),
     ("py:class", "bionty._table.EntityTable"),
     ("py:class", "bionty._species._core.Species"),
     ("py:class", "bionty._cellmarker._core.CellMarker"),
