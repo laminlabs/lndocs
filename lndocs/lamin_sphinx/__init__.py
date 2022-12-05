@@ -96,6 +96,7 @@ intersphinx_mapping = dict(
     docs=("https://lamin.ai/docs", None),
     lnschema_core=("https://lamin.ai/docs/lnschema-core", None),
     lnschema_bionty=("https://lamin.ai/docs/lnschema-bionty", None),
+    lnschema_wetlab=("https://lamin.ai/docs/lnschema-wetlab", None),
     bionty=("https://lamin.ai/docs/bionty", None),
 )
 
