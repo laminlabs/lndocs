@@ -1,5 +1,5 @@
 nitpick_ignore = [
-    ("py:class", "cloudpathlib.s3.gsclient.GSClient"),
+    ("py:class", "cloudpathlib.gs.gsclient.GSClient"),
     ("py:class", "cloudpathlib.s3.s3client.S3Client"),
     ("py:class", "lnschema_core.dev.sqlmodel.SQLModelModule"),
     ("py:class", "lnschema_core.dev.sqlmodel.SQLModelPrefix"),
