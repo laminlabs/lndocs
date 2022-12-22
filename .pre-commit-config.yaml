@@ -22,6 +22,9 @@ repos:
           - flake8-black==0.3.3
           - flake8-typing-imports==1.10.0
         language_version: python3
+        args:
+          - --max-line-length=88
+          - --ignore=E203,W503,BLK100
         exclude: |
           (?x)(
               lndocs/_template_conf.py
