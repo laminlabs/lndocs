@@ -1,15 +1,22 @@
-# lndocs: Lamin site generator
+# lndocs: Lamin static site generator
 
-This is a command line tool. Install via:
+This is a command line documentation tool _currently_ only meant for Lamin-related projects:
+
+- Given our small team with limited bandwidth, we cannot offer support for documenting projects that are not related to Lamin.
+- We _might_ develop the package into a general-purpose docs builder longer into the future.
+
+Install via:
 
 ```
 pip install git+https://github.com/laminlabs/lndocs.git
 ```
 
-And then build your documentation by calling the tool in the root of your project repository.
+Build the docs by running `lndocs` in the root of your project repository:
 
 ```
 lndocs
 ```
 
-The basis for this is largely Sphinx. More explanation to come.
+Acknowledgements:
+
+`lndocs` builds on docutils, Sphinx, Bootstrap, `pydata-sphinx-theme`, and several other open-source tools.
