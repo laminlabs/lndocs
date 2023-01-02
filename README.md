@@ -3,7 +3,10 @@
 This is a command line documentation tool _currently_ only meant for Lamin-related projects:
 
 - Given our small team with limited bandwidth, we cannot offer support for documenting projects that are not related to Lamin.
+- We will likely make drastic changes to this package that are not going to be backward compatible without any warnings.
 - We _might_ develop the package into a general-purpose docs builder longer into the future.
+
+If unaffiliated with Lamin, we recommend to not rely on `lndocs`.
 
 Install via:
 
