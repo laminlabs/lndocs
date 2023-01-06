@@ -14,7 +14,10 @@ html_title = "{{ lamin_project_name }} | Lamin Labs"
 release = {{ lamin_package_name }}.__version__
 html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 # We're actually using this for the link behind the brand of the page!
-html_theme_options["logo"] = {"link": "docs/{{ lamin_project_slug }}"}  # noqa
+
+html_theme_options["logo"] = {
+    "link": "docs/{{ lamin_project_slug }}",
+    "text": project}
 html_theme_options["icon_links"] = [
     {
         "name": "GitHub",
