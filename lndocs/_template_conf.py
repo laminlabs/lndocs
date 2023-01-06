@@ -15,6 +15,19 @@ release = {{ lamin_package_name }}.__version__
 html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 # We're actually using this for the link behind the brand of the page!
 html_theme_options["logo"] = {"link": "docs/{{ lamin_project_slug }}"}  # noqa
+html_theme_options["icon_links"] = [
+    {
+        "name": "GitHub",
+        "url": "https://github.com/laminlabs/{{ lamin_repository_name }}",
+        "icon": "fa-brands fa-square-github",
+        "type": "fontawesome"
+    },
+    {
+        "name": "PyPI",
+        "url": "https://pypi.org/project/{{ lamin_package_name }}",
+        "icon": "fa-solid fa-box",
+    }
+]
 
 ogp_site_url = "https://lamin.ai/docs/{{ lamin_project_slug }}"
 ogp_site_name = project
