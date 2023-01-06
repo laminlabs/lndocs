@@ -261,6 +261,10 @@ nav {
   height: unset;
 }
 
+.bd-sidebar-primary {
+  max-width: 20%;
+}
+
 .toc-entry > .nav-link.active {
   font-weight: 400; /* do not have bold entries */
   background-color: transparent;
