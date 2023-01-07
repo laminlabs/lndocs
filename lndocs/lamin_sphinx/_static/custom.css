@@ -83,6 +83,11 @@ div.cell_output table {
   background-color: var(--pst-color-background);
 }
 
+/* this removes the white background of output tables */
+html[data-theme="dark"] .bd-content div.cell_output .text_html {
+  background-color: var(--pst-color-background);
+}
+
 /* decrease padding in output tables */
 tr,
 th,
