@@ -80,6 +80,7 @@ table,
 div.cell_output table {
   font-size: 87.5%;
   color: var(--pst-color-text-base);
+  background-color: var(--pst-color-background);
 }
 
 /* decrease padding in output tables */
