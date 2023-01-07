@@ -31,6 +31,7 @@ html_theme_options["icon_links"] = [
         "icon": "fa-solid fa-box",
     }
 ]
+html_theme_options["show_nav_level"] = 2
 
 ogp_site_url = "https://lamin.ai/docs/{{ lamin_project_slug }}"
 ogp_site_name = project
