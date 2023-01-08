@@ -27,15 +27,5 @@ html_theme_options["icon_links"] = [
         "url": "https://github.com/laminlabs/{{ lamin_repository_name }}",
         "icon": "fa-brands fa-github",
     },
-    {
-        "name": "PyPI",
-        "url": "https://pypi.org/project/{{ lamin_package_name }}",
-        "icon": "fa-solid fa-cube",
-    },
-    {
-        "name": "Twitter",
-        "url": "https://twitter.com/laminlabs",
-        "icon": "fa-brands fa-twitter",
-    },
 ]
 html_theme_options["show_nav_level"] = 2
