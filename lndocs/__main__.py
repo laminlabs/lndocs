@@ -66,7 +66,33 @@ def main():
     else:
         build_command = "sphinx-build"
 
-    docs_dir = args.docs
+    docs_dir = Path(f"_{args.docs}_tmp/")
+    sync(
+        args.docs,
+        docs_dir,
+        "sync",
+        create=True,
+    )
+    for path in docs_dir.glob("**/*"):
+        if path.suffix not in {".md", ".ipynb"}:
+            continue
+        if ".ipynb_checkpoints/" in str(path):
+            continue
+        if path.suffix == ".ipynb":
+            # test whether prefix is capital letter or digit and if so,
+            # strip them for pretty & persistent urls
+            # we need the prefixes
+            # on notebooks to allow users to navigate downloaded notebooks
+            # that should display in order in a file browser
+            # ignore dates!
+            prefix = path.stem[0]
+            if not datetime_valid(path.stem[:10]) and (
+                prefix.isdigit() or prefix.isupper() and "-" in path.stem
+            ):
+                new_stem = "-".join(path.stem.split("-")[1:])
+                # path.with_stem() is >3.9
+                new_path = path.with_name(f"{new_stem}{path.suffix}")
+                path.rename(new_path)
 
     build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
 
