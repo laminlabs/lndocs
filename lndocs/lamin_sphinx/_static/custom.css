@@ -88,6 +88,10 @@ html[data-theme="dark"] .bd-content div.cell_output .text_html {
   background-color: var(--pst-color-background);
 }
 
+div.cell_output .text_html {
+  display: inline-block;
+}
+
 /* decrease padding in output tables */
 tr,
 th,
