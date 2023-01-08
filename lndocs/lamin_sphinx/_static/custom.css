@@ -261,6 +261,10 @@ nav {
 /* ---- */
 /* Body */
 /* ---- */
+.bd-main .bd-content .bd-article-container .bd-article {
+  padding-left: 0rem;
+  padding-top: 0rem;
+}
 
 .bd-sidebar {
   border-right: none;
@@ -269,6 +273,11 @@ nav {
 
 .bd-sidebar-primary {
   max-width: 20%;
+}
+
+.bd-sidebar-secondary {
+  padding: 2rem 0rem 1rem 1rem;
+  max-width: 16rem;
 }
 
 .toc-entry > .nav-link.active {
