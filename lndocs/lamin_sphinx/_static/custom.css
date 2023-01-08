@@ -325,6 +325,10 @@ a {
 /* Colors */
 /* ------ */
 
+i.fa-twitter:before {
+  color: #55acee;
+}
+
 html[data-theme="dark"] {
   --pst-color-background: #18191a; /* --background-color */
   --pst-color-background-up: #242526; /* --background-surface-color for navbar */
