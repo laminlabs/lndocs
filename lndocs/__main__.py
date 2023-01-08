@@ -145,6 +145,13 @@ def main():
         (site / "objects.inv").rename(
             site / lamin_project["project_slug"] / "objects.inv"
         )
+    if check_postprocess and (site / "_static").exists():
+        sync(
+            site / "_static/",
+            site / lamin_project["project_slug"] / "_static/",
+            "sync",
+            create=True,
+        )
 
     if not args.show:
         if lamin_project["project_slug"] == "":  # deploy a copy of _static on Netlify
