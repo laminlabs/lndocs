@@ -9,12 +9,6 @@ from dirsync import sync
 
 from lndocs._generate_conf import generate_conf
 
-from ._postprocess import (
-    replace_image_targets,
-    replace_index_targets,
-    update_index_file,
-)
-
 HERE = Path(__file__).parent
 
 
@@ -72,50 +66,7 @@ def main():
     else:
         build_command = "sphinx-build"
 
-    # all of what follows here is about getting rid of the back-slash for index files
-    # on URLs for the dedicated docs pages
     docs_dir = args.docs
-    check_postprocess = not args.live and generate_conf_check
-    notebooks = []
-    if check_postprocess:
-        docs_dir = Path(f"_{args.docs}_tmp/")
-        sync(
-            args.docs,
-            Path(docs_dir) / lamin_project["project_slug"],
-            "sync",
-            create=True,
-        )
-        (docs_dir / lamin_project["project_slug"] / "conf.py").rename(
-            docs_dir / "conf.py"
-        )
-        for path in docs_dir.glob("**/*"):
-            if path.suffix not in {".md", ".ipynb"}:
-                continue
-            if ".ipynb_checkpoints/" in str(path):
-                continue
-            if path.suffix == ".ipynb":
-                # test whether prefix is capital letter or digit and if so,
-                # strip them for pretty & persistent urls
-                # we need the prefixes
-                # on notebooks to allow users to navigate downloaded notebooks
-                # that should display in order in a file browser
-                # ignore dates!
-                prefix = path.stem[0]
-                if not datetime_valid(path.stem[:10]) and (
-                    prefix.isdigit() or prefix.isupper() and "-" in path.stem
-                ):
-                    new_stem = "-".join(path.stem.split("-")[1:])
-                    # path.with_stem() is >3.9
-                    new_path = path.with_name(f"{new_stem}{path.suffix}")
-                    path.rename(new_path)
-                    path = new_path
-                notebooks.append(path)
-            if path.is_file():
-                replace_index_targets(path, lamin_project["project_slug"])
-            if str(path).endswith("index.md"):
-                update_index_file(path)
-        (docs_dir / f"{lamin_project['project_slug']}.md").rename(docs_dir / "index.md")
-    # end of _docs_tmp
 
     build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
 
@@ -125,37 +76,7 @@ def main():
         for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
             generated.unlink()
 
-    site = Path(args.site)
-
-    # move Jupyter-generated images to accessible location
-    # as the root isn't part of the deployed website!
-    if check_postprocess and (site / "_images").exists():
-        for path in notebooks:
-            path_html = (
-                str(path).replace(str(docs_dir), str(site)).replace(".ipynb", ".html")
-            )
-            replace_image_targets(path_html, lamin_project["project_slug"])
-        sync(
-            site / "_images/",
-            site / lamin_project["project_slug"] / "_images/",
-            "sync",
-            create=True,
-        )
-    if check_postprocess and (site / "objects.inv").exists():
-        (site / "objects.inv").rename(
-            site / lamin_project["project_slug"] / "objects.inv"
-        )
-    if check_postprocess and (site / "_static").exists():
-        sync(
-            site / "_static/",
-            site / lamin_project["project_slug"] / "_static/",
-            "sync",
-            create=True,
-        )
-
     if not args.show:
-        if lamin_project["project_slug"] == "":  # deploy a copy of _static on Netlify
-            sync(site / "_static", site / "docs/_static", "sync", create=True)
         return build_status
     else:
         if build_status == 0:
