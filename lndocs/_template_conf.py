@@ -29,3 +29,4 @@ html_theme_options["icon_links"] = [
     },
 ]
 html_theme_options["show_nav_level"] = 2
+html_theme_options['navbar_persistent'] = ""
