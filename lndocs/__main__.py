@@ -26,7 +26,11 @@ def datetime_valid(s: str):
     try:
         datetime.fromisoformat(s)
     except ValueError:
-        return False
+        try:  # catch MM-YY dates
+            s = "2000-" + s[:5]
+            datetime.fromisoformat(s)
+        except ValueError:
+            return False
     return True
 
 
