@@ -375,6 +375,7 @@ html[data-theme="light"] {
 
 html {
   font: var(--font-size-base) / var(--line-height-base) var(--font-family-base);
+  --pst-sidebar-secondary-font-size: var(--pst-sidebar-font-size);
 }
 
 :root {
