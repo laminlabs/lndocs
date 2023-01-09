@@ -196,6 +196,10 @@ h6 {
   margin-top: 1.5rem;
 }
 
+.bd-header .navbar-nav li a.nav-link {
+  color: var(--color-emphasis-900);
+}
+
 /* ------ */
 /* Navbar */
 /* ------ */

@@ -40,8 +40,8 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "show_prev_next": True,
-    "use_edit_page_button": False,  # currently unused
-    "search_bar_text": "Search",  # currently unused
+    "use_edit_page_button": False,
+    # "search_bar_text": "Search",  # currently unused
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "navbar_align": "left",
     "footer_items": ["copyright"],
