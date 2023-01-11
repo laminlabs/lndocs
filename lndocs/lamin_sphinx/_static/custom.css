@@ -118,7 +118,6 @@ div.cell_output tbody tr:nth-child(odd) {
 /* --------- */
 
 /* The top border is as for footnotes. */
-
 .prev-next-area {
   border-top-width: 1px;
   border-top-style: solid;
@@ -132,9 +131,9 @@ div.cell_output tbody tr:nth-child(odd) {
   font-size: 1rem;
 }
 
-/* --------- */
-/* Footnotes */
-/* --------- */
+aside.footnote span.label {
+  font-size: 80%;
+}
 
 /* this is 80% to match date & author font in blog */
 .footnote p,
@@ -348,7 +347,7 @@ html[data-theme="dark"] {
   --pst-color-info: var(--color-primary);
   --pst-color-link: var(--color-primary);
   --pst-color-link-hover: var(--color-primary-darkest);
-  --pst-color-target: var(--color-primary-lightest);
+  /* --pst-color-target: var(--color-primary-lightest); */
   /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
   --pst-color-inline-code: #66d9ef; /* pygments monokai */
 }

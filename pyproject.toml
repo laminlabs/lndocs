@@ -14,7 +14,8 @@ dependencies = [
     "myst-nb==0.16.0",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
-    "docutils==0.17.1",  # this is mostly because of the double footnote brackets https://github.com/sphinx-doc/sphinx/issues/10522
+    "sphinx>=6.1.3",
+    "docutils>=0.19",
     "pydata-sphinx-theme==0.12.0",
     "markdown",
 ]

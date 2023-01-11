@@ -114,7 +114,6 @@ from ._html_tags import html_lamin_page_context  # noqa
 from ._nitpick_ignore import nitpick_ignore  # noqa
 from ._sort_autosummary import generate_autosummary_content  # noqa
 
-HTMLTranslator.visit_footnote_reference = visit_footnote_reference
 sphinx.ext.autosummary.generate.generate_autosummary_content = (
     generate_autosummary_content  # noqa
 )
