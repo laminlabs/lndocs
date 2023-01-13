@@ -102,6 +102,10 @@ div.cell_output td {
   padding: 0.3em 0.3em;
 }
 
+.cell_output .output pre {
+  padding: 0.2rem;
+}
+
 /* fix background of odd rows in dark mode */
 tbody tr:nth-child(odd),
 div.cell_output tbody tr:nth-child(odd) {
