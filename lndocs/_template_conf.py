@@ -20,7 +20,8 @@ ogp_site_name = project
 
 html_theme_options["logo"] = {
     "link": ogp_site_url,
-    "text": project}
+    "text": project
+}
 html_theme_options["icon_links"] = [
     {
         "name": "GitHub",
@@ -28,5 +29,3 @@ html_theme_options["icon_links"] = [
         "icon": "fa-brands fa-github",
     },
 ]
-html_theme_options["show_nav_level"] = 2
-html_theme_options['navbar_persistent'] = ""
