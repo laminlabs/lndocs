@@ -263,6 +263,13 @@ nav {
   border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
 }
 
+/* caption for sidevar bav */
+nav.bd-links p.caption {
+  font-weight: bold;
+  font-size: medium;
+  margin-bottom: 0.2em;
+}
+
 @media (max-width: 1199.98px) {
   .navbar #navbar-center > * {
     margin-top: 0em;
@@ -307,7 +314,7 @@ nav.bd-links .active > a {
 }
 
 .bd-content {
-  padding: 3rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
+  padding: 1rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
 }
 
 .bd-toc {
