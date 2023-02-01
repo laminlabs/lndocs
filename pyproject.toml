@@ -17,6 +17,7 @@ dependencies = [
     "docutils>=0.19",
     "pydata-sphinx-theme==0.12.0",
     "markdown",
+    "sphinx_toolbox",
 ]
 
 [project.urls]
