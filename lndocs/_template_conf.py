@@ -19,12 +19,6 @@ ogp_site_name = project
 
 html_theme_options["logo"] = {
     "link": ogp_site_url,
-    "text": project
+    "text": project,
+    "root": "https://lamin.ai"
 }
-html_theme_options["icon_links"] = [
-    {
-        "name": "GitHub",
-        "url": "https://github.com/laminlabs/{{ lamin_repository_name }}",
-        "icon": "fa-brands fa-github",
-    },
-]
