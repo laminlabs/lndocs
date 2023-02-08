@@ -37,6 +37,7 @@ nitpick_ignore = [
     ("py:class", "unicode"),
     ("py:class", "typing.DictStrAny"),
     ("py:class", "typing.unicode"),
+    ("py:class", "typing.BinaryIO"),
     ("py:data", "typing.Optional"),
     ("py:data", "typing.Literal"),
     ("py:data", "typing.Union"),
