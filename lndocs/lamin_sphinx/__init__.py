@@ -16,6 +16,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",  # needs to be after napoleon
+    "sphinx_design",
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
     "myst_nb",
     "ablog",
