@@ -99,6 +99,7 @@ ogp_image = (
 
 intersphinx_mapping = dict(
     docs=("https://lamin.ai/docs", None),
+    lndb=("https://lamin.ai/docs/lndb", None),
     lnschema_core=("https://lamin.ai/docs/lnschema-core", None),
     lnschema_bionty=("https://lamin.ai/docs/lnschema-bionty", None),
     lnschema_wetlab=("https://lamin.ai/docs/lnschema-wetlab", None),
