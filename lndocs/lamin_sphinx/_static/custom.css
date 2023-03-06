@@ -386,9 +386,6 @@ html[data-theme="light"] {
 html {
   font: var(--font-size-base) / var(--line-height-base) var(--font-family-base);
   --pst-sidebar-secondary-font-size: var(--pst-sidebar-font-size);
-  --mystnb-source-bg-color: var(
-    --pst-color-background
-  ); /* added because of hidden cells in dark mode to bright */
 }
 
 :root {
@@ -401,4 +398,7 @@ html {
     Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-weight-semibold: 400;
+  --mystnb-source-bg-color: var(
+    --pst-color-background
+  ); /* hidden cells in dark mode were too bright */
 }
