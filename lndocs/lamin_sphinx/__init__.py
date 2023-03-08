@@ -44,7 +44,7 @@ html_theme_options = {
     "show_prev_next": True,
     "use_edit_page_button": False,
     # "search_bar_text": "Search",  # currently unused
-    # "navbar_persistent": "",  # hides the search/magnifier icon
+    "navbar_persistent": "search-button.html",
     "show_toc_level": 1,
     # "show_nav_level": 2,
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
