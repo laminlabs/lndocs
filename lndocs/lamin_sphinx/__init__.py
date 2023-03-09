@@ -46,7 +46,7 @@ html_theme_options = {
     # "search_bar_text": "Search",  # currently unused
     "navbar_persistent": "search-button.html",
     "show_toc_level": 3,  # levels that are shown for table of contents
-    # "show_nav_level": 2,
+    # "show_nav_level": 2, # controls the default display level of the left navbar
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "navbar_align": "left",
     "footer_items": ["copyright"],
