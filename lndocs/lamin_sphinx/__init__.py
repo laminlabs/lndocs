@@ -103,7 +103,6 @@ intersphinx_mapping = dict(
     lndb=("https://lamin.ai/docs/lndb", None),
     lnschema_bionty=("https://lamin.ai/docs/lnschema-bionty", None),
     lnschema_wetlab=("https://lamin.ai/docs/lnschema-wetlab", None),
-    bionty=("https://lamin.ai/docs/bionty", None),
 )
 
 # myst_nb options
