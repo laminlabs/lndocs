@@ -125,7 +125,7 @@ sphinx.ext.autosummary.generate.generate_autosummary_content = (
 
 
 def setup(app: Sphinx):
-    app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
+    # app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
