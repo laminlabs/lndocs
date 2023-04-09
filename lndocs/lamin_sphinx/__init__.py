@@ -21,7 +21,7 @@ extensions = [
     "myst_nb",
     "ablog",
     "sphinxext.opengraph",
-    "sphinx_toolbox.more_autodoc.overloads",
+    # "sphinx_toolbox.more_autodoc.overloads",
 ]
 
 templates_path = ["../lamin_sphinx/_templates"]
