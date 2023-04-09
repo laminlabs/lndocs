@@ -91,7 +91,7 @@ myst_title_to_header = True  # allow frontmatter titles
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 napoleon_numpy_docstring = False
-napoleon_use_rtype = True
+napoleon_use_rtype = False
 napoleon_use_param = False
 
 ogp_image = (
