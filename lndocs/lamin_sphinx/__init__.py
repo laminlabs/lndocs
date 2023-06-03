@@ -124,10 +124,16 @@ sphinx.ext.autosummary.generate.generate_autosummary_content = (
 
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
-    from django.db import models
+
+    try:
+        from django.db import models
+
+        DjangoORM = models.Model
+    except ImportError:
+        DjangoORM = int  # a hack
 
     if inspect.isclass(obj):
-        if issubclass(obj, models.Model):
+        if issubclass(obj, DjangoORM):
             lines.append(".. rubric:: Fields")
             fields = obj._meta.get_fields()
             for field in fields:
