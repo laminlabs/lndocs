@@ -1,3 +1,4 @@
+import inspect
 import os
 from datetime import datetime
 
@@ -10,7 +11,6 @@ copyright = f"{datetime.now():%Y}, {author}"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
@@ -90,6 +90,7 @@ myst_title_to_header = True  # allow frontmatter titles
 
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
+autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
 napoleon_use_param = False
@@ -121,8 +122,53 @@ sphinx.ext.autosummary.generate.generate_autosummary_content = (
 )
 
 
+def process_docstring(app, what, name, obj, options, lines):
+    # https://gist.github.com/abulka/48b54ea4cbc7eb014308
+
+    try:
+        from django.db import models
+
+        DjangoORM = models.Model
+    except ImportError:
+        DjangoORM = int  # a hack
+
+    if inspect.isclass(obj):
+        if issubclass(obj, DjangoORM):
+            lines.append(".. rubric:: Fields")
+            fields = obj._meta.get_fields()
+            for field in fields:
+                if not hasattr(field, "verbose_name"):  # skip many to many
+                    continue
+                lines.append(f".. autoattribute:: {field.name}\n")
+                annotation = f"{type(field).__name__}"
+                if isinstance(field, models.ForeignKey):
+                    to = field.related_model
+                    annotation += f" to ~{to.__module__}.{to.__name__}"
+                lines.append(f"   :annotation: {annotation}")
+        else:
+            lines.append(".. rubric:: Attributes")
+            attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+            attributes = [
+                a
+                for a in attributes
+                if not (a[0].startswith("__") or a[0].startswith("_"))
+            ]
+            for attr in attributes:
+                lines.append(f".. autoattribute:: {attr[0]}\n")
+                lines.append(f"   :annotation: {type(attr[1])}")
+        # the following is more complicated than expected, leave this in template for now  # noqa
+        # lines.append(f".. rubric:: Methods")
+        # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
+        # methods = [a for a in methods if not(a[0].startswith('__') or a[0].startswith('_'))]  # noqa
+        # for meth in methods:
+        #     lines.append(f".. automethod:: {meth[0]}\n")
+
+    return lines
+
+
 def setup(app: Sphinx):
     # app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
+    app.connect("autodoc-process-docstring", process_docstring)
