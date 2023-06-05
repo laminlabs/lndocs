@@ -141,9 +141,10 @@ def process_docstring(app, what, name, obj, options, lines):
                     continue
                 lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
-                if isinstance(field, models.ForeignKey):
-                    to = field.related_model
-                    annotation += f" to ~{to.__module__}.{to.__name__}"
+                # the following doesn't work currently
+                # if isinstance(field, models.ForeignKey):
+                #     to = field.related_model
+                #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
                 lines.append(f"   :annotation: {annotation}")
         else:
             lines.append(".. rubric:: Attributes")
