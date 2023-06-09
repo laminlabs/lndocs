@@ -87,6 +87,7 @@ myst_enable_extensions = [
     "colon_fence",
 ]
 myst_title_to_header = True  # allow frontmatter titles
+myst_heading_anchors = 2  # create anchors for headings
 
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
