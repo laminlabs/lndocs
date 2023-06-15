@@ -45,8 +45,8 @@ def visit_footnote_reference(self, node):
     for node_ in content.children:
         # check whether a node is a footnote
         if isinstance(node_, footnote):
-            print(node)
-            print(node_.attributes["ids"])
+            # print(node)
+            # print(node_.attributes["ids"])
             if node["refid"] in set(node_.attributes["ids"]):
                 title = node_.children[1].rawsource
                 break
