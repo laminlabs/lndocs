@@ -167,7 +167,7 @@ def generate_autosummary_content(
         ns["attributes"], ns["all_attributes"] = get_members(
             obj, {"attribute", "property"}
         )
-        print(ns["attributes"])
+        # print(ns["attributes"])
 
     if modname is None or qualname is None:
         modname, qualname = split_full_qualified_name(name)
