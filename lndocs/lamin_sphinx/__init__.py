@@ -157,7 +157,10 @@ def process_docstring(app, what, name, obj, options, lines):
             ]
             for attr in attributes:
                 lines.append(f".. autoattribute:: {attr[0]}\n")
-                lines.append(f"   :annotation: :class:`~{type(attr[1])}`")
+                if isinstance(attr[1], property):
+                    lines.append(f"   :annotation: {type(attr[1]).__name__}")
+                else:
+                    lines.append(f"   :annotation: {type(attr[1]).__name__}")
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
