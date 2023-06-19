@@ -300,8 +300,16 @@ p {
   height: unset;
 }
 
-.bd-sidebar-primary {
-  max-width: 20%;
+@media (max-width: 959.98px) {
+  .bd-sidebar-primary {
+    max-width: 350px;
+  }
+}
+
+@media (min-width: 960px) {
+  .bd-sidebar-primary {
+    max-width: 20%;
+  }
 }
 
 .bd-sidebar-secondary {
