@@ -239,6 +239,7 @@ nav {
 
 .navbar-brand p {
   margin-bottom: 0;
+  margin-top: 0;
   padding: 0 0.15rem;
   color: var(--color-emphasis-900);
   font-weight: bold;
@@ -261,10 +262,6 @@ nav {
   box-shadow: none; /* unset default shadow */
   border-bottom-style: solid; /* replace with border */
   border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
-}
-
-.navbar__title {
-  margin-top: 0rem;
 }
 
 /* caption for sidevar bav */
