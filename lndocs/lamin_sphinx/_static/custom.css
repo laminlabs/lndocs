@@ -23,6 +23,11 @@ html[data-theme="dark"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="light"] .highlight .c1 {
+  color: rgb(117, 113, 94);
+  font-style: italic;
+}
+
 h1 code,
 h2 code,
 h3 code,
