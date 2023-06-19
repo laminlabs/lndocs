@@ -263,6 +263,10 @@ nav {
   border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
 }
 
+.navbar__title {
+  margin-top: 0rem;
+}
+
 /* caption for sidevar bav */
 nav.bd-links p.caption {
   font-weight: bold;
@@ -279,6 +283,11 @@ nav.bd-links p.caption {
 /* ---- */
 /* Body */
 /* ---- */
+
+p {
+  margin-top: 1.15rem;
+}
+
 .bd-main .bd-content .bd-article-container .bd-article {
   padding-left: 0rem;
   padding-top: 0rem;
