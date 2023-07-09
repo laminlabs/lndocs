@@ -5,6 +5,8 @@ nitpick_ignore = [
     ("py:class", "lamindb.dev.storage.object._backed_access._AnnDataAttrsMixin"),
     ("py:class", "lnschema_core.types.ChoicesMixin"),
     ("py:class", "PathLike"),
+    ("py:class", "lamindb.dev.storage.object._backed_access.BackedAccessor"),
+    ("py:class", "PT"),
     ("py:class", "upath.core.UPath"),
     ("py:class", "cloudpathlib.gs.gsclient.GSClient"),
     ("py:class", "cloudpathlib.s3.s3client.S3Client"),

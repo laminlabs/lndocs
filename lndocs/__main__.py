@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -41,6 +42,7 @@ def main():
     aa("--docs", type=str, default="docs", help="directory with docs sources")
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
+    aa("--strict", action="store_true", help="error upon warning")
     args = parser.parse_args()
     if not Path(args.docs).exists():
         sys.exit(
@@ -98,7 +100,11 @@ def main():
                 new_path = path.with_name(f"{new_stem}{path.suffix}")
                 path.rename(new_path)
 
+    if args.strict:
+        os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
     build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
+    if args.strict:
+        del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
     # delete auto-generated files
     if "package_name" in lamin_project:

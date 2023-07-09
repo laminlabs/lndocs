@@ -172,7 +172,7 @@ def process_docstring(app, what, name, obj, options, lines):
 
 
 def setup(app: Sphinx):
-    # app.warningiserror = os.getenv("GITHUB_ACTIONS") is not None
+    app.warningiserror = os.getenv("LNDOCS_WARNING_IS_ERROR") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
