@@ -43,6 +43,7 @@ def main():
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
     aa("--strict", action="store_true", help="error upon warning")
+    aa("--strip-prefix", action="store_true", help="error upon warning")
     args = parser.parse_args()
     if not Path(args.docs).exists():
         sys.exit(
@@ -84,7 +85,7 @@ def main():
             continue
         if ".ipynb_checkpoints/" in str(path):
             continue
-        if path.suffix == ".ipynb":
+        if path.suffix == ".ipynb" and args.strip_prefix:
             # test whether prefix is capital letter or digit and if so,
             # strip them for pretty & persistent urls
             # we need the prefixes
