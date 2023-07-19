@@ -136,7 +136,8 @@ def process_docstring(app, what, name, obj, options, lines):
     if inspect.isclass(obj):
         if issubclass(obj, DjangoORM):
             lines.append(".. rubric:: Fields")
-            fields = obj._meta.get_fields() + obj._meta.related_objects
+            fields = obj._meta.get_fields()
+            # obj._meta.related_objects, do not include related objects for now
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
             ]
