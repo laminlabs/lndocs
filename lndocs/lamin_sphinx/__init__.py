@@ -136,9 +136,25 @@ def process_docstring(app, what, name, obj, options, lines):
     if inspect.isclass(obj):
         if issubclass(obj, DjangoORM):
             lines.append(".. rubric:: Fields")
-            fields = obj._meta.get_fields()
-            for field in fields:
-                if not hasattr(field, "verbose_name"):  # skip many to many
+            fields = obj._meta.get_fields() + obj._meta.related_objects
+            non_many_to_many_fields = [
+                field for field in fields if hasattr(field, "verbose_name")
+            ]
+            many_to_many_fields = [
+                field for field in fields if not hasattr(field, "verbose_name")
+            ]
+            for field in non_many_to_many_fields:
+                lines.append(f".. autoattribute:: {field.name}\n")
+                annotation = f"{type(field).__name__}"
+                # the following doesn't work currently
+                # if isinstance(field, models.ForeignKey):
+                #     to = field.related_model
+                #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
+                lines.append(f"   :annotation: {annotation}")
+            for field in many_to_many_fields:
+                if field.model.__module__.startswith(
+                    "lnschema_bionty"
+                ) or field.related_model.__module__.startswith("lnschema_bionty"):
                     continue
                 lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
@@ -147,6 +163,8 @@ def process_docstring(app, what, name, obj, options, lines):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
                 lines.append(f"   :annotation: {annotation}")
+                if field in obj._meta.related_objects:
+                    lines.append("   :noindex:")
         else:
             lines.append(".. rubric:: Attributes")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
