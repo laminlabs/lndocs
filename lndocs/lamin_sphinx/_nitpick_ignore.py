@@ -1,4 +1,7 @@
 nitpick_ignore = [
+    ("py:class", "lnschema_core.types.PathLike"),
+    ("py:class", "lnschema_core.mocks.QuerySet"),
+    ("py:class", "lamindb.dev.storage._backed_access._AnnDataAttrsMixin"),
     ("py:class", "django.db.models.base.Model"),
     ("py:class", "django.db.models.manager.Manager"),
     ("py:class", "django.db.models.query.QuerySet"),
