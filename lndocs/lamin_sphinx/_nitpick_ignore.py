@@ -22,7 +22,7 @@ nitpick_ignore = [
     ("py:class", "lnschema_wetlab._core.Techsample"),
     ("py:class", "lnschema_wetlab._core.BiosampleBase"),
     ("py:class", "lnschema_wetlab._core.TechsampleBase"),
-    ("py:class", "bionty._table.EntityTable"),
+    ("py:class", "bionty._bionty.Bionty"),
     ("py:class", "bionty._species._core.Species"),
     ("py:class", "bionty._cellmarker._core.CellMarker"),
     ("py:class", "bionty._gene._core.Gene"),
