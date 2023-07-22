@@ -157,6 +157,8 @@ def process_docstring(app, what, name, obj, options, lines):
                     "lnschema_bionty"
                 ) or field.related_model.__module__.startswith("lnschema_bionty"):
                     continue
+                if field in obj._meta.related_objects:
+                    continue
                 lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
                 # the following doesn't work currently
