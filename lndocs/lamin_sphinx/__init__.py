@@ -168,6 +168,10 @@ def process_docstring(app, what, name, obj, options, lines):
                 lines.append(f"   :annotation: {annotation}")
                 if field in obj._meta.related_objects:
                     lines.append("   :noindex:")
+            if obj.__name__ == "File":
+                lines.append(".. rubric:: Properties")
+                lines.append(".. autoattribute:: features\n")
+
         else:
             lines.append(".. rubric:: Attributes")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
