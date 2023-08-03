@@ -35,10 +35,12 @@ def datetime_valid(s: str):
     return True
 
 
-def add_one_level_of_depth_to_image_path(filepath):
+def replace_image_path_with_absolute_path(filepath):
     with open(filepath) as f:
         content = f.read()
-    content = content.replace("../_images/", ".../_images/")
+    content = content.replace(
+        "../_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
+    )
     with open(filepath, "w") as f:
         f.write(content)
 
@@ -133,7 +135,7 @@ def main():
                     .replace(str(docs_dir), str(args.site))
                     .replace(".ipynb", ".html")
                 )
-                add_one_level_of_depth_to_image_path(path_html)
+                replace_image_path_with_absolute_path(path_html)
 
     if not args.show:
         return build_status
