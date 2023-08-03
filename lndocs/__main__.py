@@ -35,7 +35,7 @@ def datetime_valid(s: str):
     return True
 
 
-def add_one_level_of_depth_to_image_path(filepath, project_slug):
+def add_one_level_of_depth_to_image_path(filepath):
     with open(filepath) as f:
         content = f.read()
     content = content.replace("../_images/", ".../_images/")
@@ -126,6 +126,8 @@ def main():
     if args.fix_images:
         for path in docs_dir.glob("**/*"):
             if path.suffix == ".ipynb":
+                if ".ipynb_checkpoints/" in str(path):
+                    continue
                 path_html = (
                     str(path)
                     .replace(str(docs_dir), str(args.site))
