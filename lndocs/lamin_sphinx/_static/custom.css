@@ -286,6 +286,12 @@ nav.bd-links p.caption {
 /* Body */
 /* ---- */
 
+/* for custom small role */
+.small {
+  font-size: 45% !important;
+  font-weight: bold;
+}
+
 p {
   margin-top: 1.15rem;
 }
