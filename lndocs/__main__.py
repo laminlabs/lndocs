@@ -38,9 +38,7 @@ def datetime_valid(s: str):
 def replace_image_path_with_absolute_path(filepath):
     with open(filepath) as f:
         content = f.read()
-    content = content.replace(
-        "../_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
-    )
+    content = content.replace("../_images/", "_images/")
     # if it's at the root level
     content = content.replace(
         "_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
