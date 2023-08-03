@@ -41,6 +41,10 @@ def replace_image_path_with_absolute_path(filepath):
     content = content.replace(
         "../_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
     )
+    # if it's at the root level
+    content = content.replace(
+        "_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
+    )
     with open(filepath, "w") as f:
         f.write(content)
 
