@@ -315,6 +315,7 @@ p {
   border-right: none;
   height: unset;
   background: transparent !important;
+  font-size: 0.875rem;
   font-weight: 400;
 }
 
@@ -341,8 +342,6 @@ p {
 .bd-sidebar-secondary {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
-  background: transparent;
-  font-weight: 300;
 }
 
 .toc-entry > .nav-link.active {
