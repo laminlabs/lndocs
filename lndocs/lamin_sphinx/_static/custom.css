@@ -398,7 +398,7 @@ div.admonition {
   box-shadow: none !important;
 }
 
-form-control:focus {
+.form-control:focus {
   box-shadow: none !important;
 }
 
@@ -433,13 +433,13 @@ html[data-theme="dark"] {
 html[data-theme="light"] {
   --pst-color-background: #fff;
   --pst-color-background-up: #fff; /* no distinction here in light mode */
-  --color-primary: #2e8555;
-  --color-primary-dark: #29784c;
-  --color-primary-darker: #277148;
-  --color-primary-darkest: #205d3b;
-  --color-primary-light: #33925d;
-  --color-primary-lighter: #359962;
-  --color-primary-lightest: #3cad6e;
+  --color-primary: #059669;
+  --color-primary-dark: #047857;
+  --color-primary-darker: #065f46;
+  --color-primary-darkest: #064e3b;
+  --color-primary-light: #22c55e;
+  --color-primary-lighter: #34d399;
+  --color-primary-lightest: #6ee7b7;
   --color-emphasis-900: var(--color-gray-900);
   --pst-color-primary: var(--color-primary);
   --pst-color-info: var(--color-primary);
