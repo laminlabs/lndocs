@@ -135,6 +135,12 @@ def process_docstring(app, what, name, obj, options, lines):
 
     if inspect.isclass(obj):
         if issubclass(obj, DjangoORM):
+            # first properties
+            if obj.__name__ == "File":
+                lines.append(".. rubric:: Properties")
+                lines.append(".. autoattribute:: features\n")
+
+            # now fields
             lines.append(".. rubric:: Fields")
             fields = obj._meta.get_fields()
             # obj._meta.related_objects, do not include related objects for now
@@ -168,10 +174,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 lines.append(f"   :annotation: {annotation}")
                 if field in obj._meta.related_objects:
                     lines.append("   :noindex:")
-            if obj.__name__ == "File":
-                lines.append(".. rubric:: Properties")
-                lines.append(".. autoattribute:: features\n")
-
         else:
             lines.append(".. rubric:: Attributes")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
