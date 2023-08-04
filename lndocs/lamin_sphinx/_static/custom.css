@@ -245,15 +245,6 @@ h6 {
 /* Navbar */
 /* ------ */
 
-.login-button {
-  display: inline-block;
-  border-color: #ebedf0;
-  border-style: solid;
-  border-radius: 0.4rem;
-  padding: 0.375rem 1.2rem;
-  font-weight: bold;
-}
-
 nav {
   padding: 0px;
 }
@@ -333,7 +324,6 @@ nav.bd-links p.caption {
 
 p {
   margin-top: 1.15rem;
-  font-size: 0.875rem;
 }
 
 .bd-main .bd-content .bd-article-container .bd-article {
@@ -347,15 +337,21 @@ p {
   background: transparent !important;
   font-size: 0.875rem;
   font-weight: 400;
-  -webkit-backdrop-filter: blur(
-    5px
-  ); /* Add this line first, it fixes blur for Safari*/
-  backdrop-filter: blur(5px); /* blur background when scroll down */
 }
 
 @media (max-width: 959.98px) {
   .bd-sidebar-primary {
     max-width: 350px;
+    -webkit-backdrop-filter: blur(
+      5px
+    ); /* Add this line first, it fixes blur for Safari*/
+    backdrop-filter: blur(5px); /* blur background when scroll down */
+  }
+  .bd-sidebar-secondary {
+    -webkit-backdrop-filter: blur(
+      5px
+    ); /* Add this line first, it fixes blur for Safari*/
+    backdrop-filter: blur(5px); /* blur background when scroll down */
   }
 }
 
@@ -377,10 +373,6 @@ p {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
   background: transparent;
-  -webkit-backdrop-filter: blur(
-    5px
-  ); /* Add this line first, it fixes blur for Safari*/
-  backdrop-filter: blur(5px); /* blur background when scroll down */
 }
 
 .toc-entry > .nav-link.active {
