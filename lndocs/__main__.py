@@ -35,18 +35,6 @@ def datetime_valid(s: str):
     return True
 
 
-def replace_image_path_with_absolute_path(filepath):
-    with open(filepath) as f:
-        content = f.read()
-    content = content.replace("../_images/", "_images/")
-    # if it's at the root level
-    content = content.replace(
-        "_images/", "https://lamin-docs-msjq.netlify.app/docs/_images/"
-    )
-    with open(filepath, "w") as f:
-        f.write(content)
-
-
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin website.")
     aa = parser.add_argument
@@ -56,7 +44,6 @@ def main():
     aa("--live", action="store_true", help="use autobuild")
     aa("--strict", action="store_true", help="error upon warning")
     aa("--strip-prefix", action="store_true", help="error upon warning")
-    aa("--fix-images", action="store_true", help="fix image paths")
     args = parser.parse_args()
     if not Path(args.docs).exists():
         sys.exit(
@@ -127,19 +114,6 @@ def main():
         package_name = lamin_project["package_name"]
         for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
             generated.unlink()
-
-    # make image paths absolute instead of relative
-    if args.fix_images:
-        for path in docs_dir.glob("**/*"):
-            if path.suffix == ".ipynb":
-                if ".ipynb_checkpoints/" in str(path):
-                    continue
-                path_html = (
-                    str(path)
-                    .replace(str(docs_dir), str(args.site))
-                    .replace(".ipynb", ".html")
-                )
-                replace_image_path_with_absolute_path(path_html)
 
     if not args.show:
         return build_status
