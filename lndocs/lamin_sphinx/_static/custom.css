@@ -14,7 +14,7 @@ code {
   font-size: 1rem;
 }
 
-/* this is a ligher version of the tango solution */
+/* this is a lighter version of the tango solution */
 html[data-theme="dark"] .highlight .o {
   color: #f67107;
 }
@@ -280,10 +280,10 @@ nav {
   color: var(--color-emphasis-900);
 }
 
-/* caption for sidevar bav */
+/* caption for sidebar bav */
 nav.bd-links p.caption {
-  font-weight: bold;
-  font-size: 1rem;
+  font-weight: medium;
+  font-size: 0.875rem;
   margin-bottom: 0.2em;
 }
 
