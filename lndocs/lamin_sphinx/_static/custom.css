@@ -334,6 +334,7 @@ p {
   background: transparent !important;
   font-size: 0.875rem;
   font-weight: 400;
+  backdrop-filter: blur(5px); /* blur background when scroll down */
 }
 
 @media (max-width: 959.98px) {
@@ -360,6 +361,7 @@ p {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
   background: transparent;
+  backdrop-filter: blur(5px); /* blur background when scroll down */
 }
 
 .toc-entry > .nav-link.active {
