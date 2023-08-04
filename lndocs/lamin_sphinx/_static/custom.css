@@ -230,10 +230,8 @@ h6 {
 }
 
 .bd-header {
-  -webkit-backdrop-filter: blur(
-    5px
-  ); /* Add this line first, it fixes blur for Safari*/
-  backdrop-filter: blur(5px); /* blur background when scroll down */
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   background: transparent !important;
 }
 
@@ -334,7 +332,6 @@ p {
 .bd-sidebar {
   border-right: none;
   height: unset;
-  background: transparent !important;
   font-size: 0.875rem;
   font-weight: 400;
 }
@@ -342,22 +339,16 @@ p {
 @media (max-width: 959.98px) {
   .bd-sidebar-primary {
     max-width: 350px;
-    -webkit-backdrop-filter: blur(
-      5px
-    ); /* Add this line first, it fixes blur for Safari*/
-    backdrop-filter: blur(5px); /* blur background when scroll down */
-  }
-  .bd-sidebar-secondary {
-    -webkit-backdrop-filter: blur(
-      5px
-    ); /* Add this line first, it fixes blur for Safari*/
-    backdrop-filter: blur(5px); /* blur background when scroll down */
   }
 }
 
 @media (min-width: 960px) {
   .bd-sidebar-primary {
     max-width: 20%;
+    background: transparent !important;
+  }
+  .bd-sidebar-secondary {
+    background: transparent;
   }
 }
 
@@ -372,7 +363,6 @@ p {
 .bd-sidebar-secondary {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
-  background: transparent;
 }
 
 .toc-entry > .nav-link.active {
