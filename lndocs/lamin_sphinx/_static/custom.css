@@ -23,6 +23,14 @@ html[data-theme="dark"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="dark"] .highlight .go {
+  color: #6ee7b7;
+}
+
+div.doctest > div.highlight span.gp {
+  color: #fb923c;
+}
+
 /* code comments */
 html[data-theme="light"] .highlight .c1 {
   color: #94a3b8;
