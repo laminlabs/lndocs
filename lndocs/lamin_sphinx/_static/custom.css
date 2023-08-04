@@ -393,6 +393,11 @@ a {
 /* Colors */
 /* ------ */
 
+.admonition,
+div.admonition {
+  box-shadow: none !important;
+}
+
 form-control:focus {
   box-shadow: none !important;
 }
