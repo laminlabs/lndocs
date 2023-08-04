@@ -28,12 +28,20 @@ html[data-theme="light"] .highlight .c1 {
   font-style: italic;
 }
 
+/* bash code string */
 html[data-theme="light"] .highlight .s1 {
   color: #22c55e;
 }
 
+/* python code string */
 html[data-theme="light"] .highlight .s2 {
   color: #059669;
+}
+
+/* docstring examples output */
+html[data-theme="light"] .highlight .go {
+  color: #fb923c;
+  font-style: unset;
 }
 
 h1 code,
