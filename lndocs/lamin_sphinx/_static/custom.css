@@ -342,6 +342,7 @@ p {
 .bd-sidebar-secondary {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
+  background: transparent;
 }
 
 .toc-entry > .nav-link.active {
