@@ -205,7 +205,8 @@ h6 {
 }
 
 .bd-header {
-  background: transparent;
+  backdrop-filter: blur(5px); /* blur background when scroll down */
+  background: transparent !important;
 }
 
 .bd-header .navbar-nav li a.nav-link {
@@ -313,9 +314,8 @@ p {
 .bd-sidebar {
   border-right: none;
   height: unset;
-  background: transparent;
+  background: transparent !important;
   font-weight: 400;
-  overflow-y: unset;
 }
 
 @media (max-width: 959.98px) {
@@ -328,6 +328,14 @@ p {
   .bd-sidebar-primary {
     max-width: 20%;
   }
+}
+
+.bd-sidebar-primary {
+  overflow: hidden;
+}
+
+.bd-sidebar-primary:hover {
+  overflow-y: scroll;
 }
 
 .bd-sidebar-secondary {
@@ -386,6 +394,14 @@ a {
 /* Colors */
 /* ------ */
 
+form-control:focus {
+  box-shadow: none !important;
+}
+
+details.sd-dropdown {
+  box-shadow: none !important;
+}
+
 i.fa-twitter:before {
   color: #55acee;
 }
@@ -408,7 +424,6 @@ html[data-theme="dark"] {
   /* --pst-color-target: var(--color-primary-lightest); */
   /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
   --pst-color-inline-code: #66d9ef; /* pygments monokai */
-  --pst-color-on-background: transparent;
 }
 
 html[data-theme="light"] {
@@ -429,7 +444,6 @@ html[data-theme="light"] {
   --pst-color-target: var(--color-primary-lightest);
   --pst-color-border: rgba(0, 0, 0, 0.1);
   --pst-color-inline-code: #204a87; /* pygments tango */
-  --pst-color-on-background: transparent;
   --pst-color-text-base: black;
 }
 
