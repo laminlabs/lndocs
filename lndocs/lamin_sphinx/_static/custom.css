@@ -204,6 +204,10 @@ h6 {
   margin-top: 1.5rem;
 }
 
+.bd-header {
+  background: transparent;
+}
+
 .bd-header .navbar-nav li a.nav-link {
   color: var(--color-emphasis-900);
 }
@@ -248,13 +252,13 @@ nav {
   padding: 0 0.15rem;
   color: var(--color-emphasis-900);
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .navbar-light .navbar-nav li a.nav-link {
   padding: 0 0.5rem;
   color: var(--color-emphasis-900);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: var(--font-weight-semibold);
 }
 
@@ -265,14 +269,19 @@ nav {
 
 .navbar {
   box-shadow: none; /* unset default shadow */
-  border-bottom-style: solid; /* replace with border */
-  border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
+  /*  border-bottom-style: solid; /* replace with border */
+  /*  border-bottom-color: rgba(0, 0, 0, 0.1); /* this won't be visible in dark */
+}
+
+.nav-link {
+  font-size: 0.875rem;
+  color: var(--color-emphasis-900);
 }
 
 /* caption for sidevar bav */
 nav.bd-links p.caption {
   font-weight: bold;
-  font-size: medium;
+  font-size: 1rem;
   margin-bottom: 0.2em;
 }
 
@@ -304,6 +313,9 @@ p {
 .bd-sidebar {
   border-right: none;
   height: unset;
+  background: transparent;
+  font-weight: 400;
+  overflow-y: unset;
 }
 
 @media (max-width: 959.98px) {
@@ -321,6 +333,8 @@ p {
 .bd-sidebar-secondary {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
+  background: transparent;
+  font-weight: 300;
 }
 
 .toc-entry > .nav-link.active {
@@ -356,6 +370,14 @@ footer {
   font: inherit;
 }
 
+body {
+  background-image: radial-gradient(
+    192.77% 98.58% at 25.35% 1.42%,
+    rgba(46, 133, 85, 0.33) 0%,
+    rgba(46, 133, 85, 0) 28.61%
+  );
+}
+
 a {
   color: var(--link-color);
 }
@@ -386,6 +408,7 @@ html[data-theme="dark"] {
   /* --pst-color-target: var(--color-primary-lightest); */
   /* --pst-color-border: rgba(0, 0, 0, 0.5); */ /* we are happy with the pst default! */
   --pst-color-inline-code: #66d9ef; /* pygments monokai */
+  --pst-color-on-background: transparent;
 }
 
 html[data-theme="light"] {
@@ -406,6 +429,8 @@ html[data-theme="light"] {
   --pst-color-target: var(--color-primary-lightest);
   --pst-color-border: rgba(0, 0, 0, 0.1);
   --pst-color-inline-code: #204a87; /* pygments tango */
+  --pst-color-on-background: transparent;
+  --pst-color-text-base: black;
 }
 
 html {
@@ -426,4 +451,7 @@ html {
   --mystnb-source-bg-color: var(
     --pst-color-background
   ); /* hidden cells in dark mode were too bright */
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
 }
