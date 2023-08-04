@@ -379,11 +379,10 @@ footer {
 }
 
 body {
-  background-image: radial-gradient(
-    192.77% 98.58% at 25.35% 1.42%,
-    rgba(46, 133, 85, 0.33) 0%,
-    rgba(46, 133, 85, 0) 28.61%
-  );
+  background-image: url("https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/docs-bg.svg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: top left;
 }
 
 a {
