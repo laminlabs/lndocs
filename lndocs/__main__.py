@@ -94,6 +94,8 @@ def main():
         create=True,
     )
     for path in docs_dir.glob("**/*"):
+        if path.name == "index.md" and not path == docs_dir / "index.md":
+            raise ValueError(f"Please replace {path} with {path.parent}.md")
         if path.suffix not in {".md", ".ipynb"}:
             continue
         if ".ipynb_checkpoints/" in str(path):
