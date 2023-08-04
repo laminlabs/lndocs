@@ -43,6 +43,14 @@ def main():
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
     aa("--strict", action="store_true", help="error upon warning")
+    aa(
+        "--error-on-index",
+        action="store_true",
+        help=(
+            "error if encountering nested index files (needed for composite Next.js"
+            " site)"
+        ),
+    )
     aa("--strip-prefix", action="store_true", help="error upon warning")
     args = parser.parse_args()
     if not Path(args.docs).exists():
@@ -81,8 +89,9 @@ def main():
         create=True,
     )
     for path in docs_dir.glob("**/*"):
-        if path.name == "index.md" and not path == docs_dir / "index.md":
-            raise ValueError(f"Please replace {path} with {path.parent}.md")
+        if args.error_on_index:
+            if path.name == "index.md" and not path == docs_dir / "index.md":
+                raise ValueError(f"Please replace {path} with {path.parent}.md")
         if path.suffix not in {".md", ".ipynb"}:
             continue
         if ".ipynb_checkpoints/" in str(path):
