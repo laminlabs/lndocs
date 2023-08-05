@@ -72,6 +72,14 @@ h6 code {
   border: 0px;
 }
 
+.cell_output .output {
+  overflow-x: hidden;
+}
+
+.cell_output .output:hover {
+  overflow-y: scroll;
+}
+
 /* counteract the statement below */
 
 .highlight-default.notranslate {
