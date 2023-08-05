@@ -352,12 +352,17 @@ nav.bd-links p.caption {
 }
 
 .bd-sidebar-primary {
-  overflow-y: hidden;
-  scrollbar-gutter: stable; /* stable scrollbar */
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
-.bd-sidebar-primary:hover {
-  overflow-y: auto;
+/* .bd-sidebar-primary:hover {
+  overflow-y: auto
+}
+*/
+.bd-sidebar-primary::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
 }
 
 .bd-sidebar-secondary {
