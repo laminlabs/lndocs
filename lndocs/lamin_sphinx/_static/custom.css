@@ -72,14 +72,6 @@ h6 code {
   border: 0px;
 }
 
-div.cell_output .output {
-  overflow-x: hidden;
-}
-
-div.cell_output .output:hover {
-  overflow-x: scroll;
-}
-
 /* counteract the statement below */
 
 .highlight-default.notranslate {
@@ -142,6 +134,11 @@ div.cell_output td {
 
 .cell_output .output pre {
   padding: 0.2rem;
+  overflow-x: hidden;
+}
+
+.cell_output .output pre:hover {
+  overflow-x: scroll;
 }
 
 /* fix background of odd rows in dark mode */
