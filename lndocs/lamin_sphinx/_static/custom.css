@@ -353,6 +353,7 @@ nav.bd-links p.caption {
 
 .bd-sidebar-primary {
   overflow-y: hidden;
+  scrollbar-gutter: stable; /* stable scrollbar */
 }
 
 .bd-sidebar-primary:hover {
