@@ -297,6 +297,10 @@ nav {
   color: var(--color-emphasis-900);
 }
 
+/* ------ */
+/* Sidebar */
+/* ------ */
+
 /* caption for sidebar bav */
 nav.bd-links p.caption {
   font-weight: medium;
@@ -308,25 +312,6 @@ nav.bd-links p.caption {
   .navbar #navbar-center > * {
     margin-top: 0em;
   }
-}
-
-/* ---- */
-/* Body */
-/* ---- */
-
-/* for custom small role */
-.small {
-  font-size: 45% !important;
-  font-weight: bold;
-}
-
-p {
-  margin-top: 1.15rem;
-}
-
-.bd-main .bd-content .bd-article-container .bd-article {
-  padding-left: 0rem;
-  padding-top: 0rem;
 }
 
 .bd-sidebar {
@@ -363,6 +348,25 @@ p {
 .bd-sidebar-secondary {
   padding: 2rem 0rem 1rem 1rem;
   max-width: 16rem;
+}
+
+/* ---- */
+/* Body */
+/* ---- */
+
+/* for custom small role */
+.small {
+  font-size: 45% !important;
+  font-weight: bold;
+}
+
+p {
+  margin-top: 1.15rem;
+}
+
+.bd-main .bd-content .bd-article-container .bd-article {
+  padding-left: 0rem;
+  padding-top: 0rem;
 }
 
 .toc-entry > .nav-link.active {
