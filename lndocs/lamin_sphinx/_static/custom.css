@@ -72,12 +72,12 @@ h6 code {
   border: 0px;
 }
 
-.cell_output .output {
+div.cell_output .output {
   overflow-x: hidden;
 }
 
-.cell_output .output:hover {
-  overflow-y: scroll;
+div.cell_output .output:hover {
+  overflow-x: scroll;
 }
 
 /* counteract the statement below */
