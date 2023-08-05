@@ -132,13 +132,22 @@ div.cell_output td {
   padding: 0.3em 0.3em;
 }
 
+div.cell_output .output {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+div.cell_output .output:hover {
+  overflow-x: auto;
+}
+
 .cell_output .output pre {
   padding: 0.2rem;
   overflow-x: hidden;
 }
 
 .cell_output .output pre:hover {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 /* fix background of odd rows in dark mode */
@@ -343,11 +352,11 @@ nav.bd-links p.caption {
 }
 
 .bd-sidebar-primary {
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .bd-sidebar-primary:hover {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .bd-sidebar-secondary {
