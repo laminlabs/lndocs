@@ -89,6 +89,11 @@ html[data-theme="light"] .highlight .nt {
   font-weight: 700;
 }
 
+.toctree-wrapper .toctree-l1 > a {
+  color: #065f46;
+  font-weight: 500;
+}
+
 h1 code,
 h2 code,
 h3 code,
