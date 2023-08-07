@@ -94,7 +94,7 @@ autodoc_typehints_format = "short"
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
-napoleon_use_param = False
+napoleon_use_param = True
 
 ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
