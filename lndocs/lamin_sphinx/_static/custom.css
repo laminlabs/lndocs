@@ -536,7 +536,7 @@ html[data-theme="light"] {
   --pst-color-link-hover: var(--color-primary-darkest);
   --pst-color-target: var(--color-primary-lightest);
   --pst-color-border: rgba(0, 0, 0, 0.1);
-  --pst-color-inline-code: #204a87; /* pygments tango */
+  --pst-color-inline-code: #f97316;
   --pst-color-text-base: black;
 }
 
