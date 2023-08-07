@@ -48,7 +48,7 @@ html[data-theme="light"] .highlight .s1 {
 
 /* python code string */
 html[data-theme="light"] .highlight .s2 {
-  color: #059669;
+  color: #60a5fa;
 }
 
 /* python code operator */
@@ -58,7 +58,7 @@ html[data-theme="light"] .highlight .kn {
 
 /* docstring examples output */
 html[data-theme="light"] .highlight .go {
-  color: #fb923c;
+  color: #21af90;
   font-style: unset;
 }
 
