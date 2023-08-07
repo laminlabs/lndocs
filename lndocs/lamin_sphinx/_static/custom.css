@@ -89,6 +89,10 @@ html[data-theme="light"] .highlight .nt {
   font-weight: 700;
 }
 
+html .highlight .p {
+  color: var(--pst-color-inline-code);
+}
+
 .toctree-wrapper .toctree-l1 > a {
   color: #065f46;
   font-weight: 500;
