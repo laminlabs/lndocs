@@ -56,17 +56,13 @@ def main():
     args = parser.parse_args()
 
     if args.clean:
-        paths_to_delete = ["lamin_sphinx", "_docs_tmp", "_docs_tmp.md"]
+        paths_to_delete = ["lamin_sphinx", "_docs_tmp"]
         for path in paths_to_delete:
             path = Path(f"{os.getcwd()}/{path}")
-            if path.is_dir():
-                import shutil
+            print(f"Removing directory: {path}")
+            import shutil
 
-                print(f"Removing directory: {path}")
-                shutil.rmtree(path)
-            elif path.is_file():
-                print(f"Removing file: {path}")
-                path.unlink()
+            shutil.rmtree(path)
 
         return
 
