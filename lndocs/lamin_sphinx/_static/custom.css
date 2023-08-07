@@ -517,7 +517,7 @@ html[data-theme="dark"] {
 
 html[data-theme="light"] {
   --pst-color-background: #fff;
-  --pst-color-background-up: #fff; /* no distinction here in light mode */
+  --pst-color-background-up: #f5f5f5; /* --pst-color-surface-- here in light mode */
   --color-primary: #059669;
   --color-primary-dark: #047857;
   --color-primary-darker: #065f46;
