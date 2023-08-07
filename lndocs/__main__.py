@@ -52,7 +52,24 @@ def main():
         ),
     )
     aa("--strip-prefix", action="store_true", help="error upon warning")
+    aa("--clean", action="store_true", help="clean build directory")
     args = parser.parse_args()
+
+    if args.clean:
+        paths_to_delete = ["lamin_sphinx", "_docs_tmp", "_docs_tmp.md"]
+        for path in paths_to_delete:
+            path = Path(f"{os.getcwd()}/{path}")
+            if path.is_dir():
+                import shutil
+
+                print(f"Removing directory: {path}")
+                shutil.rmtree(path)
+            elif path.is_file():
+                print(f"Removing file: {path}")
+                path.unlink()
+
+        return
+
     if not Path(args.docs).exists():
         sys.exit(
             f"The source directory {args.docs} does not exist! Change to repo root!"
