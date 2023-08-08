@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "django.db.models.query_utils.DeferredAttribute"),
     ("py:class", "django.db.models.fields.Field"),
     ("py:class", "pydantic.networks.PostgresDsn"),
     ("py:class", "django.db.models.fields.TextField"),
