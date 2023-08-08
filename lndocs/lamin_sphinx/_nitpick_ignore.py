@@ -1,4 +1,8 @@
 nitpick_ignore = [
+    ("py:class", "django.db.models.fields.Field"),
+    ("py:class", "pydantic.networks.PostgresDsn"),
+    ("py:class", "django.db.models.fields.TextField"),
+    ("py:class", "django.db.models.fields.CharField"),
     ("py:class", "lnschema_core.types.PathLike"),
     ("py:class", "lnschema_core.mocks.QuerySet"),
     ("py:class", "lamindb.dev.storage._backed_access._AnnDataAttrsMixin"),
