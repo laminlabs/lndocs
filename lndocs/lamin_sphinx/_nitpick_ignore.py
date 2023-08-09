@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "lamin_utils._inspect.InspectResult"),
     ("py:class", "django.db.models.query_utils.DeferredAttribute"),
     ("py:class", "django.db.models.fields.Field"),
     ("py:class", "pydantic.networks.PostgresDsn"),
