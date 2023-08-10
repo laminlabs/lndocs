@@ -5,21 +5,12 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import call
 
-import yaml  # type: ignore
 from dirsync import sync
+from laminci._nox import get_package_name
 
 from lndocs._generate_conf import generate_conf
 
 HERE = Path(__file__).parent
-
-
-def get_lamin_project():
-    with open("./lamin-project.yaml") as f:
-        try:
-            return yaml.safe_load(f)
-        except yaml.YAMLError as exc:
-            print(exc)
-            quit()
 
 
 # https://stackoverflow.com/questions/41129921
@@ -70,9 +61,6 @@ def main():
         sys.exit(
             f"The source directory {args.docs} does not exist! Change to repo root!"
         )
-    if not Path("./lamin-project.yaml").exists():
-        sys.exit("The ./lamin-project.yaml conf file does not exist!")
-    lamin_project = get_lamin_project()
 
     sync(str(HERE / "lamin_sphinx"), "./lamin_sphinx", "sync", create=True, ctime=True)
     # check whether we need to generate the conf.py for Sphinx
@@ -132,10 +120,9 @@ def main():
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
     # delete auto-generated files
-    if "package_name" in lamin_project:
-        package_name = lamin_project["package_name"]
-        for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
-            generated.unlink()
+    package_name = get_package_name()
+    for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
+        generated.unlink()
 
     if not args.show:
         return build_status
