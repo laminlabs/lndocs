@@ -2,6 +2,7 @@ from pathlib import Path
 
 import jinja2
 import yaml  # type: ignore
+from laminci._env import get_package_name
 
 
 def generate_conf(directory):
@@ -11,12 +12,17 @@ def generate_conf(directory):
     TEMPLATE_FILE = "_template_conf.py"
     template = templateEnv.get_template(TEMPLATE_FILE)
 
-    with open("./lamin-project.yaml") as f:
-        try:
-            variables = yaml.safe_load(f)
-        except yaml.YAMLError as exc:
-            print(exc)
-            quit()
+    if Path("./lamin-project.yaml").exists():
+        with open("./lamin-project.yaml") as f:
+            try:
+                variables = yaml.safe_load(f)
+            except yaml.YAMLError as exc:
+                print(exc)
+                quit()
+    else:
+        package_name = get_package_name()
+        variables = {}
+        variables["project_name"] = package_name.replace("_", "-")
 
     # see the cookiecutter.json!
     if "project_slug" not in variables:
