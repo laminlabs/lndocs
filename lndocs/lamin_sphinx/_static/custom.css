@@ -410,6 +410,18 @@ nav.bd-links p.caption {
   max-width: 16rem;
 }
 
+/* --------- */
+/* Dropdowns */
+/* --------- */
+
+details.sd-dropdown {
+  box-shadow: none !important;
+}
+
+details.sd-dropdown summary.sd-card-header {
+  font-weight: 400;
+}
+
 /* ---- */
 /* Body */
 /* ---- */
@@ -483,10 +495,6 @@ div.admonition {
 }
 
 .form-control:focus {
-  box-shadow: none !important;
-}
-
-details.sd-dropdown {
   box-shadow: none !important;
 }
 
