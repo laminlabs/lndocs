@@ -444,6 +444,7 @@ p {
 .toc-entry > .nav-link.active {
   font-weight: 400; /* do not have bold entries */
   background-color: transparent;
+  color: var(--link-color);
   border-left: unset;
 }
 
