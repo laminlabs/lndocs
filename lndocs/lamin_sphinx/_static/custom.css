@@ -455,6 +455,7 @@ p {
 nav.bd-links .active:hover > a,
 nav.bd-links .active > a {
   font-weight: 400; /* do not have bold entries */
+  color: var(--link-color);
 }
 
 .bd-content {
