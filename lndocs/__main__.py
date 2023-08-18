@@ -121,8 +121,9 @@ def main():
 
     # delete auto-generated files
     package_name = get_package_name()
-    for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
-        generated.unlink()
+    if package_name is not None:
+        for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
+            generated.unlink()
 
     if not args.show:
         return build_status
