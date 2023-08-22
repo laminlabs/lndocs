@@ -181,12 +181,14 @@ div.cell_output .output:hover {
   overflow-x: auto;
 }
 
-.cell_output .output pre {
+.cell_output .output pre,
+.cell_output .output img {
   padding: 0.2rem;
   overflow-x: hidden;
 }
 
-.cell_output .output pre:hover {
+.cell_output .output pre:hover,
+.cell_output .output img:hover {
   overflow-x: auto;
 }
 
