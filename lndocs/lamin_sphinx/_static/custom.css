@@ -181,6 +181,14 @@ div.cell_output .output:hover {
   overflow-x: auto;
 }
 
+/* image overflow in cell output */
+.cell_output {
+  overflow: auto;
+}
+.cell_output img {
+  max-width: none;
+}
+
 .cell_output .output pre {
   padding: 0.2rem;
   overflow-x: hidden;
