@@ -182,14 +182,16 @@ div.cell_output .output:hover {
 }
 
 .cell_output .output pre,
-.cell_output .output img {
+.cell_output img {
   padding: 0.2rem;
   overflow-x: hidden;
+  max-width: unset;
 }
 
 .cell_output .output pre:hover,
-.cell_output .output img:hover {
+.cell_output img:hover {
   overflow-x: auto;
+  max-width: unset;
 }
 
 /* fix background of odd rows in dark mode */
