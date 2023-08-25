@@ -21,6 +21,7 @@ extensions = [
     "myst_nb",
     "ablog",
     "sphinxext.opengraph",
+    "sphinx_copybutton",
     # "sphinx_toolbox.more_autodoc.overloads",
 ]
 

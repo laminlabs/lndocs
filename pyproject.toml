@@ -19,6 +19,7 @@ dependencies = [
     "markdown",
     "sphinx_toolbox",
     "sphinx-design",
+    "sphinx-copybutton",
 ]
 
 [project.urls]
