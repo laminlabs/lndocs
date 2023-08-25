@@ -434,6 +434,12 @@ details.sd-dropdown summary.sd-card-header {
 /* Body */
 /* ---- */
 
+button.copybtn {
+  top: 0rem;
+  width: 1.4em;
+  height: 1.35em;
+}
+
 /* for custom small role */
 .small {
   font-size: 45% !important;
