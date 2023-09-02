@@ -139,7 +139,6 @@ def process_docstring(app, what, name, obj, options, lines):
             # first properties
             if obj.__name__ == "File":
                 lines.append(".. rubric:: Properties")
-                lines.append(".. autoattribute:: features\n")
                 lines.append(".. autoattribute:: path\n")
 
             # now fields
@@ -160,6 +159,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
                 lines.append(f"   :annotation: {annotation}")
+                lines.append("   :noindex:")
             for field in many_to_many_fields:
                 if field.model.__module__.startswith(
                     "lnschema_bionty"
@@ -174,6 +174,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
                 lines.append(f"   :annotation: {annotation}")
+                lines.append("   :noindex:")
                 if field in obj._meta.related_objects:
                     lines.append("   :noindex:")
         else:
