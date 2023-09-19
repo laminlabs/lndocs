@@ -432,7 +432,7 @@ details.sd-dropdown summary.sd-card-header {
 
 details.sd-dropdown summary.sd-card-header,
 details.sd-dropdown summary.sd-card-header + div.sd-summary-content {
-  --pst-sd-dropdown-color: skyblue;
+  --pst-sd-dropdown-color: seagreen;
 }
 
 /* ---- */
