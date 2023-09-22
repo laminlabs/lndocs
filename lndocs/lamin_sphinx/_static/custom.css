@@ -451,6 +451,12 @@ button.copybtn {
   font-weight: bold;
 }
 
+/* for custom smaller role */
+.smaller {
+  font-size: 70% !important;
+  font-weight: bold;
+}
+
 p {
   margin-top: 1.15rem;
 }
