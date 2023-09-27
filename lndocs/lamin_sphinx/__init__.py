@@ -141,6 +141,9 @@ def process_docstring(app, what, name, obj, options, lines):
             if obj.__name__ == "File":
                 lines.append(".. rubric:: Properties")
                 lines.append(".. autoattribute:: path\n")
+            elif obj.__name__ == "FeatureSet":
+                lines.append(".. rubric:: Properties")
+                lines.append(".. autoattribute:: members\n")
 
             # now fields
             lines.append(".. rubric:: Fields")
