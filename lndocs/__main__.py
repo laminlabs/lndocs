@@ -26,6 +26,17 @@ def datetime_valid(s: str):
     return True
 
 
+def strip_db_args(path: Path):
+    with open(path) as f:
+        content = f.read()
+    # now, find the line that contains *db_args and remove it
+    for line in content.split("\n")[:700]:
+        if "db_args" in line:
+            break
+    with open(path, "w") as f:
+        f.write(content.replace(line, ""))
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin website.")
     aa = parser.add_argument
@@ -122,8 +133,9 @@ def main():
     # delete auto-generated files
     package_name = get_package_name()
     if package_name is not None:
-        for generated in Path(args.docs).glob(f"{package_name}.*.rst"):
-            generated.unlink()
+        for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
+            if package_name == "lamindb" or package_name.startswith("lnschema_"):
+                strip_db_args(Path(args.site) / generated.with_suffix(".html").name)
 
     if not args.show:
         return build_status
