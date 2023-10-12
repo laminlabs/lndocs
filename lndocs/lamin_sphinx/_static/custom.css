@@ -131,6 +131,11 @@ div[class*="highlight-"] {
   max-width: 100%;
 }
 
+.toctree-wrapper li[class^="toctree-l"] > a {
+  font-size: 1rem;
+  list-style: none;
+}
+
 /* --- */
 /* API */
 /* --- */
@@ -333,13 +338,13 @@ nav {
   padding: 0 0.15rem;
   color: var(--color-emphasis-900);
   font-weight: bold;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .navbar-light .navbar-nav li a.nav-link {
   padding: 0 0.5rem;
   color: var(--color-emphasis-900);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: var(--font-weight-semibold);
 }
 
@@ -355,7 +360,7 @@ nav {
 }
 
 .nav-link {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--color-emphasis-900);
 }
 
@@ -418,6 +423,10 @@ nav.bd-links p.caption {
   max-width: 16rem;
 }
 
+/* font of table of content */
+.toc-entry a.nav-link {
+  font-size: 0.875rem;
+}
 /* --------- */
 /* Dropdowns */
 /* --------- */
