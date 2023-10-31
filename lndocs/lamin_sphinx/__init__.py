@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    # "sphinx.ext.autosectionlabel",  # gives some warnings even with autosectionlabel_prefix_document = True  # noqa
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "sphinx_design",
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
@@ -89,7 +90,6 @@ myst_enable_extensions = [
 ]
 myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
-
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_inherit_docstrings = False
