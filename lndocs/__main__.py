@@ -6,7 +6,6 @@ from pathlib import Path
 from subprocess import call
 
 from dirsync import sync
-from laminci._nox import get_package_name
 
 from lndocs._generate_conf import generate_conf
 
@@ -130,12 +129,10 @@ def main():
     if args.strict:
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
-    # delete auto-generated files
-    package_name = get_package_name()
-    if package_name is not None:
+    # remove db_args from registries documentation
+    for package_name in ["lamindb", "lnschema_bionty"]:
         for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
-            if package_name == "lamindb" or package_name.startswith("lnschema_"):
-                strip_db_args(Path(args.site) / generated.with_suffix(".html").name)
+            strip_db_args(Path(args.site) / generated.with_suffix(".html").name)
 
     if not args.show:
         return build_status
