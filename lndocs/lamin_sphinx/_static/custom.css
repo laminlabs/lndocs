@@ -214,6 +214,14 @@ div.cell_output tbody tr:nth-child(odd) {
   border-bottom: 1px solid var(--pst-color-border);
 }
 
+/* ------ */
+/* Images */
+/* ------ */
+
+html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
+  background: transparent;
+}
+
 /* --------- */
 /* Footnotes */
 /* --------- */
