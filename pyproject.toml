@@ -12,6 +12,7 @@ dependencies = [
     "dirsync",
     "myst-parser>=0.18.0",
     "myst-nb>=0.17.1",
+    "sphinx<6",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
     "docutils",
