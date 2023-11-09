@@ -9,8 +9,8 @@ from sphinx.ext.autosummary import get_documenter
 from sphinx.ext.autosummary.generate import (
     AutosummaryRenderer,
     ModuleScanner,
+    _split_full_qualified_name,
     members_of,
-    split_full_qualified_name,
 )
 from sphinx.pycode import ModuleAnalyzer, PycodeError
 from sphinx.util import logging
@@ -170,7 +170,7 @@ def generate_autosummary_content(
         # print(ns["attributes"])
 
     if modname is None or qualname is None:
-        modname, qualname = split_full_qualified_name(name)
+        modname, qualname = _split_full_qualified_name(name)
 
     if doc.objtype in ("method", "attribute", "property"):
         ns["class"] = qualname.rsplit(".", 1)[0]  # type: ignore
