@@ -138,7 +138,7 @@ def process_docstring(app, what, name, obj, options, lines):
     if inspect.isclass(obj):
         if issubclass(obj, DjangoORM):
             # first properties
-            if obj.__name__ == "File":
+            if obj.__name__ == "Artifact":
                 lines.append(".. rubric:: Properties")
                 lines.append(".. autoattribute:: path\n")
             elif obj.__name__ == "FeatureSet":
