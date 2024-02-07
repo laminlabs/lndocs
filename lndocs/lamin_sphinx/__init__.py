@@ -184,17 +184,15 @@ def process_docstring(app, what, name, obj, options, lines):
         else:
             lines.append(".. rubric:: Attributes")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
-            attributes = [
-                a
-                for a in attributes
-                if not (a[0].startswith("__") or a[0].startswith("_"))
-            ]
-            for attr in attributes:
-                lines.append(f".. autoattribute:: {attr[0]}\n")
-                if isinstance(attr[1], property):
-                    lines.append(f"   :annotation: {type(attr[1]).__name__}")
-                else:
-                    lines.append(f"   :annotation: {type(attr[1]).__name__}")
+            attributes = [a for a in attributes if not (a[0].startswith("__") or a[0].startswith("_"))]
+            for attr_name, attr_value in attributes:
+                annotation = "property" if isinstance(attr_value, property) else type(attr_value).__name__
+                if isinstance(attr_value, property):
+                    getter = attr_value.fget
+                    if getter and hasattr(getter, "__annotations__") and 'return' in getter.__annotations__:
+                        annotation = getter.__annotations__['return'].__name__
+                lines.append(f".. autoattribute:: {attr_name}\n")
+                lines.append(f"   :annotation: {annotation}")
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
