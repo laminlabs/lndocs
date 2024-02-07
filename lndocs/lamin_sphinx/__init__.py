@@ -202,7 +202,16 @@ def process_docstring(app, what, name, obj, options, lines):
                         and hasattr(getter, "__annotations__")
                         and "return" in getter.__annotations__
                     ):
-                        annotation = getter.__annotations__["return"].__name__
+                        annotation = getter.__annotations__["return"]
+                        if isinstance(annotation, str):
+                            # Directly use the string annotation
+                            pass
+                        elif hasattr(annotation, "__name__"):
+                            # Use the name of the type
+                            annotation = annotation.__name__
+                        else:
+                            # Default to 'property' if type cannot be determined
+                            annotation = "property"
                 lines.append(f".. autoattribute:: {attr_name}\n")
                 lines.append(f"   :annotation: {annotation}")
         # the following is more complicated than expected, leave this in template for now  # noqa
