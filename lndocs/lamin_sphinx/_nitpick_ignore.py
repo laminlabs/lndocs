@@ -1,5 +1,6 @@
 nitpick_ignore = [
     ("py:class", "types.UnionType"),
+    ("py:class", "lamindb_setup.core.types.UPathStr"),
     ("py:class", "collections.UserList"),
     ("py:class", "lamin_utils._inspect.InspectResult"),
     ("py:class", "django.db.models.query_utils.DeferredAttribute"),
