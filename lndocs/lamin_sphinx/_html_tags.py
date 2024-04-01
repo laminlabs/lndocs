@@ -5,8 +5,6 @@ import docutils.nodes as nodes  # type: ignore
 from sphinx.application import Sphinx
 from sphinxext.opengraph import make_tag  # see below for implementation
 
-from ._authors import authors
-
 # def make_tag(property: str, content: str) -> str:
 #     content = content.replace('"', "&quot;")
 #     return f'<meta property="{property}" content="{content}" />'
@@ -31,10 +29,14 @@ def fix_og_type(context: Dict[str, Any], config: Dict[str, Any]):
 
 
 def add_authors(context, fields):
+    import lndocs
+
     if "author" in fields:
         for key in fields["author"].split(", "):
             # does not work with tag dict as key is the same for all authors
-            context["metatags"] += "\n" + make_tag("citation_author", authors[key][0])
+            context["metatags"] += "\n" + make_tag(
+                "citation_author", lndocs.authors[key][0]
+            )
 
 
 def add_scholar_tags(
