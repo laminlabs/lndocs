@@ -8,8 +8,6 @@ from myst_parser.mdit_to_docutils.base import (  # noqa
     token_line,
 )
 
-from ._authors import authors
-
 
 # from myst_parser 0.18.0
 # https://github.com/executablebooks/MyST-Parser/blob/391a8cd1097db16f122ce4736e8924ecfb23e621/myst_parser/mdit_to_docutils/base.py#L792-L831  # noqa
@@ -97,9 +95,12 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         def format_title(k):
             return f'title="{affiliation[k]}"' if affiliation else ""
 
+        import lndocs
+
         return ", ".join(
             [
-                f'<a href="{authors[k][1]}" {format_title(k)}>{authors[k][0]}</a>'
+                f'<a href="{lndocs.authors[k][1]}"'
+                f" {format_title(k)}>{lndocs.authors[k][0]}</a>"
                 for k in data["author"].split(", ")
             ]
         )
