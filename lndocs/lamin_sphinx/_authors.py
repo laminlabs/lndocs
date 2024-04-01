@@ -1,8 +1,16 @@
 authors = {
     "bpenteado": ("Bernardo Penteado", "https://pbern.com"),
+    "chaichontat": ("Chaichontat Sriworarat", "https://github.com/chaichontat"),
     "falexwolf": ("Alex Wolf", "https://falexwolf.me"),
+    "felix-fischer*": ("Felix Fischer*", ""),
+    "maciek-wiatrak": ("Maciek Wiatrak", ""),
+    "ilan-gold": ("Ilan Gold", ""),
+    "fabian-theis": ("Fabian Theis", ""),
+    "jkobject": ("Jeremie Kalfon", "https://www.jkobject.com"),
+    "yanay-rosen": ("Yanay Rosen", ""),
     "fredericenard": ("Frederic Enard", "https://github.com/fredericenard"),
     "Koncopd": ("Sergei Rybakov", "https://github.com/Koncopd"),
+    "Koncopd*": ("Sergei Rybakov*", "https://github.com/Koncopd"),
     "sunnyosun": ("Sunny Sun", "https://github.com/sunnyosun"),
     "Zethson": ("Lukas Heumos", "https://github.com/Zethson"),
 }
