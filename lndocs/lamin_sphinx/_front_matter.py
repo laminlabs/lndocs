@@ -61,6 +61,9 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     if data.get("docs"):
         docs = f"<a href={data['docs']}>Docs</a>"
         html += f"{docs}"
+    if data.get("db"):
+        db = f"<a href={data['db']}>DB</a>"
+        html += f"{db}"
     if data.get("repo"):
         if html != "" and not html.endswith(" · "):
             html += " · "
@@ -77,9 +80,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         if html != "" and not html.endswith(" · "):
             html += " · "
         html += f'<a href=https://doi.org/{data["doi"]}>DOI</a>'
-    float_right = ""
-    if data.get("number"):
-        float_right += f'<li> ⸻ #{data["number"]}</li>'
+    float_right = f"<li> ⸻ {format_date()}</li>"
     html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
     self.nested_render_text(f"{html}", 0)
 
@@ -106,8 +107,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         )
 
     if data.get("author"):
-        html = f"{format_date()} · "
-        html += f"{format_authors()}"
+        html = f"{format_authors()}"
         html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""  # noqa
         self.nested_render_text(f"{html}", 0)
 
