@@ -80,7 +80,9 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         if html != "" and not html.endswith(" · "):
             html += " · "
         html += f'<a href=https://doi.org/{data["doi"]}>DOI</a>'
-    float_right = f"<li> ⸻ {format_date()}</li>"
+    float_right = ""
+    if data.get("date"):
+        float_right = f"<li> ⸻ {format_date()}</li>"
     html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
     self.nested_render_text(f"{html}", 0)
 
