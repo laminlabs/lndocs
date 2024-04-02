@@ -1,6 +1,7 @@
 {%- extends "page.html" %} {% block body %} {% for post in collection %}
-<ul class="ablog-archive" style="padding-left: 0px; margin-bottom: 0.5rem">
-  <li>⸻ {{ post.date.strftime(ablog.post_date_format) }}</li>
+<hr />
+<ul class="ablog-archive" style="padding-left: 0px; margin-bottom: 0.25rem">
+  <li>{{ post.date.strftime(ablog.post_date_format) }}</li>
 </ul>
 <h1 class="ablog-post-title">
   <a href="{{ pathto(post.docname) }}{{ anchor(post) }}">{{ post.title }}</a>
