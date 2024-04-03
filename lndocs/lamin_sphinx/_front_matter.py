@@ -62,12 +62,12 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         docs = f"<a href={data['docs']}>Docs</a>"
         html += f"{docs}"
     if data.get("db"):
-        db = f"<a href={data['db']}>DB</a>"
+        db = f"<a href={data['db']}>Database</a>"
         html += f"{db}"
     if data.get("repo"):
         if html != "" and not html.endswith(" · "):
             html += " · "
-        html += f"<a href={data['repo']}>Repo</a>"
+        html += f"<a href={data['repo']}>Repository</a>"
     if data.get("tweet"):
         if html != "" and not html.endswith(" · "):
             html += " · "
