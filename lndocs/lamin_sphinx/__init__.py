@@ -92,6 +92,9 @@ myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
+autodoc_type_aliases = {
+    "UPathStr": "lamindb.core.types.UPathStr",
+}
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
