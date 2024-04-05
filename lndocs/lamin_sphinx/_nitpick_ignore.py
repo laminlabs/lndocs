@@ -3,11 +3,15 @@ nitpick_ignore = [
     (
         "py:class",
         "lamindb.core.types.UPathStr",
-    ),  # Alex: this shouldn't be here, but I need to move to something else now
+    ),
+    (
+        "py:class",
+        "AnnData",
+    ),
     (
         "py:class",
         "UPathStr",
-    ),  # Alex: this shouldn't be here, but I need to move to something else now
+    ),
     ("py:class", "pandas.core.series.Series"),
     ("py:class", "numpy.array"),
     ("py:class", "lnschema_core.mocks.BackedAccessor"),
