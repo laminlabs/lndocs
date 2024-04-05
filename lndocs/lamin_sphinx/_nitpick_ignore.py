@@ -1,6 +1,7 @@
 nitpick_ignore = [
     ("py:class", "lamin_validator._anndata_validator.AnnDataValidator"),
     ("py:class", "lamindb.core.types.UPathStr"),
+    ("py:class", "np.ndarray"),
     ("py:class", "ListLike"),
     ("py:class", "Path"),
     ("py:class", "AnnData"),
