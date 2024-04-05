@@ -1,5 +1,13 @@
 nitpick_ignore = [
     ("py:class", "lamin_validator._anndata_validator.AnnDataValidator"),
+    (
+        "py:class",
+        "lamindb.core.types.UPathStr",
+    ),  # Alex: this shouldn't be here, but I need to move to something else now
+    (
+        "py:class",
+        "UPathStr",
+    ),  # Alex: this shouldn't be here, but I need to move to something else now
     ("py:class", "pandas.core.series.Series"),
     ("py:class", "numpy.array"),
     ("py:class", "lnschema_core.mocks.BackedAccessor"),
