@@ -1,17 +1,9 @@
 nitpick_ignore = [
     ("py:class", "lamin_validator._anndata_validator.AnnDataValidator"),
-    (
-        "py:class",
-        "lamindb.core.types.UPathStr",
-    ),
-    (
-        "py:class",
-        "AnnData",
-    ),
-    (
-        "py:class",
-        "UPathStr",
-    ),
+    ("py:class", "lamindb.core.types.UPathStr"),
+    ("py:class", "AnnData"),
+    ("py:class", "UPathStr"),
+    ("py:class", "pd.DataFrame"),
     ("py:class", "pandas.core.series.Series"),
     ("py:class", "numpy.array"),
     ("py:class", "lnschema_core.mocks.BackedAccessor"),
