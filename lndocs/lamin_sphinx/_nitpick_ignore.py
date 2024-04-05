@@ -1,5 +1,7 @@
 nitpick_ignore = [
     ("py:class", "lamin_validator._anndata_validator.AnnDataValidator"),
+    ("py:class", "pandas.core.series.Series"),
+    ("py:class", "numpy.array"),
     ("py:class", "lnschema_core.mocks.BackedAccessor"),
     ("py:class", "lnschema_core.mocks.AnnDataAccessor"),
     ("py:class", "types.UnionType"),
