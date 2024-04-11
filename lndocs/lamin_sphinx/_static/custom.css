@@ -518,7 +518,7 @@ footer {
   font: inherit;
 }
 
-body {
+/* body {
   background: radial-gradient(
       circle at top left,
       rgba(197, 250, 184, 0.4) 1%,
@@ -530,6 +530,10 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: top left;
+} */
+
+html[data-theme="light"] body {
+  background: white;
 }
 
 html[data-theme="dark"] body {
