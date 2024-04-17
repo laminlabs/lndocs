@@ -106,9 +106,9 @@ ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
-# intersphinx_mapping = dict(
-#     docs=("https://lamin-docs-msjq.netlify.app/docs/", None),
-# )
+intersphinx_mapping = dict(
+    docs=("https://lamin-docs-msjq.netlify.app/docs/", None),
+)
 
 # myst_nb options
 nb_execution_mode = "off"
