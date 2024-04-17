@@ -95,6 +95,7 @@ autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
+autodoc_mock_imports = ["vitessce"]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
@@ -105,9 +106,9 @@ ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
-intersphinx_mapping = dict(
-    docs=("https://lamin.ai/docs", None),
-)
+# intersphinx_mapping = dict(
+#     docs=("https://lamin-docs-msjq.netlify.app/docs/", None),
+# )
 
 # myst_nb options
 nb_execution_mode = "off"
