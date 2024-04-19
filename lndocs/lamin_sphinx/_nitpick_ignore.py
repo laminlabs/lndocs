@@ -68,8 +68,8 @@ nitpick_ignore = [
     ("py:data", "typing.Union"),
     ("py:data", "typing.Any"),
     ("py:data", "typing.Tuple"),
+    ("py:data", "typing.Callable"),
     ("py:obj", "typing.BinaryIO"),
-    ("py:obj", "typing.Callable"),
     ("py:obj", "bionty.Gene"),
     ("py:obj", "bionty.Species"),
 ]
