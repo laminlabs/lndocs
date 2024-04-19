@@ -518,26 +518,19 @@ footer {
   font: inherit;
 }
 
-/* body {
-  background: radial-gradient(
+body {
+  /* background: radial-gradient(
       circle at top left,
       rgba(197, 250, 184, 0.4) 1%,
       transparent 20%
     ),
     conic-gradient(from 180deg at 0% 0%, #f5f5f7 1%, #f9f9fb 1%),
     radial-gradient(circle at bottom right, #d9f7eb 0%, transparent 20%);
-  background-blend-mode: multiply;
+  background-blend-mode: multiply; */
+  background-image: url("https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/docs-bg.svg");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: top left;
-} */
-
-html[data-theme="light"] body {
-  background: white;
-}
-
-html[data-theme="dark"] body {
-  background: black;
 }
 
 a {
