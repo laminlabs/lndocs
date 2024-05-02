@@ -69,7 +69,6 @@ html_favicon = (
     "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico"
 )
 html_static_path = ["../lamin_sphinx/_static"]
-html_css_files = ["../lamin_sphinx/_static/custom.css"]
 
 # order matters below!
 # https://stackoverflow.com/questions/45112812/sphinx-exclude-one-page-from-html-sidebars # noqa
