@@ -81,6 +81,8 @@ html_sidebars = {
     "docs": [],
 }
 
+html_link_suffix = "" if os.getenv("GITHUB_ACTIONS") is not None else None
+
 # Other configurations
 panels_add_bootstrap_css = False
 myst_enable_extensions = [
