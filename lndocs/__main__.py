@@ -36,6 +36,35 @@ def strip_db_args(path: Path):
         f.write(content.replace(line, ""))
 
 
+def sluggify_autosummary():
+    import sphinx.ext.autosummary
+    import sphinx.ext.autosummary.generate
+
+    content = Path(sphinx.ext.autosummary.generate.__file__).read_text()
+    original_line = (
+        "filename = os.path.join(path, filename_map.get(name, name) + suffix)"
+    )
+    new_line = (
+        "filename = os.path.join(path, filename_map.get(name, name).lower() + suffix)"
+    )
+    if original_line not in content:
+        assert new_line in content
+    else:
+        Path(sphinx.ext.autosummary.generate.__file__).write_text(
+            content.replace(original_line, new_line)
+        )
+
+    content = Path(sphinx.ext.autosummary.__file__).read_text()
+    original_line = "real_name = filename_map.get(real_name, real_name)"
+    new_line = "real_name = filename_map.get(real_name, real_name).lower()"
+    if original_line not in content:
+        assert new_line in content
+    else:
+        Path(sphinx.ext.autosummary.__file__).write_text(
+            content.replace(original_line, new_line)
+        )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin website.")
     aa = parser.add_argument
@@ -123,26 +152,7 @@ def main():
                 new_path = path.with_name(f"{new_stem}{path.suffix}")
                 path.rename(new_path)
 
-    import sphinx.ext.autosummary
-    import sphinx.ext.autosummary.generate
-
-    content = Path(sphinx.ext.autosummary.generate.__file__).read_text()
-    original_line = (
-        "filename = os.path.join(path, filename_map.get(name, name) + suffix)"
-    )
-    new_line = (
-        "filename = os.path.join(path, filename_map.get(name, name).lower() + suffix)"
-    )
-    Path(sphinx.ext.autosummary.generate.__file__).write_text(
-        content.replace(original_line, new_line)
-    )
-
-    content = Path(sphinx.ext.autosummary.__file__).read_text()
-    original_line = "real_name = filename_map.get(real_name, real_name)"
-    new_line = "real_name = filename_map.get(real_name, real_name).lower()"
-    Path(sphinx.ext.autosummary.__file__).write_text(
-        content.replace(original_line, new_line)
-    )
+    sluggify_autosummary()
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
@@ -151,7 +161,7 @@ def main():
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
     # remove db_args from registries documentation
-    for package_name in ["lamindb", "lnschema_bionty"]:
+    for package_name in ["lamindb", "bionty", "omop", "lrex", "wetlab"]:
         for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
             strip_db_args(Path(args.site) / generated.with_suffix(".html").name)
 
