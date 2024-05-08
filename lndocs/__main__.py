@@ -123,6 +123,27 @@ def main():
                 new_path = path.with_name(f"{new_stem}{path.suffix}")
                 path.rename(new_path)
 
+    import sphinx.ext.autosummary
+    import sphinx.ext.autosummary.generate
+
+    content = Path(sphinx.ext.autosummary.generate.__file__).read_text()
+    original_line = (
+        "filename = os.path.join(path, filename_map.get(name, name) + suffix)"
+    )
+    new_line = (
+        "filename = os.path.join(path, filename_map.get(name, name).lower() + suffix)"
+    )
+    Path(sphinx.ext.autosummary.generate.__file__).write_text(
+        content.replace(original_line, new_line)
+    )
+
+    content = Path(sphinx.ext.autosummary.__file__).read_text()
+    original_line = "real_name = filename_map.get(real_name, real_name)"
+    new_line = "real_name = filename_map.get(real_name, real_name).lower()"
+    Path(sphinx.ext.autosummary.__file__).write_text(
+        content.replace(original_line, new_line)
+    )
+
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
     build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
