@@ -82,7 +82,7 @@ html_sidebars = {
 }
 
 # Netlify pretty URLs doesn't like if we switch this
-html_link_suffix = None  # "" if os.getenv("GITHUB_ACTIONS") is not None else None
+html_link_suffix = "" if os.getenv("GITHUB_ACTIONS") is not None else None
 
 # Other configurations
 panels_add_bootstrap_css = False
