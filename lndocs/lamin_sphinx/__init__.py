@@ -98,7 +98,7 @@ autodoc_type_aliases = {
 # autodoc_default_options = {
 #     'inherited-members': False,
 # }
-autodoc_mock_imports = ["vitessce"]
+autodoc_mock_imports = ["vitessce", "mudata"]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
