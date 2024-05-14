@@ -169,4 +169,4 @@ def main():
         return build_status
     else:
         if build_status == 0:
-            call("cd _build/html; python -m http.server", shell=True)
+            call("python -m http.server", shell=True, cwd="./_build/html")
