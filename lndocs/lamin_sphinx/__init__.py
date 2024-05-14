@@ -60,14 +60,12 @@ html_context = {
     "default_mode": "auto",
     "github_user": "laminlabs",
     "github_version": "main",
+    "logo": (
+        "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+    ),
+    "favicon": "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico",  # noqa
 }
 
-html_logo = (
-    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
-)
-html_favicon = (
-    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico"
-)
 html_static_path = ["../lamin_sphinx/_static"]
 
 # order matters below!
