@@ -4,6 +4,7 @@ nitpick_ignore = [
     ("py:class", "np.ndarray"),
     ("py:class", "ListLike"),
     ("py:class", "Path"),
+    ("py:class", "mudata.MuData"),
     ("py:class", "AnnData"),
     ("py:class", "UPathStr"),
     ("py:class", "pd.DataFrame"),
