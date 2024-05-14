@@ -106,6 +106,7 @@ napoleon_numpy_docstring = False
 napoleon_use_rtype = False
 napoleon_use_param = True
 typehints_defaults = "comma"
+always_use_bars_union = True
 
 ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
@@ -125,12 +126,6 @@ from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
 from ._html_tags import html_lamin_page_context  # noqa
 from ._nitpick_ignore import nitpick_ignore  # noqa
-from ._sort_autosummary import generate_autosummary_content  # noqa
-
-# HTMLTranslator.visit_footnote_reference = visit_footnote_reference
-sphinx.ext.autosummary.generate.generate_autosummary_content = (
-    generate_autosummary_content  # noqa
-)
 
 
 def process_docstring(app, what, name, obj, options, lines):

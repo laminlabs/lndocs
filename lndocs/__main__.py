@@ -169,4 +169,5 @@ def main():
         return build_status
     else:
         if build_status == 0:
-            call("cd _build/html; python -m http.server", shell=True)
+            print(Path.cwd())
+            call("python -m http.server 8003", shell=True, cwd="./_build/html")

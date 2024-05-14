@@ -10,11 +10,11 @@ dynamic = ["version", "description"]
 dependencies = [
     "ablog==0.10.25",  # this is only because sometime around 0.10.28 the author ordering on summary pages changed
     "dirsync",
-    "myst-parser==0.18.1",
-    "myst-nb>=0.17.1",
-    "sphinx<6",
+    "myst-parser",
+    "myst-nb",
+    "sphinx",
     "sphinxext-opengraph",
-    "sphinx-autodoc-typehints",
+    "sphinx-autodoc-typehints>=2.1.0",
     "docutils",
     "pydata-sphinx-theme==0.12.0",
     "markdown",
