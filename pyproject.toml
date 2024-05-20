@@ -20,6 +20,7 @@ dependencies = [
     "markdown",
     "sphinx_toolbox",
     "sphinx-design",
+    "sphinxcontrib-jquery",
     "sphinx-copybutton",
 ]
 

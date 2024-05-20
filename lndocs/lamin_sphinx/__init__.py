@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinxcontrib.jquery",
     # "sphinx.ext.autosectionlabel",  # gives some warnings even with autosectionlabel_prefix_document = True  # noqa
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "sphinx_design",
