@@ -194,6 +194,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     else type(attr_value).__name__
                 )
                 docstring = ""
+                is_linked_type = False
                 if isinstance(attr_value, property):
                     getter = attr_value.fget
                     if (
@@ -206,6 +207,7 @@ def process_docstring(app, what, name, obj, options, lines):
                             pass
                         elif hasattr(annotation, "__name__"):
                             annotation = annotation.__name__
+                            is_linked_type = True
                         else:
                             annotation = "property"
                     if getter and getter.__doc__:
@@ -213,11 +215,15 @@ def process_docstring(app, what, name, obj, options, lines):
                 else:
                     if hasattr(attr_value, "__name__"):
                         annotation = attr_value.__name__
+                        is_linked_type = True
                     else:
                         annotation = type(attr_value).__name__
                     docstring = attr_value.__doc__
                 lines.append(f".. attribute:: {attr_name}\n")
-                lines.append(f"   :type: {annotation}")
+                if is_linked_type:
+                    lines.append(f"   :type: {annotation}")
+                else:
+                    lines.append(f"   :annotation: {annotation}")
                 if docstring:
                     lines.append("")
                     for line in docstring.split("\n"):
