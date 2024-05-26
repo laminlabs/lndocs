@@ -186,17 +186,14 @@ def process_docstring(app, what, name, obj, options, lines):
         else:
             lines.append(".. rubric:: Attributes")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
-            attributes = [
-                a
-                for a in attributes
-                if not (a[0].startswith("__") or a[0].startswith("_"))
-            ]
+            attributes = [a for a in attributes if not a[0].startswith(("__", "_"))]
             for attr_name, attr_value in attributes:
                 annotation = (
                     "property"
                     if isinstance(attr_value, property)
                     else type(attr_value).__name__
                 )
+                docstring = ""
                 if isinstance(attr_value, property):
                     getter = attr_value.fget
                     if (
@@ -211,8 +208,22 @@ def process_docstring(app, what, name, obj, options, lines):
                             annotation = annotation.__name__
                         else:
                             annotation = "property"
-                lines.append(f".. autoattribute:: {attr_name}\n")
-                lines.append(f"   :annotation: {annotation}")
+                    if getter and getter.__doc__:
+                        docstring = getter.__doc__.strip()
+                else:
+                    if hasattr(attr_value, "__name__"):
+                        annotation = attr_value.__name__
+                    else:
+                        annotation = type(attr_value).__name__
+                    docstring = attr_value.__doc__
+                lines.append(f".. attribute:: {attr_name}\n")
+                lines.append(f"   :type: {annotation}")
+                if docstring:
+                    lines.append("")
+                    for line in docstring.split("\n"):
+                        lines.append(f"   {line}")
+                        break  # only show the first line because for general
+                        # attributes, the full class docstring would be shown
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
