@@ -184,20 +184,21 @@ def process_docstring(app, what, name, obj, options, lines):
                 if field in obj._meta.related_objects:
                     lines.append("   :noindex:")
         else:
-            lines.append(".. rubric:: Attributes")
+            # if there are more than one attribute nothing renders anymore if we
+            # add a rubric or any other text before the attributes
+            # be super careful with this as some pages might simply be blank because
+            # of div elements in the html not being closed properly
+            # lines.append("**Attributes**")
+            # lines.append("")
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
-            attributes = [
-                a
-                for a in attributes
-                if not (a[0].startswith("__") or a[0].startswith("_"))
-            ]
+            attributes = [a for a in attributes if not a[0].startswith(("__", "_"))]
             for attr_name, attr_value in attributes:
-                annotation = (
-                    "property"
-                    if isinstance(attr_value, property)
-                    else type(attr_value).__name__
-                )
-                if isinstance(attr_value, property):
+                docstring = ""
+                annotation = ""
+                autoattribute = False
+                is_linked_type = False
+                is_property = isinstance(attr_value, property)
+                if is_property:
                     getter = attr_value.fget
                     if (
                         getter
@@ -206,20 +207,43 @@ def process_docstring(app, what, name, obj, options, lines):
                     ):
                         annotation = getter.__annotations__["return"]
                         if isinstance(annotation, str):
-                            pass
+                            is_linked_type = True
                         elif hasattr(annotation, "__name__"):
                             annotation = annotation.__name__
+                            is_linked_type = True
                         else:
                             annotation = "property"
-                lines.append(f".. autoattribute:: {attr_name}\n")
-                lines.append(f"   :annotation: {annotation}")
+                    if getter and getter.__doc__:
+                        docstring = getter.__doc__.strip()
+                else:
+                    if hasattr(attr_value, "__name__"):
+                        annotation = attr_value.__name__
+                        is_linked_type = True
+                    else:
+                        autoattribute = True
+                        annotation = type(attr_value).__name__
+                    docstring = attr_value.__doc__
+                if autoattribute:
+                    lines.append(f".. autoattribute:: {attr_name}")
+                else:
+                    lines.append(f".. attribute:: {attr_name}")
+                if is_linked_type:
+                    lines.append(f"   :type: {annotation}")
+                else:
+                    lines.append(f"   :annotation: {annotation}")
+                if docstring and not autoattribute:
+                    lines.append("")
+                    for line in docstring.split("\n"):
+                        lines.append(f"   {line}\n")
+                        break  # only show the first line because for general
+                        # attributes, the full class docstring would be shown
+            print("\n".join(lines))
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
         # methods = [a for a in methods if not(a[0].startswith('__') or a[0].startswith('_'))]  # noqa
         # for meth in methods:
         #     lines.append(f".. automethod:: {meth[0]}\n")
-
     return lines
 
 
