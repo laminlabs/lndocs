@@ -138,17 +138,10 @@ def process_docstring(app, what, name, obj, options, lines):
         DjangoORM = int  # a hack
 
     if inspect.isclass(obj):
+        field_lines = []
+        attributes_to_exclude = set()
         if issubclass(obj, DjangoORM):
-            # first properties
-            if obj.__name__ == "Artifact":
-                lines.append(".. rubric:: Properties")
-                lines.append(".. autoattribute:: path\n")
-            elif obj.__name__ == "FeatureSet":
-                lines.append(".. rubric:: Properties")
-                lines.append(".. autoattribute:: members\n")
-
-            # now fields
-            lines.append(".. rubric:: Fields")
+            field_lines.append(".. rubric:: Fields")
             fields = obj._meta.get_fields()
             # obj._meta.related_objects, do not include related objects for now
             non_many_to_many_fields = [
@@ -158,86 +151,100 @@ def process_docstring(app, what, name, obj, options, lines):
                 field for field in fields if not hasattr(field, "verbose_name")
             ]
             for field in non_many_to_many_fields:
-                lines.append(f".. autoattribute:: {field.name}\n")
+                attributes_to_exclude.add(field.name)
+                attributes_to_exclude.add(f"{field.name}_id")
+                field_lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
                 # the following doesn't work currently
                 # if isinstance(field, models.ForeignKey):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                lines.append(f"   :annotation: {annotation}")
-                lines.append("   :noindex:")
+                field_lines.append(f"   :annotation: {annotation}")
+                # field_lines.append("   :noindex:")
             for field in many_to_many_fields:
+                attributes_to_exclude.add(field.name)
                 if field.model.__module__.startswith(
                     "lnschema_bionty"
                 ) or field.related_model.__module__.startswith("lnschema_bionty"):
                     continue
                 if field in obj._meta.related_objects:
                     continue
-                lines.append(f".. autoattribute:: {field.name}\n")
+                field_lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
                 # the following doesn't work currently
                 # if isinstance(field, models.ForeignKey):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                lines.append(f"   :annotation: {annotation}")
-                lines.append("   :noindex:")
-                if field in obj._meta.related_objects:
-                    lines.append("   :noindex:")
-        else:
-            # if there are more than one attribute nothing renders anymore if we
-            # add a rubric or any other text before the attributes
-            # be super careful with this as some pages might simply be blank because
-            # of div elements in the html not being closed properly
-            # lines.append("**Attributes**")
-            # lines.append("")
-            attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
-            attributes = [a for a in attributes if not a[0].startswith(("__", "_"))]
-            for attr_name, attr_value in attributes:
-                docstring = ""
-                annotation = ""
-                autoattribute = False
-                is_linked_type = False
-                is_property = isinstance(attr_value, property)
-                if is_property:
-                    getter = attr_value.fget
-                    if (
-                        getter
-                        and hasattr(getter, "__annotations__")
-                        and "return" in getter.__annotations__
-                    ):
-                        annotation = getter.__annotations__["return"]
-                        if isinstance(annotation, str):
-                            is_linked_type = True
-                        elif hasattr(annotation, "__name__"):
-                            annotation = annotation.__name__
-                            is_linked_type = True
-                        else:
-                            annotation = "property"
-                    if getter and getter.__doc__:
-                        docstring = getter.__doc__.strip()
-                else:
-                    if hasattr(attr_value, "__name__"):
-                        annotation = attr_value.__name__
+                field_lines.append(f"   :annotation: {annotation}")
+                # field_lines.append("   :noindex:")
+                # if field in obj._meta.related_objects:
+                #     field_lines.append("   :noindex:")
+            attributes_to_exclude.update(
+                ["MultipleObjectsReturned", "Meta", "DoesNotExist", "pk"]
+            )
+        attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+        attributes = [
+            a
+            for a in attributes
+            if (not a[0].startswith(("__", "_")) and a[0] not in attributes_to_exclude)
+        ]
+        attr_lines = []
+        for attr_name, attr_value in attributes:
+            docstring = ""
+            annotation = ""
+            autoattribute = False
+            is_linked_type = False
+            is_property = isinstance(attr_value, property)
+            if is_property:
+                getter = attr_value.fget
+                if (
+                    getter
+                    and hasattr(getter, "__annotations__")
+                    and "return" in getter.__annotations__
+                ):
+                    annotation = getter.__annotations__["return"]
+                    if isinstance(annotation, str):
+                        is_linked_type = True
+                    elif hasattr(annotation, "__name__"):
+                        annotation = annotation.__name__
                         is_linked_type = True
                     else:
-                        autoattribute = True
-                        annotation = type(attr_value).__name__
-                    docstring = attr_value.__doc__
-                if autoattribute:
-                    lines.append(f".. autoattribute:: {attr_name}")
+                        annotation = "property"
+                if getter and getter.__doc__:
+                    docstring = getter.__doc__.strip()
+            else:
+                if hasattr(attr_value, "__name__"):
+                    annotation = attr_value.__name__
+                    is_linked_type = True
                 else:
-                    lines.append(f".. attribute:: {attr_name}")
-                if is_linked_type:
-                    lines.append(f"   :type: {annotation}")
-                else:
-                    lines.append(f"   :annotation: {annotation}")
-                if docstring and not autoattribute:
-                    lines.append("")
-                    for line in docstring.split("\n"):
-                        lines.append(f"   {line}\n")
-                        break  # only show the first line because for general
-                        # attributes, the full class docstring would be shown
-            print("\n".join(lines))
+                    autoattribute = True
+                    annotation = type(attr_value).__name__
+                docstring = attr_value.__doc__
+            if annotation in {"FeatureManagerArtifact", "FeatureManagerCollection"}:
+                annotation = "FeatureManager"
+            if autoattribute:
+                attr_lines.append(f".. autoattribute:: {attr_name}")
+            else:
+                attr_lines.append(f".. attribute:: {attr_name}")
+            if is_linked_type:
+                attr_lines.append(f"   :type: {annotation}")
+            else:
+                attr_lines.append(f"   :annotation: {annotation}")
+            if docstring and not autoattribute:
+                attr_lines.append("")
+                for line in docstring.split("\n"):
+                    attr_lines.append(f"   {line}\n")
+                    break  # only show the first line because for general
+                    # attributes, the full class docstring would be shown
+        if attr_lines:
+            lines.append("Attributes")
+            lines.append("----------")
+            lines.append("")
+            for line in attr_lines:
+                lines.append(line)
+        for line in field_lines:
+            lines.append(line)
+        print("\n".join(lines))
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
