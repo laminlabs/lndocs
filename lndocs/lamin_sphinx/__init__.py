@@ -378,6 +378,10 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
         if True:
             soupbody = bs(context["body"], "html.parser")
 
+            if soup.ul is None:
+                return ""
+            if soup.ul.li is None:
+                return ""
             target_ul = soup.ul.li.ul
             if target_ul is None:
                 return ""
@@ -501,6 +505,7 @@ def process_docstring(app, what, name, obj, options, lines):
         field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, DjangoORM):
+            field_lines.append("")
             field_lines.append("Fields")
             field_lines.append("------")
             field_lines.append("")
