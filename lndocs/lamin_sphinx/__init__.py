@@ -505,10 +505,11 @@ def process_docstring(app, what, name, obj, options, lines):
         field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, DjangoORM):
-            field_lines.append("")
-            field_lines.append("Fields")
-            field_lines.append("------")
-            field_lines.append("")
+            if obj.__name__ != "Registry":
+                field_lines.append("")
+                field_lines.append("Fields")
+                field_lines.append("------")
+                field_lines.append("")
             fields = obj._meta.get_fields()
             # obj._meta.related_objects, do not include related objects for now
             non_many_to_many_fields = [
