@@ -2,7 +2,6 @@ import inspect
 import os
 from datetime import datetime
 
-import sphinx.ext.autosummary.generate
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
 from sphinx.application import Sphinx
 
@@ -120,11 +119,327 @@ nb_execution_mode = "off"
 
 nitpicky = True  # report broken links
 
+from functools import lru_cache  # noqa
+
+import pydata_sphinx_theme  # noqa
+from bs4 import BeautifulSoup as bs  # noqa
+from pydata_sphinx_theme import (  # noqa
+    _add_collapse_checkboxes,
+    add_inline_math,
+    index_toctree,
+    logger,
+    nodes,
+    urlparse,
+)
+from sphinx.addnodes import toctree as toctree_node  # noqa
+from sphinx.environment.adapters.toctree import TocTree  # noqa
+
 from . import _front_matter  # noqa
 from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
 from ._html_tags import html_lamin_page_context  # noqa
 from ._nitpick_ignore import nitpick_ignore  # noqa
+
+
+# when upgrading beyond pydata-sphinx-theme, note that this function moved to
+# the toctree module
+def add_toctree_functions(app, pagename, templatename, context, doctree):
+    """Add functions so Jinja templates can add toctree objects."""
+
+    @lru_cache(maxsize=None)
+    def generate_header_nav_html(n_links_before_dropdown=5):
+        """
+        Generate top-level links that are meant for the header navigation.
+        We use this function instead of the TocTree-based one used for the
+        sidebar because this one is much faster for generating the links and
+        we don't need the complexity of the full Sphinx TocTree.
+
+        This includes two kinds of links:
+
+        - Links to pages described listed in the root_doc TocTrees
+        - External links defined in theme configuration
+
+        Additionally it will create a dropdown list for several links after
+        a cutoff.
+
+        Parameters
+        ----------
+        n_links_before_dropdown : int (default: 5)
+            The number of links to show before nesting the remaining links in
+            a Dropdown element.
+        """
+
+        try:
+            n_links_before_dropdown = int(n_links_before_dropdown)
+        except Exception:
+            raise ValueError(
+                f"n_links_before_dropdown is not an int: {n_links_before_dropdown}"
+            )
+        toctree = TocTree(app.env)
+
+        # Find the active header navigation item so we decide whether to highlight
+        # Will be empty if there is no active page (root_doc, or genindex etc)
+        active_header_page = toctree.get_toctree_ancestors(pagename)
+        if active_header_page:
+            # The final list item will be the top-most ancestor
+            active_header_page = active_header_page[-1]
+
+        # Find the root document because it lists our top-level toctree pages
+        root = app.env.tocs[app.config.root_doc]
+
+        # Iterate through each toctree node in the root document
+        # Grab the toctree pages and find the relative link + title.
+        links_html = []
+        # TODO: just use "findall" once docutils min version >=0.18.1
+        meth = "findall" if hasattr(root, "findall") else "traverse"
+        for toc in getattr(root, meth)(toctree_node):
+            for title, page in toc.attributes["entries"]:
+                # if the page is using "self" use the correct link
+                page = toc.attributes["parent"] if page == "self" else page
+
+                # If this is the active ancestor page, add a class so we highlight it
+                current = " current active" if page == active_header_page else ""
+
+                # sanitize page title for use in the html output if needed
+                if title is None:
+                    title = ""
+                    for node in app.env.titles[page].children:
+                        if isinstance(node, nodes.math):
+                            title += add_inline_math(node)
+                        else:
+                            title += node.astext()
+
+                # set up the status of the link and the path
+                # if the path is relative then we use the context for the path
+                # resolution and the internal class.
+                # If it's an absolute one then we use the external class and
+                # the complete url.
+                is_absolute = bool(urlparse(page).netloc)
+                link_status = "external" if is_absolute else "internal"
+                link_href = page if is_absolute else context["pathto"](page)
+
+                # create the html output
+                links_html.append(
+                    f"""
+                    <li class="nav-item{current}">
+                      <a class="nav-link nav-{link_status}" href="{link_href}">
+                        {title}
+                      </a>
+                    </li>
+                """
+                )
+
+        # Add external links defined in configuration as sibling list items
+        for external_link in context["theme_external_links"]:
+            links_html.append(
+                f"""
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="{ external_link["url"] }">
+                    { external_link["name"] }
+                  </a>
+                </li>
+                """
+            )
+
+        # The first links will always be visible
+        links_solo = links_html[:n_links_before_dropdown]
+        out = "\n".join(links_solo)
+
+        # Wrap the final few header items in a "more" dropdown
+        links_dropdown = links_html[n_links_before_dropdown:]
+        if links_dropdown:
+            links_dropdown_html = "\n".join(links_dropdown)
+            out += f"""
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    {links_dropdown_html}
+                </div>
+            </div>
+            """  # noqa
+
+        return out
+
+    # TODO: Deprecate after v0.12
+    def generate_nav_html(*args, **kwargs):
+        logger.warning(
+            "`generate_nav_html` is deprecated and will be removed."
+            "Use `generate_toctree_html` instead."
+        )
+        generate_toctree_html(*args, **kwargs)
+
+    # Cache this function because it is expensive to run, and becaues Sphinx
+    # somehow runs this twice in some circumstances in unpredictable ways.
+    @lru_cache(maxsize=None)
+    def generate_toctree_html(kind, startdepth=1, show_nav_level=1, **kwargs):
+        """
+        Return the navigation link structure in HTML. This is similar to Sphinx's
+        own default TocTree generation, but it is modified to generate TocTrees
+        for *second*-level pages and below (not supported by default in Sphinx).
+        This is used for our sidebar, which starts at the second-level page.
+
+        It also modifies the generated TocTree slightly for Bootstrap classes
+        and structure (via BeautifulSoup).
+
+        Arguments are passed to Sphinx "toctree" function (context["toctree"] below).
+
+        ref: https://www.sphinx-doc.org/en/master/templating.html#toctree
+
+        Parameters
+        ----------
+        kind : "sidebar" or "raw"
+            Whether to generate HTML meant for sidebar navigation ("sidebar")
+            or to return the raw BeautifulSoup object ("raw").
+        startdepth : int
+            The level of the toctree at which to start. By default, for
+            the navbar uses the normal toctree (`startdepth=0`), and for
+            the sidebar starts from the second level (`startdepth=1`).
+        show_nav_level : int
+            The level of the navigation bar to toggle as visible on page load.
+            By default, this level is 1, and only top-level pages are shown,
+            with drop-boxes to reveal children. Increasing `show_nav_level`
+            will show child levels as well.
+
+        kwargs: passed to the Sphinx `toctree` template function.
+
+        Returns
+        -------
+        HTML string (if kind == "sidebar") OR
+        BeautifulSoup object (if kind == "raw")
+        """
+        if startdepth == 0:
+            toc_sphinx = context["toctree"](**kwargs)
+        else:
+            # select the "active" subset of the navigation tree for the sidebar
+            toc_sphinx = index_toctree(app, pagename, startdepth, **kwargs)
+
+        soup = bs(toc_sphinx, "html.parser")
+
+        # pair "current" with "active" since that's what we use w/ bootstrap
+        for li in soup("li", {"class": "current"}):
+            li["class"].append("active")
+
+        # Remove sidebar links to sub-headers on the page
+        for li in soup.select("li"):
+            # Remove
+            if li.find("a"):
+                href = li.find("a")["href"]
+                if "#" in href and href != "#":
+                    li.decompose()
+
+        if kind == "sidebar":
+            # Add bootstrap classes for first `ul` items
+            for ul in soup("ul", recursive=False):
+                ul.attrs["class"] = ul.attrs.get("class", []) + ["nav", "bd-sidenav"]
+
+            # Add collapse boxes for parts/captions.
+            # Wraps the TOC part in an extra <ul> to behave like chapters with toggles
+            # show_nav_level: 0 means make parts collapsible.
+            if show_nav_level == 0:
+                partcaptions = soup.find_all("p", attrs={"class": "caption"})
+                if len(partcaptions):
+                    new_soup = bs("<ul class='list-caption'></ul>", "html.parser")
+                    for caption in partcaptions:
+                        # Assume that the next <ul> element is the TOC list
+                        # for this part
+                        for sibling in caption.next_siblings:
+                            if sibling.name == "ul":
+                                toclist = sibling
+                                break
+                        li = soup.new_tag("li", attrs={"class": "toctree-l0"})
+                        li.extend([caption, toclist])
+                        new_soup.ul.append(li)
+                    soup = new_soup
+
+            # Add icons and labels for collapsible nested sections
+            _add_collapse_checkboxes(soup)
+
+            # Open the sidebar navigation to the proper depth
+            for ii in range(int(show_nav_level)):
+                for checkbox in soup.select(
+                    f"li.toctree-l{ii} > input.toctree-checkbox"
+                ):
+                    checkbox.attrs["checked"] = None
+
+        return soup
+
+    @lru_cache(maxsize=None)
+    def generate_toc_html(kind="html"):
+        """Return the within-page TOC links in HTML."""
+
+        if "toc" not in context:
+            return ""
+
+        soup = bs(context["toc"], "html.parser")
+
+        # Add toc-hN + visible classes
+        def add_header_level_recursive(ul, level):
+            if ul is None:
+                return
+            if level <= (context["theme_show_toc_level"] + 1):
+                ul["class"] = ul.get("class", []) + ["visible"]
+            for li in ul("li", recursive=False):
+                li["class"] = li.get("class", []) + [f"toc-h{level}"]
+                add_header_level_recursive(li.find("ul", recursive=False), level + 1)
+
+        add_header_level_recursive(soup.find("ul"), 1)
+
+        # Add in CSS classes for bootstrap
+        for ul in soup("ul"):
+            ul["class"] = ul.get("class", []) + ["nav", "section-nav", "flex-column"]
+
+        for li in soup("li"):
+            li["class"] = li.get("class", []) + ["nav-item", "toc-entry"]
+            if li.find("a"):
+                a = li.find("a")
+                a["class"] = a.get("class", []) + ["nav-link"]
+
+        # If we only have one h1 header, assume it's a title
+        h1_headers = soup.select(".toc-h1")
+        if len(h1_headers) == 1:
+            title = h1_headers[0]
+            # If we have no sub-headers of a title then we won't have a TOC
+            if not title.select(".toc-h2"):
+                out = ""
+            else:
+                out = title.find("ul").prettify()
+        # Else treat the h1 headers as sections
+        else:
+            out = soup.prettify()
+
+        # Return the toctree object
+        if kind == "html":
+            return out
+        else:
+            return soup
+
+    def navbar_align_class():
+        """Return the class that aligns the navbar based on config."""
+        align = context.get("theme_navbar_align", "content")
+        align_options = {
+            "content": ("col-lg-9", "mr-auto"),
+            "left": ("", "mr-auto"),
+            "right": ("", "ml-auto"),
+        }
+        if align not in align_options:
+            raise ValueError(
+                "Theme option navbar_align must be one of"
+                f"{align_options.keys()}, got: {align}"
+            )
+        return align_options[align]
+
+    context["generate_header_nav_html"] = generate_header_nav_html
+    context["generate_toctree_html"] = generate_toctree_html
+    context["generate_toc_html"] = generate_toc_html
+    context["navbar_align_class"] = navbar_align_class
+
+    # TODO: Deprecate after v0.12
+    context["generate_nav_html"] = generate_nav_html
+
+
+pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
 def process_docstring(app, what, name, obj, options, lines):
@@ -244,7 +559,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 lines.append(line)
         for line in field_lines:
             lines.append(line)
-        print("\n".join(lines))
+        # print("\n".join(lines))
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
