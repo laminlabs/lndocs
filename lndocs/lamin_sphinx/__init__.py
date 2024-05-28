@@ -373,6 +373,46 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             return ""
 
         soup = bs(context["toc"], "html.parser")
+        soupbody = bs(context["body"], "html.parser")
+
+        target_ul = soup.ul.li.ul
+        if target_ul is None:
+            return ""
+        for li in target_ul.find_all("li"):
+            li.decompose()
+
+        # Find all h2 elements
+        for h2 in soupbody.find_all("h2"):
+            # Create a new li for the h2 element
+            h2_li = soup.new_tag("li")
+            h2_link = soup.new_tag("a", href=h2.find("a")["href"])
+            h2_link.string = h2.get_text(strip=True).replace("¶", "")
+            h2_li.append(h2_link)
+
+            # Create a nested ul for this h2 section
+            nested_ul = soup.new_tag("ul")
+
+            # Find all headerlink objects within the same section
+            section = h2.find_parent("section")
+            if section:
+                for headerlink in section.find_all("a", class_="headerlink"):
+                    # Skip the h2 headerlink itself
+                    if headerlink == h2.find("a"):
+                        continue
+                    # Create a new li for each headerlink
+                    link_li = soup.new_tag("li")
+                    # Create a new a tag for each headerlink
+                    link = soup.new_tag("a", href=headerlink["href"])
+                    link.string = headerlink["href"].split(".")[-1]
+                    # Add the a tag to the li
+                    link_li.append(link)
+                    # Add the li to the nested ul
+                    nested_ul.append(link_li)
+
+            # Add the nested ul to the h2 li
+            h2_li.append(nested_ul)
+            # Add the h2 li to the root ul
+            target_ul.append(h2_li)
 
         # Add toc-hN + visible classes
         def add_header_level_recursive(ul, level):
