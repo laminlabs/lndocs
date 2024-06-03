@@ -152,7 +152,7 @@ def main():
                 new_path = path.with_name(f"{new_stem}{path.suffix}")
                 path.rename(new_path)
 
-    sluggify_autosummary()
+    # sluggify_autosummary()
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
