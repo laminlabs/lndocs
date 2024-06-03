@@ -635,7 +635,8 @@ def setup(app: Sphinx):
     # fix UPath.open docs
     from upath import UPath
 
-    UPath.open.__doc__ = UPath.open.__doc__.split("Parameters")[0]
+    if UPath.open.__doc__ is not None:
+        UPath.open.__doc__ = UPath.open.__doc__.split("Parameters")[0]
     app.warningiserror = os.getenv("LNDOCS_WARNING_IS_ERROR") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)
