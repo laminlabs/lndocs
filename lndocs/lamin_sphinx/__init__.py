@@ -63,9 +63,10 @@ html_context = {
     "logo": (
         "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
     ),
-    "favicon": "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico",  # noqa
 }
-
+html_favicon = (
+    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico"
+)
 html_static_path = ["../lamin_sphinx/_static"]
 
 # order matters below!
