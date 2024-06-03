@@ -25,15 +25,26 @@ def datetime_valid(s: str):
     return True
 
 
-def strip_db_args(path: Path):
+# this here is difficult to test but I hope it's now safe and doesn't
+# corrupt html files anymore
+def remove_lines_with_db_args(path: Path):
     with open(path) as f:
         content = f.read()
     # now, find the line that contains *db_args and remove it
+    previous_line = ""
+    found_db_args = False
     for line in content.split("\n")[:700]:
-        if "db_args" in line:
+        if (
+            "db_args" in line
+            and line.endswith("</dt>")
+            and previous_line == '<dt class="sig sig-object py">'
+        ):
+            found_db_args = True
             break
-    with open(path, "w") as f:
-        f.write(content.replace(line, ""))
+        previous_line = line
+    if found_db_args:
+        with open(path, "w") as f:
+            f.write(content.replace(previous_line + "\n" + line, ""))
 
 
 def sluggify_autosummary():
@@ -163,7 +174,9 @@ def main():
     # remove db_args from registries documentation
     for package_name in ["lamindb", "bionty", "omop", "lrex", "wetlab"]:
         for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
-            strip_db_args(Path(args.site) / generated.with_suffix(".html").name)
+            remove_lines_with_db_args(
+                Path(args.site) / generated.with_suffix(".html").name
+            )
 
     if not args.show:
         return build_status
