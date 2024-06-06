@@ -609,6 +609,13 @@ html {
   --pst-sidebar-secondary-font-size: var(--pst-sidebar-font-size);
 }
 
+body {
+  /* to customize sphinx-design dropdown like Furo */
+  --sd-fontsize-dropdown: var(--admonition-font-size);
+  --sd-fontsize-dropdown-title: var(--admonition-title-font-size);
+  --sd-fontweight-dropdown-title: 400;
+}
+
 :root {
   --color-gray-100: #f5f6f7;
   --color-gray-900: #1c1e21;
@@ -625,8 +632,4 @@ html {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
-  /* to customize sphinx-design dropdown like Furo */
-  --sd-fontsize-dropdown: var(--admonition-font-size);
-  --sd-fontsize-dropdown-title: var(--admonition-title-font-size);
-  --sd-fontweight-dropdown-title: 500;
 }
