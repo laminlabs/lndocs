@@ -625,4 +625,8 @@ html {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
+  /* to customize sphinx-design dropdown like Furo */
+  --sd-fontsize-dropdown: var(--admonition-font-size);
+  --sd-fontsize-dropdown-title: var(--admonition-title-font-size);
+  --sd-fontweight-dropdown-title: 500;
 }
