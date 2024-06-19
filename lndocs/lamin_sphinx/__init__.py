@@ -600,6 +600,8 @@ def process_docstring(app, what, name, obj, options, lines):
                 docstring = attr_value.__doc__
             if annotation in {"FeatureManagerArtifact", "FeatureManagerCollection"}:
                 annotation = "FeatureManager"
+            if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
+                annotation = "ParamManager"
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             else:
