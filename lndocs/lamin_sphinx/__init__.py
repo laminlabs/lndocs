@@ -506,13 +506,17 @@ def process_docstring(app, what, name, obj, options, lines):
 
     try:
         from django.db import models
+        from lnschema_core.models import Artifact, FeatureManager, ParamManager
 
         DjangoORM = models.Model
+        Artifact.features = FeatureManager("dummy")
+        Artifact.params = ParamManager("dummy")
     except ImportError:
         DjangoORM = int  # a hack
 
     if inspect.isclass(obj):
         field_lines = []
+        provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, DjangoORM):
             if obj.__name__ != "Registry":
@@ -531,14 +535,18 @@ def process_docstring(app, what, name, obj, options, lines):
             for field in non_many_to_many_fields:
                 attributes_to_exclude.add(field.name)
                 attributes_to_exclude.add(f"{field.name}_id")
-                field_lines.append(f".. autoattribute:: {field.name}\n")
                 annotation = f"{type(field).__name__}"
-                # the following doesn't work currently
-                # if isinstance(field, models.ForeignKey):
-                #     to = field.related_model
-                #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                field_lines.append(f"   :annotation: {annotation}")
-                # field_lines.append("   :noindex:")
+                if field.name in {"created_at", "created_by", "updated_at"}:
+                    provenance_field_lines.append(f".. autoattribute:: {field.name}\n")
+                    provenance_field_lines.append(f"   :annotation: {annotation}")
+                else:
+                    field_lines.append(f".. autoattribute:: {field.name}\n")
+                    # the following doesn't work currently
+                    # if isinstance(field, models.ForeignKey):
+                    #     to = field.related_model
+                    #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
+                    field_lines.append(f"   :annotation: {annotation}")
+                    # field_lines.append("   :noindex:")
             for field in many_to_many_fields:
                 attributes_to_exclude.add(field.name)
                 if field.model.__module__.startswith(
@@ -570,7 +578,7 @@ def process_docstring(app, what, name, obj, options, lines):
         for attr_name, attr_value in attributes:
             docstring = ""
             annotation = ""
-            autoattribute = False
+            autoattribute = True
             is_linked_type = False
             is_property = isinstance(attr_value, property)
             if is_property:
@@ -602,20 +610,35 @@ def process_docstring(app, what, name, obj, options, lines):
                 annotation = "FeatureManager"
             if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
                 annotation = "ParamManager"
+            # try:
+            #     import lamindb.core
+
+            #     if hasattr(lamindb.core, annotation):
+            #         linked_annotation = f" :class:`~lamindb.core.{annotation}`"
+            # except ImportError:
+            #     pass
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             else:
+                # don't use this anymore because formatting the docstring
+                # becomes impossible
                 attr_lines.append(f".. attribute:: {attr_name}")
             if is_linked_type:
-                attr_lines.append(f"   :type: {annotation}")
+                pass
+                # this only works with attribute, not with autoattribute
+                # attr_lines.append(f"   :type: {annotation}")
             else:
-                attr_lines.append(f"   :annotation: {annotation}")
+                pass
+                # don't need to add annotation if it's not clickable...
+                # attr_lines.append(f"   :annotation: {annotation}")
             if docstring and not autoattribute:
+                attr_lines.append("")
                 attr_lines.append("")
                 for line in docstring.split("\n"):
                     # I don't get why we have to unindent with the replace below
                     # but that seems to be required
-                    attr_lines.append(line.replace("        ", ""))
+                    attr_lines.append("    " + line.replace("        ", ""))
+                attr_lines.append("")
                 attr_lines.append("")
         if attr_lines:
             lines.append("Attributes")
@@ -623,9 +646,9 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
             for line in attr_lines:
                 lines.append(line)
-            print("\n".join(attr_lines))
-            print("\n".join(field_lines))
         for line in field_lines:
+            lines.append(line)
+        for line in provenance_field_lines:
             lines.append(line)
         # print("\n".join(lines))
         # the following is more complicated than expected, leave this in template for now  # noqa
