@@ -506,11 +506,19 @@ def process_docstring(app, what, name, obj, options, lines):
 
     try:
         from django.db import models
-        from lnschema_core.models import Artifact, FeatureManager, ParamManager
+        from lnschema_core.models import (
+            Artifact,
+            Collection,
+            FeatureManager,
+            ParamManager,
+            Run,
+        )
 
         DjangoORM = models.Model
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
+        Collection.features = FeatureManager("dummy")
+        Run.params = ParamManager("dummy")
     except ImportError:
         DjangoORM = int  # a hack
 
@@ -532,6 +540,7 @@ def process_docstring(app, what, name, obj, options, lines):
             many_to_many_fields = [
                 field for field in fields if not hasattr(field, "verbose_name")
             ]
+            related_objects = obj._meta.related_objects
             for field in non_many_to_many_fields:
                 attributes_to_exclude.add(field.name)
                 attributes_to_exclude.add(f"{field.name}_id")
@@ -565,6 +574,9 @@ def process_docstring(app, what, name, obj, options, lines):
                 # field_lines.append("   :noindex:")
                 # if field in obj._meta.related_objects:
                 #     field_lines.append("   :noindex:")
+            for field in related_objects:
+                attributes_to_exclude.add(field.name + "_set")
+                # field_lines.append(f".. autoattribute:: {field.name}\n")
             attributes_to_exclude.update(
                 ["MultipleObjectsReturned", "Meta", "DoesNotExist", "pk", "objects"]
             )
