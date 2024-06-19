@@ -558,7 +558,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 # if field in obj._meta.related_objects:
                 #     field_lines.append("   :noindex:")
             attributes_to_exclude.update(
-                ["MultipleObjectsReturned", "Meta", "DoesNotExist", "pk"]
+                ["MultipleObjectsReturned", "Meta", "DoesNotExist", "pk", "objects"]
             )
         attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
         attributes = [
@@ -613,15 +613,18 @@ def process_docstring(app, what, name, obj, options, lines):
             if docstring and not autoattribute:
                 attr_lines.append("")
                 for line in docstring.split("\n"):
-                    attr_lines.append(f"   {line}\n")
-                    break  # only show the first line because for general
-                    # attributes, the full class docstring would be shown
+                    # I don't get why we have to unindent with the replace below
+                    # but that seems to be required
+                    attr_lines.append(line.replace("        ", ""))
+                attr_lines.append("")
         if attr_lines:
             lines.append("Attributes")
             lines.append("----------")
             lines.append("")
             for line in attr_lines:
                 lines.append(line)
+            print("\n".join(attr_lines))
+            print("\n".join(field_lines))
         for line in field_lines:
             lines.append(line)
         # print("\n".join(lines))
