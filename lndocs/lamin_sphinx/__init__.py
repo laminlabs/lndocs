@@ -506,13 +506,8 @@ def process_docstring(app, what, name, obj, options, lines):
 
     try:
         from django.db import models
-        from lnschema_core.models import (
-            Artifact,
-            Collection,
-            FeatureManager,
-            ParamManager,
-            Run,
-        )
+        from lamindb.core._feature_manager import FeatureManager, ParamManager
+        from lnschema_core.models import Artifact, Collection, Run
 
         DjangoORM = models.Model
         Artifact.features = FeatureManager("dummy")
