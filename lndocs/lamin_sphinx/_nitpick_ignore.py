@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "fsspec.spec.AbstractFileSystem"),
     ("py:class", "upath._stat.UPathStatResult"),
     ("py:class", "upath._compat.PathlibPathShim"),
     ("py:class", "lamin_validator._anndata_validator.AnnDataValidator"),
