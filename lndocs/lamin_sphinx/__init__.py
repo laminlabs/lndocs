@@ -589,22 +589,8 @@ def process_docstring(app, what, name, obj, options, lines):
             is_linked_type = False
             is_property = isinstance(attr_value, property)
             if is_property:
-                getter = attr_value.fget
-                if (
-                    getter
-                    and hasattr(getter, "__annotations__")
-                    and "return" in getter.__annotations__
-                ):
-                    annotation = getter.__annotations__["return"]
-                    if isinstance(annotation, str):
-                        is_linked_type = True
-                    elif hasattr(annotation, "__name__"):
-                        annotation = annotation.__name__
-                        is_linked_type = True
-                    else:
-                        annotation = "property"
-                if getter and getter.__doc__:
-                    docstring = getter.__doc__.strip()
+                autoproperty = True
+                autoattribute = False
             else:
                 if hasattr(attr_value, "__name__"):
                     annotation = attr_value.__name__
@@ -626,6 +612,8 @@ def process_docstring(app, what, name, obj, options, lines):
             #     pass
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
+            elif autoproperty:
+                attr_lines.append(f".. autoproperty:: {attr_name}")
             else:
                 # don't use this anymore because formatting the docstring
                 # becomes impossible
@@ -657,7 +645,6 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append(line)
         for line in provenance_field_lines:
             lines.append(line)
-        # print("\n".join(lines))
         # the following is more complicated than expected, leave this in template for now  # noqa
         # lines.append(f".. rubric:: Methods")
         # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
