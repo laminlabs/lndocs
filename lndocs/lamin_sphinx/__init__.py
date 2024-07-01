@@ -542,14 +542,14 @@ def process_docstring(app, what, name, obj, options, lines):
                 annotation = f"{type(field).__name__}"
                 if field.name in {"created_at", "created_by", "updated_at"}:
                     provenance_field_lines.append(f".. autoattribute:: {field.name}\n")
-                    provenance_field_lines.append(f"   :annotation: {annotation}")
+                    # provenance_field_lines.append(f"   :annotation: {annotation}")
                 else:
                     field_lines.append(f".. autoattribute:: {field.name}\n")
                     # the following doesn't work currently
                     # if isinstance(field, models.ForeignKey):
                     #     to = field.related_model
                     #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                    field_lines.append(f"   :annotation: {annotation}")
+                    # field_lines.append(f"   :annotation: {annotation}")
                     # field_lines.append("   :noindex:")
             for field in many_to_many_fields:
                 attributes_to_exclude.add(field.name)
@@ -565,7 +565,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 # if isinstance(field, models.ForeignKey):
                 #     to = field.related_model
                 #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                field_lines.append(f"   :annotation: {annotation}")
+                # field_lines.append(f"   :annotation: {annotation}")
                 # field_lines.append("   :noindex:")
                 # if field in obj._meta.related_objects:
                 #     field_lines.append("   :noindex:")
