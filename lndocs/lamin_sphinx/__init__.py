@@ -30,6 +30,7 @@ templates_path = ["../lamin_sphinx/_templates"]
 source_suffix = [".rst", ".md", ".ipynb"]
 exclude_patterns = [
     "includes/*",
+    "changelog/soon/*",
     "README.md",
 ]
 default_role = "literal"
