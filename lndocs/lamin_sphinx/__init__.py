@@ -106,7 +106,7 @@ ogp_image = (
 )
 
 intersphinx_mapping = dict(
-    docs=("https://lamin.ai/docs", None),
+    docs=("https://docs.lamin.ai", None),
 )
 
 # myst_nb options
