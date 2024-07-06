@@ -29,15 +29,7 @@ extensions = [
 templates_path = ["../lamin_sphinx/_templates"]
 source_suffix = [".rst", ".md", ".ipynb"]
 exclude_patterns = [
-    ".nox",
-    "_build",
-    "Thumbs.db",
-    ".DS_Store",
-    "node_modules",
-    "README.md",
-    "**/README.md",
-    "profile",
-    "private",
+    "includes/*",
 ]
 default_role = "literal"
 html_theme = "pydata_sphinx_theme"
