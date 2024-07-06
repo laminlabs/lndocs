@@ -30,6 +30,7 @@ templates_path = ["../lamin_sphinx/_templates"]
 source_suffix = [".rst", ".md", ".ipynb"]
 exclude_patterns = [
     "includes/*",
+    "README.md",
 ]
 default_role = "literal"
 html_theme = "pydata_sphinx_theme"
