@@ -468,13 +468,13 @@ button.copybtn {
 
 /* for custom small role */
 .small {
-  font-size: 45% !important;
+  font-size: min(45%, 0.72rem) !important;
   font-weight: bold;
 }
 
 /* for custom smaller role */
-.smaller {
-  font-size: 70% !important;
+.small {
+  font-size: min(70%, 0.85rem) !important;
   font-weight: bold;
 }
 

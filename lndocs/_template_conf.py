@@ -18,7 +18,7 @@ project = "{{ lamin_project_name }}"
 html_title = "{{ lamin_project_name }} | Lamin"
 html_context["github_repo"] = "{{ lamin_repository_name }}"  # noqa
 
-ogp_site_url = "https://docs.lamin.ai/{{ lamin_project_slug }}"
+ogp_site_url = "https://{{ lamin_project_slug }}.lamin.ai/"
 ogp_site_name = project
 
 html_theme_options["logo"] = {
