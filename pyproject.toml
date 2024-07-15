@@ -12,7 +12,7 @@ dependencies = [
     "dirsync",
     "myst-parser",
     "myst-nb",
-    "sphinx>6,<8",  # html_logo and html_favicon got removed in sphinx 6
+    "sphinx>6,<7.4",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints>=2.1.0",
     "docutils",
