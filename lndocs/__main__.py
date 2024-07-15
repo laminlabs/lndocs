@@ -52,8 +52,12 @@ def sluggify_autosummary():
     import sphinx.ext.autosummary.generate
 
     content = Path(sphinx.ext.autosummary.generate.__file__).read_text()
-    original_line = "file_path = Path(path, filename_map.get(name, name) + suffix)"
-    new_line = "file_path = Path(path, filename_map.get(name, name).lower() + suffix)"
+    original_line = (
+        "filename = os.path.join(path, filename_map.get(name, name) + suffix)"
+    )
+    new_line = (
+        "filename = os.path.join(path, filename_map.get(name, name).lower() + suffix)"
+    )
     if original_line not in content:
         assert new_line in content
     else:
