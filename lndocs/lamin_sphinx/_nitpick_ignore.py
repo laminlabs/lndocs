@@ -72,6 +72,8 @@ nitpick_ignore = [
     ("py:class", "typing.unicode"),
     ("py:class", "typing.BinaryIO"),
     ("py:class", "types.UnionType"),
+    ("py:class", "tiledbsoma.Collection"),
+    ("py:class", "tiledbsoma.Experiment"),
     ("py:data", "typing.Optional"),
     ("py:data", "typing.Literal"),
     ("py:data", "typing.Union"),
