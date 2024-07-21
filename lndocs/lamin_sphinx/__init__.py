@@ -570,7 +570,14 @@ def process_docstring(app, what, name, obj, options, lines):
                 attributes_to_exclude.add(field.name + "_set")
                 # field_lines.append(f".. autoattribute:: {field.name}\n")
             attributes_to_exclude.update(
-                ["MultipleObjectsReturned", "Meta", "DoesNotExist", "pk", "objects"]
+                [
+                    "MultipleObjectsReturned",
+                    "Meta",
+                    "DoesNotExist",
+                    "pk",
+                    "objects",
+                    "backed",
+                ]
             )
         attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
         attributes = [
