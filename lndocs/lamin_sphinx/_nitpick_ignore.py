@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "pydantic_core._pydantic_core.MultiHostUrl"),
     ("py:class", "fsspec.spec.AbstractFileSystem"),
     ("py:class", "upath._stat.UPathStatResult"),
     ("py:class", "upath._compat.PathlibPathShim"),
