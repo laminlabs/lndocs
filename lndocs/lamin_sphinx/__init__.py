@@ -72,6 +72,7 @@ html_sidebars = {
     "impressum": [],
     "products": [],
     "docs": [],
+    "changelog": [],
 }
 
 # Netlify pretty URLs doesn't like if we switch this
