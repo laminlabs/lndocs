@@ -84,4 +84,5 @@ nitpick_ignore = [
     ("py:obj", "typing.BinaryIO"),
     ("py:obj", "bionty.Gene"),
     ("py:obj", "bionty.Species"),
+    ("py:class", "bionty.base._public_ontology.PublicOntologyField"),
 ]
