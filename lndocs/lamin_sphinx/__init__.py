@@ -515,29 +515,57 @@ def process_docstring(app, what, name, obj, options, lines):
         if issubclass(obj, Record):
             registry_info = RegistryInfo(obj)
 
+            field_lines.append("")
+            field_lines.append("Simple fields")
+            field_lines.append("-------------")
+            field_lines.append("")
             for field in registry_info.get_simple_fields():
-                field_lines.append("")
-                field_lines.append("Simple fields")
-                field_lines.append("------")
-                field_lines.append("")
+                attributes_to_exclude.add(field.name)
                 field_lines.append(f".. autoattribute:: {field.name}\n")
 
-            core_relations, external_relations = registry_info.get_relational_fields
-
-            for field in core_relations:
+            core_relations, external_relations = registry_info.get_relational_fields()
+            if core_relations:  # in fact always true
                 field_lines.append("")
                 field_lines.append("Relational fields")
-                field_lines.append("------")
+                field_lines.append("-----------------")
                 field_lines.append("")
+            for field in core_relations:
                 field_lines.append(f".. autoattribute:: {field.name}\n")
 
-            for module_name, module_relations in external_relations.items():
-                for field in module_relations:
-                    field_lines.append("")
-                    field_lines.append(f"{module_name} fields")
-                    field_lines.append("------")
-                    field_lines.append("")
-                    field_lines.append(f".. autoattribute:: {field.name}\n")
+            # clean up
+            fields = obj._meta.get_fields()
+            non_many_to_many_fields = [
+                field for field in fields if hasattr(field, "verbose_name")
+            ]
+            for field in non_many_to_many_fields:
+                attributes_to_exclude.add(field.name)
+                attributes_to_exclude.add(f"{field.name}_id")
+            many_to_many_fields = [
+                field for field in fields if not hasattr(field, "verbose_name")
+            ]
+            for field in many_to_many_fields:
+                attributes_to_exclude.add(field.name)
+            for field in obj._meta.related_objects:
+                attributes_to_exclude.add(field.name + "_set")
+            # figure this out later
+            # for module_name, module_relations in external_relations.items():
+            #     field_lines.append("")
+            #     field_lines.append(f"{module_name.capitalize()} fields")
+            #     field_lines.append(len(f"{module_name} fields") * "-")
+            #     field_lines.append("")
+            #     for field in module_relations:
+            #         field_lines.append(f".. autoattribute:: {field.name}\n")
+
+            attributes_to_exclude.update(
+                [
+                    "MultipleObjectsReturned",
+                    "Meta",
+                    "DoesNotExist",
+                    "pk",
+                    "objects",
+                    "backed",
+                ]
+            )
 
         attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
         attributes = [
