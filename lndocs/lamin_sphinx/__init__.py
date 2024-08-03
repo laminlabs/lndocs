@@ -65,9 +65,9 @@ html_static_path = ["../lamin_sphinx/_static"]
 
 # order matters below!
 # https://stackoverflow.com/questions/45112812/sphinx-exclude-one-page-from-html-sidebars # noqa
-html_sidebars = {
-    "*": ["sidebar-nav-bs"],
-    "**/*": ["sidebar-nav-bs"],
+# update 2024-08-03: https://claude.ai/share/e00e8810-a07f-4558-a11b-2abceee99488
+html_sidebar = ["sidebar-nav-bs"]
+html_sidebars = {  # type: ignore
     "changelog": [],
     "changelog/*": [],
 }
