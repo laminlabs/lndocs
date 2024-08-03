@@ -55,11 +55,11 @@ html_context = {
     "github_user": "laminlabs",
     "github_version": "main",
     "logo": (
-        "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/logo.svg"
+        "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
     ),
 }
 html_favicon = (
-    "https://raw.githubusercontent.com/laminlabs/lamin-profile/main/assets/favicon.ico"
+    "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/favicon.ico"
 )
 html_static_path = ["../lamin_sphinx/_static"]
 
@@ -68,12 +68,8 @@ html_static_path = ["../lamin_sphinx/_static"]
 html_sidebars = {
     "*": ["sidebar-nav-bs"],
     "**/*": ["sidebar-nav-bs"],
-    "index": [],
-    "impressum": [],
-    "products": [],
-    "docs": [],
     "changelog": [],
-    "202*": [],
+    "changelog/*": [],
 }
 
 # Netlify pretty URLs doesn't like if we switch this
