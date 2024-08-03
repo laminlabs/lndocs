@@ -502,71 +502,72 @@ def process_docstring(app, what, name, obj, options, lines):
     try:
         from django.db import models
         from lamindb.core._feature_manager import FeatureManager, ParamManager
-        from lnschema_core.models import Artifact, Collection, Run
+        from lnschema_core.models import (
+            Artifact,
+            Collection,
+            Record,
+            RegistryInfo,
+            Run,
+            Transform,
+            User,
+        )
 
-        DjangoORM = models.Model
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
         Collection.features = FeatureManager("dummy")
         Run.params = ParamManager("dummy")
     except ImportError:
-        DjangoORM = int  # a hack
+        Record = int  # a hack
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
-        if issubclass(obj, DjangoORM):
-            if obj.__name__ != "Registry":
-                field_lines.append("")
-                field_lines.append("Fields")
-                field_lines.append("------")
-                field_lines.append("")
+        if issubclass(obj, Record):
+            registry_info = RegistryInfo(obj)
+            field_lines.append("")
+            field_lines.append("Simple fields")
+            field_lines.append("-------------")
+            field_lines.append("")
+            for field in registry_info.get_simple_fields():
+                attributes_to_exclude.add(field.name)
+                field_lines.append(f".. autoattribute:: {field.name}\n")
+            if obj in {Artifact, Collection, Transform}:
+                (
+                    core_relations,
+                    external_relations,
+                ) = registry_info.get_relational_fields()
+                if core_relations:  # in fact always true
+                    field_lines.append("")
+                    field_lines.append("Relational fields")
+                    field_lines.append("-----------------")
+                    field_lines.append("")
+                for field in core_relations:
+                    field_lines.append(f".. autoattribute:: {field.name}\n")
+            # figure this out later
+            # for module_name, module_relations in external_relations.items():
+            #     field_lines.append("")
+            #     field_lines.append(f"{module_name.capitalize()} fields")
+            #     field_lines.append(len(f"{module_name} fields") * "-")
+            #     field_lines.append("")
+            #     for field in module_relations:
+            #         field_lines.append(f".. autoattribute:: {field.name}\n")
+            # clean up
             fields = obj._meta.get_fields()
-            # obj._meta.related_objects, do not include related objects for now
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
             ]
-            many_to_many_fields = [
-                field for field in fields if not hasattr(field, "verbose_name")
-            ]
-            related_objects = obj._meta.related_objects
             for field in non_many_to_many_fields:
                 attributes_to_exclude.add(field.name)
                 attributes_to_exclude.add(f"{field.name}_id")
-                annotation = f"{type(field).__name__}"
-                if field.name in {"created_at", "created_by", "updated_at"}:
-                    provenance_field_lines.append(f".. autoattribute:: {field.name}\n")
-                    # provenance_field_lines.append(f"   :annotation: {annotation}")
-                else:
-                    field_lines.append(f".. autoattribute:: {field.name}\n")
-                    # the following doesn't work currently
-                    # if isinstance(field, models.ForeignKey):
-                    #     to = field.related_model
-                    #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                    # field_lines.append(f"   :annotation: {annotation}")
-                    # field_lines.append("   :noindex:")
+            many_to_many_fields = [
+                field for field in fields if not hasattr(field, "verbose_name")
+            ]
             for field in many_to_many_fields:
                 attributes_to_exclude.add(field.name)
-                if field.model.__module__.startswith(
-                    "lnschema_bionty"
-                ) or field.related_model.__module__.startswith("lnschema_bionty"):
-                    continue
-                if field in obj._meta.related_objects:
-                    continue
-                field_lines.append(f".. autoattribute:: {field.name}\n")
-                annotation = f"{type(field).__name__}"
-                # the following doesn't work currently
-                # if isinstance(field, models.ForeignKey):
-                #     to = field.related_model
-                #     annotation += f" to :class:`~{to.__module__}.{to.__name__}`"
-                # field_lines.append(f"   :annotation: {annotation}")
-                # field_lines.append("   :noindex:")
-                # if field in obj._meta.related_objects:
-                #     field_lines.append("   :noindex:")
-            for field in related_objects:
+            for field in obj._meta.related_objects:
                 attributes_to_exclude.add(field.name + "_set")
-                # field_lines.append(f".. autoattribute:: {field.name}\n")
+
             attributes_to_exclude.update(
                 [
                     "MultipleObjectsReturned",
@@ -577,6 +578,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     "backed",
                 ]
             )
+
         attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
         attributes = [
             a
