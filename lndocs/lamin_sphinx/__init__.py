@@ -499,7 +499,14 @@ def process_docstring(app, what, name, obj, options, lines):
     try:
         from django.db import models
         from lamindb.core._feature_manager import FeatureManager, ParamManager
-        from lnschema_core.models import Artifact, Collection, Record, RegistryInfo, Run
+        from lnschema_core.models import (
+            Artifact,
+            Collection,
+            Record,
+            RegistryInfo,
+            Run,
+            User,
+        )
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
@@ -514,23 +521,34 @@ def process_docstring(app, what, name, obj, options, lines):
         attributes_to_exclude = set()
         if issubclass(obj, Record):
             registry_info = RegistryInfo(obj)
-
-            field_lines.append("")
-            field_lines.append("Simple fields")
-            field_lines.append("-------------")
-            field_lines.append("")
-            for field in registry_info.get_simple_fields():
-                attributes_to_exclude.add(field.name)
-                field_lines.append(f".. autoattribute:: {field.name}\n")
-
-            core_relations, external_relations = registry_info.get_relational_fields()
-            if core_relations:  # in fact always true
+            if obj is not User:
                 field_lines.append("")
-                field_lines.append("Relational fields")
-                field_lines.append("-----------------")
+                field_lines.append("Simple fields")
+                field_lines.append("-------------")
                 field_lines.append("")
-            for field in core_relations:
-                field_lines.append(f".. autoattribute:: {field.name}\n")
+                for field in registry_info.get_simple_fields():
+                    attributes_to_exclude.add(field.name)
+                    field_lines.append(f".. autoattribute:: {field.name}\n")
+                (
+                    core_relations,
+                    external_relations,
+                ) = registry_info.get_relational_fields()
+                if core_relations:  # in fact always true
+                    field_lines.append("")
+                    field_lines.append("Relational fields")
+                    field_lines.append("-----------------")
+                    field_lines.append("")
+                for field in core_relations:
+                    field_lines.append(f".. autoattribute:: {field.name}\n")
+
+                # figure this out later
+                # for module_name, module_relations in external_relations.items():
+                #     field_lines.append("")
+                #     field_lines.append(f"{module_name.capitalize()} fields")
+                #     field_lines.append(len(f"{module_name} fields") * "-")
+                #     field_lines.append("")
+                #     for field in module_relations:
+                #         field_lines.append(f".. autoattribute:: {field.name}\n")
 
             # clean up
             fields = obj._meta.get_fields()
@@ -547,14 +565,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 attributes_to_exclude.add(field.name)
             for field in obj._meta.related_objects:
                 attributes_to_exclude.add(field.name + "_set")
-            # figure this out later
-            # for module_name, module_relations in external_relations.items():
-            #     field_lines.append("")
-            #     field_lines.append(f"{module_name.capitalize()} fields")
-            #     field_lines.append(len(f"{module_name} fields") * "-")
-            #     field_lines.append("")
-            #     for field in module_relations:
-            #         field_lines.append(f".. autoattribute:: {field.name}\n")
 
             attributes_to_exclude.update(
                 [
