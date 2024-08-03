@@ -505,6 +505,7 @@ def process_docstring(app, what, name, obj, options, lines):
             Record,
             RegistryInfo,
             Run,
+            Transform,
             User,
         )
 
@@ -521,14 +522,14 @@ def process_docstring(app, what, name, obj, options, lines):
         attributes_to_exclude = set()
         if issubclass(obj, Record):
             registry_info = RegistryInfo(obj)
-            if obj is not User:
-                field_lines.append("")
-                field_lines.append("Simple fields")
-                field_lines.append("-------------")
-                field_lines.append("")
-                for field in registry_info.get_simple_fields():
-                    attributes_to_exclude.add(field.name)
-                    field_lines.append(f".. autoattribute:: {field.name}\n")
+            field_lines.append("")
+            field_lines.append("Simple fields")
+            field_lines.append("-------------")
+            field_lines.append("")
+            for field in registry_info.get_simple_fields():
+                attributes_to_exclude.add(field.name)
+                field_lines.append(f".. autoattribute:: {field.name}\n")
+            if obj in {Artifact, Collection, Transform}:
                 (
                     core_relations,
                     external_relations,
@@ -540,16 +541,14 @@ def process_docstring(app, what, name, obj, options, lines):
                     field_lines.append("")
                 for field in core_relations:
                     field_lines.append(f".. autoattribute:: {field.name}\n")
-
-                # figure this out later
-                # for module_name, module_relations in external_relations.items():
-                #     field_lines.append("")
-                #     field_lines.append(f"{module_name.capitalize()} fields")
-                #     field_lines.append(len(f"{module_name} fields") * "-")
-                #     field_lines.append("")
-                #     for field in module_relations:
-                #         field_lines.append(f".. autoattribute:: {field.name}\n")
-
+            # figure this out later
+            # for module_name, module_relations in external_relations.items():
+            #     field_lines.append("")
+            #     field_lines.append(f"{module_name.capitalize()} fields")
+            #     field_lines.append(len(f"{module_name} fields") * "-")
+            #     field_lines.append("")
+            #     for field in module_relations:
+            #         field_lines.append(f".. autoattribute:: {field.name}\n")
             # clean up
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
