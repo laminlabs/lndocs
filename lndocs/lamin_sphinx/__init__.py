@@ -73,6 +73,7 @@ html_sidebars = {
     "products": [],
     "docs": [],
     "changelog": [],
+    "202*": [],
 }
 
 # Netlify pretty URLs doesn't like if we switch this
