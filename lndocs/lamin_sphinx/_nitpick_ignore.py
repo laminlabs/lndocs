@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "django.db.models.base.ModelBase"),
     ("py:class", "TransformType"),
     ("py:class", "ArtifactType"),
     ("py:class", "pydantic_core._pydantic_core.MultiHostUrl"),
