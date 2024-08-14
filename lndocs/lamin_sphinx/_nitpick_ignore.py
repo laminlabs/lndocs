@@ -21,6 +21,7 @@ nitpick_ignore = [
     ("py:class", "UPathStr"),
     ("py:class", "pd.DataFrame"),
     ("py:class", "pandas.core.series.Series"),
+    ("py:class", "pandas.core.indexes.base.Index"),
     ("py:class", "numpy.array"),
     ("py:class", "lnschema_core.mocks.BackedAccessor"),
     ("py:class", "lnschema_core.mocks.AnnDataAccessor"),
