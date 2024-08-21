@@ -116,6 +116,23 @@ h6 code {
   border: 0px;
 }
 
+pre {
+  border: unset;
+}
+
+div.cell div.cell_input,
+div.cell details.above-input > summary {
+  border: unset;
+  border-left-color: unset;
+  border-left-width: unset;
+}
+
+div.cell details.below-input > summary {
+  border: unset;
+  border-left-color: unset;
+  border-left-width: unset;
+}
+
 /* counteract the statement below */
 
 .highlight-default.notranslate {
@@ -454,6 +471,7 @@ details.sd-dropdown summary.sd-card-header {
 details.sd-dropdown summary.sd-card-header,
 details.sd-dropdown summary.sd-card-header + div.sd-summary-content {
   --pst-sd-dropdown-color: seagreen;
+  border-left: unset !important;
 }
 
 /* ---- */
