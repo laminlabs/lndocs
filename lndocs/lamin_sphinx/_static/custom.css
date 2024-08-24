@@ -474,6 +474,11 @@ details.sd-dropdown summary.sd-card-header + div.sd-summary-content {
   border-left: unset !important;
 }
 
+.admonition,
+div.admonition {
+  border-left: unset !important;
+}
+
 /* ---- */
 /* Body */
 /* ---- */
