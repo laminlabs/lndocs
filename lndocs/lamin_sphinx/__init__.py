@@ -88,9 +88,9 @@ autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
-# autodoc_default_options = {
-#     'inherited-members': False,
-# }
+autodoc_default_options = {
+    "inherited-members": True,
+}
 autodoc_mock_imports = ["vitessce", "mudata", "tiledbsoma", "universal-pathlib"]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
