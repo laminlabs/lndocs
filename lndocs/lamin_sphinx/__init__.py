@@ -87,7 +87,7 @@ autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
 autodoc_default_options = {
-    "inherited-members": True,
+    "inherited-members": False,
 }
 autodoc_mock_imports = ["vitessce", "mudata", "tiledbsoma", "universal-pathlib"]
 autodoc_inherit_docstrings = False
@@ -491,6 +491,33 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
+def get_class_methods(cls):
+    class_methods = []
+    for c in cls.__mro__:
+        for name, method in inspect.getmembers(c):
+            if (
+                isinstance(getattr(c, name, None), classmethod)
+                and name not in class_methods
+            ):
+                class_methods.append(name)
+    return class_methods
+
+
+def get_instance_methods(cls):
+    instance_methods = []
+    for c in cls.__mro__:
+        instance_methods.extend(
+            [
+                name
+                for name, method in inspect.getmembers(c)
+                if inspect.isfunction(method)
+                and not isinstance(method, (classmethod, staticmethod))
+                and name not in instance_methods
+            ]
+        )
+    return instance_methods
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
 
@@ -627,20 +654,29 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append(line)
         for line in provenance_field_lines:
             lines.append(line)
-        lines.append("Methods")
-        lines.append("----------")
-        lines.append("")
-        methods = inspect.getmembers(
-            obj, lambda a: not (inspect.isroutine(a) or inspect.isfunction(a))
-        )
+
+        class_methods = get_class_methods(obj)
+        class_methods = [a for a in class_methods if not a.startswith(("__", "_"))]
+        print(class_methods)
+        if class_methods:
+            lines.append("Class methods")
+            lines.append("-------")
+            lines.append("")
+        for meth in class_methods:
+            lines.append(f".. automethod:: {meth}\n")
+        methods = get_instance_methods(obj)
         methods = [
             a
             for a in methods
-            if not (a[0].startswith("__") or a[0].startswith("_"))
-            and a[0] not in attributes_to_exclude
+            if not a.startswith(("__", "_", "get_next", "get_previous"))
         ]
+        print(methods)
+        if methods:
+            lines.append("Methods")
+            lines.append("-------")
+            lines.append("")
         for meth in methods:
-            lines.append(f".. automethod:: {meth[0]}\n")
+            lines.append(f".. automethod:: {meth}\n")
     return lines
 
 
