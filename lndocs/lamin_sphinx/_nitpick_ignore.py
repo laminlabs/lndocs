@@ -1,4 +1,10 @@
 nitpick_ignore = [
+    ("py:class", "pronto.relationship.Relationship"),
+    ("py:class", "pronto.term.Term"),
+    ("py:class", "pronto.synonym.SynonymType"),
+    ("py:class", "pronto.ontology._OntologyRelationships"),
+    ("py:class", "pronto.utils.iter.SizedIterator"),
+    ("py:class", "pronto.ontology._OntologyTerms"),
     ("py:class", "django.db.models.base.ModelBase"),
     ("py:class", "TransformType"),
     ("py:class", "ArtifactType"),
