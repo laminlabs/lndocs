@@ -15,7 +15,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinxcontrib.jquery",
-    # "sphinx.ext.autosectionlabel",  # gives some warnings even with autosectionlabel_prefix_document = True  # noqa
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "sphinx_design",
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
@@ -23,7 +22,6 @@ extensions = [
     "ablog",
     "sphinxext.opengraph",
     "sphinx_copybutton",
-    # "sphinx_toolbox.more_autodoc.overloads",
 ]
 
 templates_path = ["../lamin_sphinx/_templates"]
@@ -88,9 +86,9 @@ autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
-# autodoc_default_options = {
-#     'inherited-members': False,
-# }
+autodoc_default_options = {
+    "inherited-members": False,
+}
 autodoc_mock_imports = ["vitessce", "mudata", "tiledbsoma", "universal-pathlib"]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
@@ -493,6 +491,37 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
+def get_class_methods(cls, excludes):
+    class_methods = []
+    for c in cls.__mro__:
+        if c in excludes:
+            continue
+        for name, _ in inspect.getmembers(c):
+            if (
+                isinstance(inspect.getattr_static(c, name), classmethod)
+                and name not in class_methods
+            ):
+                class_methods.append(name)
+    return class_methods
+
+
+def get_instance_methods(cls, excludes):
+    instance_methods = []
+    for c in cls.__mro__:
+        if c in excludes:
+            continue
+        for name, method in inspect.getmembers(c):
+            if (
+                inspect.isfunction(method)
+                and not isinstance(
+                    inspect.getattr_static(c, name), (classmethod, staticmethod)
+                )
+                and name not in instance_methods
+            ):
+                instance_methods.append(name)
+    return instance_methods
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
 
@@ -502,6 +531,8 @@ def process_docstring(app, what, name, obj, options, lines):
         from lnschema_core.models import (
             Artifact,
             Collection,
+            HasFeatures,
+            HasParams,
             Record,
             RegistryInfo,
             Run,
@@ -532,7 +563,7 @@ def process_docstring(app, what, name, obj, options, lines):
             if obj in {Artifact, Collection, Transform}:
                 (
                     core_relations,
-                    external_relations,
+                    _,
                 ) = registry_info.get_relational_fields()
                 if core_relations:  # in fact always true
                     field_lines.append("")
@@ -541,7 +572,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     field_lines.append("")
                 for field in core_relations:
                     field_lines.append(f".. autoattribute:: {field.name}\n")
-            # figure this out later
+            # external relations don't yet work
             # for module_name, module_relations in external_relations.items():
             #     field_lines.append("")
             #     field_lines.append(f"{module_name.capitalize()} fields")
@@ -587,7 +618,6 @@ def process_docstring(app, what, name, obj, options, lines):
             docstring = ""
             annotation = ""
             autoattribute = True
-            is_linked_type = False
             is_property = isinstance(attr_value, property)
             if is_property:
                 autoproperty = True
@@ -595,7 +625,6 @@ def process_docstring(app, what, name, obj, options, lines):
             else:
                 if hasattr(attr_value, "__name__"):
                     annotation = attr_value.__name__
-                    is_linked_type = True
                 else:
                     autoattribute = True
                     annotation = type(attr_value).__name__
@@ -604,13 +633,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 annotation = "FeatureManager"
             if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
                 annotation = "ParamManager"
-            # try:
-            #     import lamindb.core
-
-            #     if hasattr(lamindb.core, annotation):
-            #         linked_annotation = f" :class:`~lamindb.core.{annotation}`"
-            # except ImportError:
-            #     pass
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             elif autoproperty:
@@ -619,14 +641,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 # don't use this anymore because formatting the docstring
                 # becomes impossible
                 attr_lines.append(f".. attribute:: {attr_name}")
-            if is_linked_type:
-                pass
-                # this only works with attribute, not with autoattribute
-                # attr_lines.append(f"   :type: {annotation}")
-            else:
-                pass
-                # don't need to add annotation if it's not clickable...
-                # attr_lines.append(f"   :annotation: {annotation}")
             if docstring and not autoattribute:
                 attr_lines.append("")
                 attr_lines.append("")
@@ -636,6 +650,8 @@ def process_docstring(app, what, name, obj, options, lines):
                     attr_lines.append("    " + line.replace("        ", ""))
                 attr_lines.append("")
                 attr_lines.append("")
+
+        # print attributes and fields
         if attr_lines:
             lines.append("Attributes")
             lines.append("----------")
@@ -646,12 +662,40 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append(line)
         for line in provenance_field_lines:
             lines.append(line)
-        # the following is more complicated than expected, leave this in template for now  # noqa
-        # lines.append(f".. rubric:: Methods")
-        # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
-        # methods = [a for a in methods if not(a[0].startswith('__') or a[0].startswith('_'))]  # noqa
-        # for meth in methods:
-        #     lines.append(f".. automethod:: {meth[0]}\n")
+        # empty line in any case
+        lines.append("")
+
+        # class methods
+        class_methods = get_class_methods(obj, {HasFeatures, HasParams})
+        class_methods = [
+            a
+            for a in class_methods
+            if not a.startswith(("__", "_", "from_db", "check"))
+        ]
+        if class_methods:
+            lines.append("Class methods")
+            lines.append("-------------")
+            lines.append("")
+        for meth in class_methods:
+            lines.append(f".. automethod:: {meth}\n")
+        if class_methods:
+            lines.append("")
+
+        # instance methods
+        methods = get_instance_methods(obj, {HasFeatures, HasParams})
+        methods = [
+            a
+            for a in methods
+            if not a.startswith(("__", "_", "get_next", "get_previous", "full_clean"))
+        ]
+        if methods:
+            lines.append("Methods")
+            lines.append("-------")
+            lines.append("")
+        for meth in methods:
+            lines.append(f".. automethod:: {meth}\n")
+        if methods:
+            lines.append("")
     return lines
 
 
