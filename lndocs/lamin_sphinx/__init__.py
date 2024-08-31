@@ -15,7 +15,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinxcontrib.jquery",
-    # "sphinx.ext.autosectionlabel",  # gives some warnings even with autosectionlabel_prefix_document = True  # noqa
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "sphinx_design",
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
@@ -23,7 +22,6 @@ extensions = [
     "ablog",
     "sphinxext.opengraph",
     "sphinx_copybutton",
-    # "sphinx_toolbox.more_autodoc.overloads",
 ]
 
 templates_path = ["../lamin_sphinx/_templates"]
@@ -587,7 +585,6 @@ def process_docstring(app, what, name, obj, options, lines):
             docstring = ""
             annotation = ""
             autoattribute = True
-            is_linked_type = False
             is_property = isinstance(attr_value, property)
             if is_property:
                 autoproperty = True
@@ -595,7 +592,6 @@ def process_docstring(app, what, name, obj, options, lines):
             else:
                 if hasattr(attr_value, "__name__"):
                     annotation = attr_value.__name__
-                    is_linked_type = True
                 else:
                     autoattribute = True
                     annotation = type(attr_value).__name__
@@ -604,13 +600,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 annotation = "FeatureManager"
             if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
                 annotation = "ParamManager"
-            # try:
-            #     import lamindb.core
-
-            #     if hasattr(lamindb.core, annotation):
-            #         linked_annotation = f" :class:`~lamindb.core.{annotation}`"
-            # except ImportError:
-            #     pass
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             elif autoproperty:
@@ -619,14 +608,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 # don't use this anymore because formatting the docstring
                 # becomes impossible
                 attr_lines.append(f".. attribute:: {attr_name}")
-            if is_linked_type:
-                pass
-                # this only works with attribute, not with autoattribute
-                # attr_lines.append(f"   :type: {annotation}")
-            else:
-                pass
-                # don't need to add annotation if it's not clickable...
-                # attr_lines.append(f"   :annotation: {annotation}")
             if docstring and not autoattribute:
                 attr_lines.append("")
                 attr_lines.append("")
@@ -646,12 +627,20 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append(line)
         for line in provenance_field_lines:
             lines.append(line)
-        # the following is more complicated than expected, leave this in template for now  # noqa
-        # lines.append(f".. rubric:: Methods")
-        # methods = inspect.getmembers(obj, lambda a:not(inspect.isroutine(a) or inspect.isfunction(a)))  # noqa
-        # methods = [a for a in methods if not(a[0].startswith('__') or a[0].startswith('_'))]  # noqa
-        # for meth in methods:
-        #     lines.append(f".. automethod:: {meth[0]}\n")
+        lines.append("Methods")
+        lines.append("----------")
+        lines.append("")
+        methods = inspect.getmembers(
+            obj, lambda a: not (inspect.isroutine(a) or inspect.isfunction(a))
+        )
+        methods = [
+            a
+            for a in methods
+            if not (a[0].startswith("__") or a[0].startswith("_"))
+            and a[0] not in attributes_to_exclude
+        ]
+        for meth in methods:
+            lines.append(f".. automethod:: {meth[0]}\n")
     return lines
 
 
