@@ -1,4 +1,8 @@
 nitpick_ignore = [
+    ("py:class", "D[k] if k in D, else d.  d defaults to None."),
+    ("py:class", "a set-like object providing a view on D's items"),
+    ("py:class", "a set-like object providing a view on D's keys"),
+    ("py:class", "an object providing a view on D's values"),
     ("py:class", "pronto.relationship.Relationship"),
     ("py:class", "pronto.term.Term"),
     ("py:class", "pronto.synonym.SynonymType"),
