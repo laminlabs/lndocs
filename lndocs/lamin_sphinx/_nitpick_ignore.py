@@ -1,4 +1,6 @@
 nitpick_ignore = [
+    ("py:class", "lnschema_core.models.HasParams"),
+    ("py:class", "lnschema_core.models.HasFeatures"),
     ("py:class", "D[k] if k in D, else d.  d defaults to None."),
     ("py:class", "a set-like object providing a view on D's items"),
     ("py:class", "a set-like object providing a view on D's keys"),
