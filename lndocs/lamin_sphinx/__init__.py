@@ -549,6 +549,8 @@ def process_docstring(app, what, name, obj, options, lines):
         Run.params = ParamManager("dummy")
     except ImportError:
         Record = int  # a hack
+        HasFeatures = int
+        HasParams = int
 
     if inspect.isclass(obj):
         field_lines = []
