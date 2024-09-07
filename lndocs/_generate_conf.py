@@ -20,7 +20,7 @@ def generate_conf(directory):
                 quit()
     else:
         repo_name = Path.cwd().name
-        assert repo_name.suffix == ""  # doesn't have a weird suffix
+        assert "." not in repo_name  # doesn't have a weird suffix
         assert Path(".git/").exists()  # is git repo
         assert repo_name.lower() == repo_name  # is all lower-case
         variables = {}
