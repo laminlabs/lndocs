@@ -2,7 +2,6 @@ from pathlib import Path
 
 import jinja2
 import yaml  # type: ignore
-from laminci._env import get_package_name
 
 
 def generate_conf(directory):
@@ -20,9 +19,12 @@ def generate_conf(directory):
                 print(exc)
                 quit()
     else:
-        package_name = get_package_name()
+        repo_name = Path.cwd().name
+        assert repo_name.suffix == ""  # doesn't have a weird suffix
+        assert Path(".git/").exists()  # is git repo
+        assert repo_name.lower() == repo_name  # is all lower-case
         variables = {}
-        variables["project_name"] = package_name.replace("_", "-")
+        variables["project_name"] = repo_name
 
     # see the cookiecutter.json!
     if "project_slug" not in variables:
