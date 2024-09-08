@@ -1,6 +1,7 @@
 <!-- prettier-ignore -->
 {% set page_toc = generate_toc_html() %}
+
 {%- if page_toc | length >= 1 %}
-<br />
-<nav id="bd-toc-nav page-toc">{{ page_toc }}</nav>
+<div class="tocsection onthispage">{{ _("Table of contents") }}</div>
+<nav id="bd-toc-nav" class="page-toc">{{ page_toc }}</nav>
 {%- endif %}
