@@ -397,6 +397,11 @@ nav {
 /* Sidebar */
 /* ------ */
 
+.bd-sidebar-primary .sidebar-end-items__item,
+.bd-sidebar-primary .sidebar-start-items__item {
+  padding: unset;
+}
+
 /* caption for sidebar bav */
 nav.bd-links p.caption {
   font-weight: medium;
@@ -436,6 +441,7 @@ nav.bd-links p.caption {
 .bd-sidebar-primary {
   overflow-y: auto;
   scrollbar-gutter: stable;
+  padding-top: unset;
 }
 
 /* .bd-sidebar-primary:hover {
@@ -448,7 +454,7 @@ nav.bd-links p.caption {
 }
 
 .bd-sidebar-secondary {
-  padding: 2rem 0rem 1rem 1rem;
+  padding: unset;
   max-width: 16rem;
 }
 
@@ -456,6 +462,11 @@ nav.bd-links p.caption {
 .toc-entry a.nav-link {
   font-size: 0.875rem;
 }
+
+.toc-item {
+  padding-top: unset;
+}
+
 /* --------- */
 /* Dropdowns */
 /* --------- */
@@ -510,6 +521,10 @@ p {
   padding-top: 0rem;
 }
 
+.bd-main .bd-content .bd-article-container {
+  padding-top: unset;
+}
+
 .toc-entry > .nav-link.active {
   font-weight: 400 !important; /* do not have bold entries */
   border-left: unset !important;
@@ -526,7 +541,7 @@ nav.bd-links .active > a {
 }
 
 .bd-content {
-  padding: 1rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
+  padding: 0rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
 }
 
 .bd-toc {
@@ -565,6 +580,10 @@ a {
 .ablog-post-title a {
   color: var(--pst-text-color-base);
   font-size: 2.5rem;
+}
+
+ul.ablog-archive {
+  margin-bottom: unset;
 }
 
 /* ------ */
