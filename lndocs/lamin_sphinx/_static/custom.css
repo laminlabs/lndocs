@@ -399,7 +399,7 @@ nav {
 
 .bd-sidebar-primary .sidebar-end-items__item,
 .bd-sidebar-primary .sidebar-start-items__item {
-  padding: unset;
+  padding-top: 4px;
 }
 
 /* caption for sidebar bav */
