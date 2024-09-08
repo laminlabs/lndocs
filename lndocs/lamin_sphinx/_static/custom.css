@@ -540,6 +540,10 @@ nav.bd-links .active > a {
   color: var(--link-color);
 }
 
+.bd-container {
+  padding-top: 1rem;
+}
+
 .bd-content {
   padding: 0rem 1.5rem 2rem 1.5rem; /* symmetrical center body */
 }
