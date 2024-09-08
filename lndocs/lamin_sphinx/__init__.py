@@ -5,7 +5,7 @@ from datetime import datetime
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
 from sphinx.application import Sphinx
 
-author = "Lamin Labs"
+author = "Lamin Team"
 copyright = f"{datetime.now():%Y}, {author}"
 
 extensions = [
@@ -491,7 +491,9 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
-def get_class_methods(cls, excludes):
+def get_class_methods(cls, excludes=None):
+    if excludes is None:
+        excludes = []
     class_methods = []
     for c in cls.__mro__:
         if c in excludes:
@@ -505,7 +507,9 @@ def get_class_methods(cls, excludes):
     return class_methods
 
 
-def get_instance_methods(cls, excludes):
+def get_instance_methods(cls, excludes=None):
+    if excludes is None:
+        excludes = []
     instance_methods = []
     for c in cls.__mro__:
         if c in excludes:
@@ -531,8 +535,6 @@ def process_docstring(app, what, name, obj, options, lines):
         from lnschema_core.models import (
             Artifact,
             Collection,
-            HasFeatures,
-            HasParams,
             Record,
             RegistryInfo,
             Run,
@@ -546,8 +548,6 @@ def process_docstring(app, what, name, obj, options, lines):
         Run.params = ParamManager("dummy")
     except ImportError:
         Record = int  # a hack
-        HasFeatures = int
-        HasParams = int
 
     if inspect.isclass(obj):
         field_lines = []
@@ -668,7 +668,7 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
 
         # class methods
-        class_methods = get_class_methods(obj, {HasFeatures, HasParams})
+        class_methods = get_class_methods(obj)
         class_methods = [
             a
             for a in class_methods
@@ -684,7 +684,7 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
 
         # instance methods
-        methods = get_instance_methods(obj, {HasFeatures, HasParams})
+        methods = get_instance_methods(obj)
         methods = [
             a
             for a in methods
