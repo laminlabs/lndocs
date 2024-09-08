@@ -464,7 +464,7 @@ nav.bd-links p.caption {
 }
 
 .toc-item {
-  padding-top: unset;
+  padding-top: 4px;
 }
 
 /* --------- */
