@@ -1,5 +1,6 @@
 import inspect
 import os
+import warnings
 from datetime import datetime
 
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
@@ -107,6 +108,7 @@ intersphinx_mapping = dict(
 
 # https://github.com/sphinx-doc/sphinx/issues/7697
 suppress_warnings = ["autosectionlabel.*"]
+warnings.filterwarnings("ignore", "duplicate label .*", UserWarning)
 
 # myst_nb options
 nb_execution_mode = "off"
