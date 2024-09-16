@@ -109,7 +109,7 @@ intersphinx_mapping = dict(
     docs=("https://docs.lamin.ai", None),
 )
 
-# Duplicateed labels
+# https://github.com/sphinx-doc/sphinx/issues/7697
 suppress_warnings = ["autosectionlabel.*"]
 
 # myst_nb options
