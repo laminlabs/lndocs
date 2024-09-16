@@ -109,6 +109,9 @@ intersphinx_mapping = dict(
     docs=("https://docs.lamin.ai", None),
 )
 
+# Duplicateed labels
+suppress_warnings = ["autosectionlabel.*"]
+
 # myst_nb options
 nb_execution_mode = "off"
 
