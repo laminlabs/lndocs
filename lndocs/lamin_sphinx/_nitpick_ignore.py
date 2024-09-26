@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:data", "Ellipsis"),    
     ("py:class", "lnschema_core.models.HasParams"),
     ("py:class", "lnschema_core.models.HasFeatures"),
     ("py:class", "D[k] if k in D, else d.  d defaults to None."),
