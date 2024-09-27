@@ -1,5 +1,5 @@
 nitpick_ignore = [
-    ("py:data", "Ellipsis"),    
+    ("py:data", "Ellipsis"),
     ("py:class", "lnschema_core.models.HasParams"),
     ("py:class", "lnschema_core.models.HasFeatures"),
     ("py:class", "D[k] if k in D, else d.  d defaults to None."),
@@ -91,4 +91,5 @@ nitpick_ignore = [
     ("py:data", "typing.Callable"),
     ("py:obj", "typing.BinaryIO"),
     ("py:class", "bionty.base._public_ontology.PublicOntologyField"),
+    ("py:class", "collections.abc.Iterable"),
 ]
