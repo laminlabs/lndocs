@@ -335,6 +335,13 @@ h6 {
   color: var(--color-emphasis-900);
 }
 
+div.literal-block-wrapper div.code-block-caption {
+  font-size: 87.5%;
+  font-weight: 400;
+  padding: 2px 5px;
+  font-family: var(--pst-font-family-monospace);
+}
+
 /* ------ */
 /* Navbar */
 /* ------ */
