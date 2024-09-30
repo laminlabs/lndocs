@@ -77,6 +77,7 @@ nitpick_ignore = [
     ("py:class", "MetaData"),
     ("py:class", "DictStrAny"),
     ("py:class", "unicode"),
+    ("py:class", "typing.Self"),
     ("py:class", "typing.DictStrAny"),
     ("py:class", "typing.unicode"),
     ("py:class", "typing.BinaryIO"),
