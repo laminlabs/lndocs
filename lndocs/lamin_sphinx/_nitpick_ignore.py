@@ -1,5 +1,5 @@
 nitpick_ignore = [
-    ("py:data", "vitessce.VitessceConfig"),    
+    ("py:class", "vitessce.VitessceConfig"),
     ("py:data", "Ellipsis"),
     ("py:class", "lnschema_core.models.HasParams"),
     ("py:class", "lnschema_core.models.HasFeatures"),
