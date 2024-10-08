@@ -544,7 +544,6 @@ def process_docstring(app, what, name, obj, options, lines):
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
-        Collection.features = FeatureManager("dummy")
         Run.params = ParamManager("dummy")
     except ImportError:
         Record = int  # a hack
