@@ -172,7 +172,16 @@ def main():
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
     # remove db_args from registries documentation
-    for package_name in ["lamindb", "bionty", "omop", "lrex", "wetlab", "findrefs", "ourprojects", "cellregistry"]:
+    for package_name in [
+        "lamindb",
+        "bionty",
+        "omop",
+        "lrex",
+        "wetlab",
+        "findrefs",
+        "ourprojects",
+        "cellregistry",
+    ]:
         for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
             remove_lines_with_db_args(
                 Path(args.site) / generated.with_suffix(".html").name
