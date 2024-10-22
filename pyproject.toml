@@ -8,7 +8,6 @@ authors = [{name = "Lamin Labs", email = "laminlabs@gmail.com"}]
 readme = "README.md"
 dynamic = ["version", "description"]
 dependencies = [
-    "ablog==0.10.25",  # this is only because sometime around 0.10.28 the author ordering on summary pages changed
     "dirsync",
     "myst-parser",
     "myst-nb",
@@ -31,9 +30,10 @@ Home = "https://github.com/laminlabs/lndocs"
 dev = [
     "pre-commit",
     "nox",
-]
-test = [
     "pytest>=6.0",
+]
+blog = [
+    "ablog==0.10.25",  # this is only because sometime around 0.10.28 the author ordering on summary pages changed
 ]
 
 [project.scripts]
