@@ -19,10 +19,17 @@ extensions = [
     "sphinx_design",
     "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
     "myst_nb",
-    "ablog",
     "sphinxext.opengraph",
     "sphinx_copybutton",
 ]
+
+try:
+    import ablog
+
+    extensions.append("ablog")
+except ImportError:
+    pass
+
 
 templates_path = ["../lamin_sphinx/_templates"]
 source_suffix = [".rst", ".md", ".ipynb"]
