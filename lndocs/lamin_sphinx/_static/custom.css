@@ -166,6 +166,27 @@ span.highlighted {
   background-color: unset;
 }
 
+/* ---- */
+/* Tabs */
+/* ---- */
+
+/* via the myst tabs feature, **not** sphinx-tabs: https://github.com/laminlabs/lamin-docs/pull/175 */
+
+.sd-tab-set {
+  margin-top: 0em !important;
+}
+
+.sd-tab-content {
+  box-shadow: 0 -0.0625rem var(--sd-color-tabs-underline), 0 0 !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.sd-tab-set > label {
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  padding-top: 0 !important;
+}
+
 /* ------ */
 /* Tables */
 /* ------ */
