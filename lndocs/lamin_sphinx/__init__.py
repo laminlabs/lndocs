@@ -21,6 +21,7 @@ extensions = [
     "myst_nb",
     "sphinxext.opengraph",
     "sphinx_copybutton",
+    "sphinx_tabs.tabs",
 ]
 
 try:

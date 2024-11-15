@@ -21,6 +21,7 @@ dependencies = [
     "sphinx-design>=0.6.0",  # dropdowns etc.
     "sphinxcontrib-jquery",
     "sphinx-copybutton",
+    "sphinx-tabs",
 ]
 
 [project.urls]
