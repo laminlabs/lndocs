@@ -63,6 +63,7 @@ nitpick_ignore = [
     ("py:class", "mudata._core.mudata.MuData"),
     ("py:class", "bionty_base._public_ontology.PublicOntology"),
     ("py:class", "bionty_base._public_ontology.PublicOntologyField"),
+    ('py:class', 'bionty.base.entities._gene.MappingResult'),
     ("py:class", "pronto.ontology.Ontology"),
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "sqlmodel.orm.session.Session"),
