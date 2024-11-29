@@ -1,6 +1,7 @@
 nitpick_ignore = [
     ("py:class", "vitessce.VitessceConfig"),
     ("py:data", "Ellipsis"),
+    ("py:data", "lamindb._query_set.T"),
     ("py:class", "lamindb_setup.core._settings.SetupPaths"),
     ("py:class", "lnschema_core.models.HasParams"),
     ("py:class", "lnschema_core.models.HasFeatures"),
@@ -64,7 +65,7 @@ nitpick_ignore = [
     ("py:class", "mudata._core.mudata.MuData"),
     ("py:class", "bionty_base._public_ontology.PublicOntology"),
     ("py:class", "bionty_base._public_ontology.PublicOntologyField"),
-    ('py:class', 'bionty.base.entities._gene.MappingResult'),
+    ("py:class", "bionty.base.entities._gene.MappingResult"),
     ("py:class", "pronto.ontology.Ontology"),
     ("py:class", "pandas.core.frame.DataFrame"),
     ("py:class", "sqlmodel.orm.session.Session"),
