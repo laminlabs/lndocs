@@ -1,7 +1,7 @@
 nitpick_ignore = [
     ("py:class", "vitessce.VitessceConfig"),
     ("py:data", "Ellipsis"),
-    ("py:data", "lamindb._query_set.T"),
+    ("py:obj", "lamindb._query_set.T"),
     ("py:class", "lamindb_setup.core._settings.SetupPaths"),
     ("py:class", "lnschema_core.models.HasParams"),
     ("py:class", "lnschema_core.models.HasFeatures"),
