@@ -114,6 +114,8 @@ intersphinx_mapping = dict(
 
 # myst_nb options
 nb_execution_mode = "off"
+nb_render_text_lexer = "myst-ansi"
+
 
 nitpicky = True  # report broken links
 
@@ -715,6 +717,7 @@ def setup(app: Sphinx):
             UPath.open.__doc__ = UPath.open.__doc__.split("Parameters")[0]
     except ImportError:
         pass
+
     app.warningiserror = os.getenv("LNDOCS_WARNING_IS_ERROR") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)

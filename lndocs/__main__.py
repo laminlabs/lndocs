@@ -76,6 +76,30 @@ def sluggify_autosummary():
         )
 
 
+ORIG_ANSI = """\
+                        elif value == 49:
+                            self.bg_color = None"""
+
+NEW_ANSI = '''\
+                        elif value == 49:
+                            self.bg_color = None
+                        elif value == 92:  # Special case for bright green
+                            self.fg_color = "Green"
+                        elif value == 94:  # Special case for bright blue
+                            self.fg_color = "Blue"'''
+
+
+def additional_ansi_colors():
+    import myst_nb.core.lexers
+
+    content = Path(myst_nb.core.lexers.__file__).read_text()
+    if NEW_ANSI not in content:
+        assert ORIG_ANSI in content
+        Path(myst_nb.core.lexers.__file__).write_text(
+            content.replace(ORIG_ANSI, NEW_ANSI)
+        )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin website.")
     aa = parser.add_argument
@@ -164,6 +188,7 @@ def main():
                 path.rename(new_path)
 
     sluggify_autosummary()
+    additional_ansi_colors()
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
