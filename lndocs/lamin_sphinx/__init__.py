@@ -114,6 +114,8 @@ intersphinx_mapping = dict(
 
 # myst_nb options
 nb_execution_mode = "off"
+nb_render_text_lexer = "myst-ansi"
+
 
 nitpicky = True  # report broken links
 
@@ -132,6 +134,7 @@ from pydata_sphinx_theme import (  # noqa
 from sphinx.addnodes import toctree as toctree_node  # noqa
 from sphinx.environment.adapters.toctree import TocTree  # noqa
 
+from . import _ansi_lexer  # noqa
 from . import _front_matter  # noqa
 from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
