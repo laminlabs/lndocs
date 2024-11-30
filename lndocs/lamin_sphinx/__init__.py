@@ -134,7 +134,6 @@ from pydata_sphinx_theme import (  # noqa
 from sphinx.addnodes import toctree as toctree_node  # noqa
 from sphinx.environment.adapters.toctree import TocTree  # noqa
 
-from . import _ansi_lexer  # noqa
 from . import _front_matter  # noqa
 from ._cite_commands import register_cite  # noqa
 from ._footnote_title import visit_footnote_reference  # noqa
@@ -718,6 +717,7 @@ def setup(app: Sphinx):
             UPath.open.__doc__ = UPath.open.__doc__.split("Parameters")[0]
     except ImportError:
         pass
+
     app.warningiserror = os.getenv("LNDOCS_WARNING_IS_ERROR") is not None
     app.add_css_file("custom.css")
     app.connect("html-page-context", html_lamin_page_context)
