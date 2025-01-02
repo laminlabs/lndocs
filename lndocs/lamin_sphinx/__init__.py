@@ -541,7 +541,7 @@ def process_docstring(app, what, name, obj, options, lines):
     try:
         from django.db import models
         from lamindb.core._feature_manager import FeatureManager, ParamManager
-        from lnschema_core.models import (
+        from lamindb.models import (
             Artifact,
             Collection,
             Record,
