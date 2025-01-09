@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "ArtifactKind"),
     ("py:class", "Source"),
     ("py:class", "vitessce.VitessceConfig"),
     ("py:data", "Ellipsis"),
