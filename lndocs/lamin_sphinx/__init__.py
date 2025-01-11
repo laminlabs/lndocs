@@ -708,6 +708,12 @@ def process_docstring(app, what, name, obj, options, lines):
     return lines
 
 
+def skip_deprecated(app, what, name, obj, skip, options):
+    if hasattr(obj, "__deprecated"):
+        return True
+    return skip
+
+
 def setup(app: Sphinx):
     try:
         # fix UPath.open docs
@@ -723,3 +729,4 @@ def setup(app: Sphinx):
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
+    app.connect("autodoc-skip-member", skip_deprecated)
