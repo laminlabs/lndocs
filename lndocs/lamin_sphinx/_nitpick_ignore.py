@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "lamindb.models.Space"),
     ("py:class", "ArtifactKind"),
     ("py:class", "Source"),
     ("py:class", "vitessce.VitessceConfig"),
