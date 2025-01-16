@@ -1,4 +1,8 @@
 nitpick_ignore = [
+    ("py:class", "lamindb.Schema"),
+    ("py:meth", "lamindb.Schema.from_values"),
+    ("py:meth", "lamindb.Schema.from_df"),
+    ("py:meth", "lamindb.Schema.from_values"),
     ("py:class", "lamindb.models.Space"),
     ("py:class", "ArtifactKind"),
     ("py:class", "Source"),
