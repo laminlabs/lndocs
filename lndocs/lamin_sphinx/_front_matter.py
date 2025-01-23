@@ -2,7 +2,7 @@
 # this renders the front matter
 
 import yaml  # type: ignore
-from myst_parser.mdit_to_docutils.base import (  # noqa
+from myst_parser.mdit_to_docutils.base import (
     DocutilsRenderer,
     SyntaxTreeNode,
     token_line,
@@ -10,7 +10,7 @@ from myst_parser.mdit_to_docutils.base import (  # noqa
 
 
 # from myst_parser 0.18.0
-# https://github.com/executablebooks/MyST-Parser/blob/391a8cd1097db16f122ce4736e8924ecfb23e621/myst_parser/mdit_to_docutils/base.py#L792-L831  # noqa
+# https://github.com/executablebooks/MyST-Parser/blob/391a8cd1097db16f122ce4736e8924ecfb23e621/myst_parser/mdit_to_docutils/base.py#L792-L831
 def render_front_matter(self, token: SyntaxTreeNode) -> None:
     """Pass document front matter data."""
     position = token_line(token, default=0)
@@ -79,12 +79,12 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     if data.get("doi"):
         if html != "" and not html.endswith(" · "):
             html += " · "
-        html += f'<a href=https://doi.org/{data["doi"]}>DOI</a>'
+        html += f"<a href=https://doi.org/{data['doi']}>DOI</a>"
     float_right = ""
     if data.get("date"):
         float_right = f"<li> ⸻ {format_date()}</li>"
     if html != "":
-        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
+        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""
         self.nested_render_text(f"{html}", 0)
 
     if data.get("title") and self.md_config.title_to_header:
@@ -111,7 +111,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
 
     if data.get("author"):
         html = f"{format_authors()}"
-        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""  # noqa
+        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li></ul>"""
         self.nested_render_text(f"{html}", 0)
 
 

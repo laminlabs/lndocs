@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import urljoin
 
 import docutils.nodes as nodes  # type: ignore
@@ -10,7 +10,7 @@ from sphinxext.opengraph import make_tag  # see below for implementation
 #     return f'<meta property="{property}" content="{content}" />'
 
 
-def fix_og_url(context: Dict[str, Any], config: Dict[str, Any]):
+def fix_og_url(context: dict[str, Any], config: dict[str, Any]):
     old_url = urljoin(
         config["ogp_site_url"], context["pagename"] + context["file_suffix"]
     )
@@ -22,7 +22,7 @@ def fix_og_url(context: Dict[str, Any], config: Dict[str, Any]):
     )
 
 
-def fix_og_type(context: Dict[str, Any], config: Dict[str, Any]):
+def fix_og_type(context: dict[str, Any], config: dict[str, Any]):
     context["metatags"] = context["metatags"].replace(
         make_tag("og:type", "website"), make_tag("og:type", "article")
     )
@@ -41,9 +41,9 @@ def add_authors(context, fields):
 
 def add_scholar_tags(
     app: Sphinx,
-    context: Dict[str, Any],
+    context: dict[str, Any],
     doctree: nodes.document,
-    config: Dict[str, Any],
+    config: dict[str, Any],
 ) -> None:
     # Get field lists for per-page overrides
     fields = context["meta"]
@@ -52,9 +52,9 @@ def add_scholar_tags(
     tags = {}
 
     fix_og_url(context, config)
-    tags[
-        "twitter:image"
-    ] = "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
+    tags["twitter:image"] = (
+        "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
+    )
 
     # add citation tags and overwrite ogp tags
     if "doi" in fields:
@@ -79,7 +79,7 @@ def html_lamin_page_context(
     app: Sphinx,
     pagename: str,
     templatename: str,
-    context: Dict[str, Any],
+    context: dict[str, Any],
     doctree: nodes.document,
 ) -> None:
     if doctree:

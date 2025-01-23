@@ -123,7 +123,7 @@ def main():
     if args.clean:
         paths_to_delete = ["lamin_sphinx", "_docs_tmp"]
         for path in paths_to_delete:
-            path = Path(f"{os.getcwd()}/{path}")
+            path = Path(f"{Path.getcwd()}/{path}")
             print(f"Removing directory: {path}")
             import shutil
 

@@ -1,41 +1,39 @@
+fail_fast: false
+default_language_version:
+  python: python3
+default_stages:
+  - pre-commit
+  - pre-push
+minimum_pre_commit_version: 2.12.0
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-  - repo: https://github.com/psf/black
-    rev: 22.6.0
-    hooks:
-      - id: black-jupyter
-        exclude: |
-          (?x)(
-              lndocs/_template_conf.py
-          )
-  - repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-black==0.3.3
-          - flake8-typing-imports==1.10.0
-        language_version: python3
-        args:
-          - --max-line-length=88
-          - --ignore=E203,W503,BLK100
-        exclude: |
-          (?x)(
-              lndocs/_template_conf.py
-          )
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.2
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         exclude: |
           (?x)(
               LICENSE.md
+          )
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.2
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix, --unsafe-fixes]
+        exclude: |
+          (?x)(
+              lndocs/_template_conf.py
+          )
+      - id: ruff-format
+        exclude: |
+          (?x)(
+              lndocs/_template_conf.py
           )
   - repo: https://github.com/kynan/nbstripout
     rev: 0.3.9
@@ -45,18 +43,8 @@ repos:
           (?x)(
               docs/tasks/
           )
-  - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.9
-    hooks:
-      - id: forbid-crlf
-      - id: remove-crlf
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.8.0
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.940
+    rev: v1.14.1
     hooks:
       - id: mypy
         exclude: |

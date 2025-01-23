@@ -2,7 +2,7 @@ import inspect
 import os
 from datetime import datetime
 
-from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
+from docutils.writers._html_base import HTMLTranslator  # type: ignore
 from sphinx.application import Sphinx
 
 author = "Lamin Team"
@@ -17,7 +17,7 @@ extensions = [
     "sphinxcontrib.jquery",
     "sphinx_autodoc_typehints",  # needs to be after napoleon
     "sphinx_design",
-    "IPython.sphinxext.ipython_console_highlighting",  # noqa https://github.com/spatialaudio/nbsphinx/issues/24
+    "IPython.sphinxext.ipython_console_highlighting",
     "myst_nb",
     "sphinxext.opengraph",
     "sphinx_copybutton",
@@ -69,7 +69,7 @@ html_favicon = (
 html_static_path = ["../lamin_sphinx/_static"]
 
 # order matters below!
-# https://stackoverflow.com/questions/45112812/sphinx-exclude-one-page-from-html-sidebars # noqa
+# https://stackoverflow.com/questions/45112812/sphinx-exclude-one-page-from-html-sidebars
 # update 2024-08-03: https://claude.ai/share/e00e8810-a07f-4558-a11b-2abceee99488
 html_sidebar = ["sidebar-nav-bs"]
 html_sidebars = {  # type: ignore
@@ -108,9 +108,9 @@ ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
-intersphinx_mapping = dict(
-    docs=("https://docs.lamin.ai", None),
-)
+intersphinx_mapping = {
+    "docs": ("https://docs.lamin.ai", None),
+}
 
 # myst_nb options
 nb_execution_mode = "off"
@@ -119,11 +119,11 @@ nb_render_text_lexer = "myst-ansi"
 
 nitpicky = True  # report broken links
 
-from functools import lru_cache  # noqa
+from functools import lru_cache, cache  # noqa
 
-import pydata_sphinx_theme  # noqa
-from bs4 import BeautifulSoup as bs  # noqa
-from pydata_sphinx_theme import (  # noqa
+import pydata_sphinx_theme
+from bs4 import BeautifulSoup as bs
+from pydata_sphinx_theme import (
     _add_collapse_checkboxes,
     add_inline_math,
     index_toctree,
@@ -131,14 +131,14 @@ from pydata_sphinx_theme import (  # noqa
     nodes,
     urlparse,
 )
-from sphinx.addnodes import toctree as toctree_node  # noqa
-from sphinx.environment.adapters.toctree import TocTree  # noqa
+from sphinx.addnodes import toctree as toctree_node
+from sphinx.environment.adapters.toctree import TocTree
 
-from . import _front_matter  # noqa
-from ._cite_commands import register_cite  # noqa
-from ._footnote_title import visit_footnote_reference  # noqa
-from ._html_tags import html_lamin_page_context  # noqa
-from ._nitpick_ignore import nitpick_ignore  # noqa
+from . import _front_matter
+from ._cite_commands import register_cite
+from ._footnote_title import visit_footnote_reference
+from ._html_tags import html_lamin_page_context
+from ._nitpick_ignore import nitpick_ignore
 
 
 # when upgrading beyond pydata-sphinx-theme, note that this function moved to
@@ -146,10 +146,10 @@ from ._nitpick_ignore import nitpick_ignore  # noqa
 def add_toctree_functions(app, pagename, templatename, context, doctree):
     """Add functions so Jinja templates can add toctree objects."""
 
-    @lru_cache(maxsize=None)
+    @cache
     def generate_header_nav_html(n_links_before_dropdown=5):
-        """
-        Generate top-level links that are meant for the header navigation.
+        """Generate top-level links that are meant for the header navigation.
+
         We use this function instead of the TocTree-based one used for the
         sidebar because this one is much faster for generating the links and
         we don't need the complexity of the full Sphinx TocTree.
@@ -168,13 +168,12 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             The number of links to show before nesting the remaining links in
             a Dropdown element.
         """
-
         try:
             n_links_before_dropdown = int(n_links_before_dropdown)
         except Exception:
             raise ValueError(
                 f"n_links_before_dropdown is not an int: {n_links_before_dropdown}"
-            )
+            ) from None
         toctree = TocTree(app.env)
 
         # Find the active header navigation item so we decide whether to highlight
@@ -234,8 +233,8 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             links_html.append(
                 f"""
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="{ external_link["url"] }">
-                    { external_link["name"] }
+                  <a class="nav-link nav-external" href="{external_link["url"]}">
+                    {external_link["name"]}
                   </a>
                 </li>
                 """
@@ -258,7 +257,7 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
                     {links_dropdown_html}
                 </div>
             </div>
-            """  # noqa
+            """
 
         return out
 
@@ -272,11 +271,11 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 
     # Cache this function because it is expensive to run, and becaues Sphinx
     # somehow runs this twice in some circumstances in unpredictable ways.
-    @lru_cache(maxsize=None)
+    @cache
     def generate_toctree_html(kind, startdepth=1, show_nav_level=1, **kwargs):
-        """
-        Return the navigation link structure in HTML. This is similar to Sphinx's
-        own default TocTree generation, but it is modified to generate TocTrees
+        """Return the navigation link structure in HTML.
+
+        This is similar to Sphinx's own default TocTree generation, but it is modified to generate TocTrees
         for *second*-level pages and below (not supported by default in Sphinx).
         This is used for our sidebar, which starts at the second-level page.
 
@@ -304,7 +303,7 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 
         kwargs: passed to the Sphinx `toctree` template function.
 
-        Returns
+        Returns:
         -------
         HTML string (if kind == "sidebar") OR
         BeautifulSoup object (if kind == "raw")
@@ -365,10 +364,9 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 
         return soup
 
-    @lru_cache(maxsize=None)
+    @cache
     def generate_toc_html(kind="html"):
         """Return the within-page TOC links in HTML."""
-
         if "toc" not in context:
             return ""
 
