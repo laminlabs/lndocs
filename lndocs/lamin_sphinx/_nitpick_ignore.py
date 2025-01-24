@@ -1,4 +1,6 @@
 nitpick_ignore = [
+    ("py:class", "hard unique constraint"),
+    ("py:class", "feature"),
     ("py:class", "Name"),
     ("py:class", "lamindb.Schema"),
     ("py:meth", "lamindb.Schema.from_values"),
