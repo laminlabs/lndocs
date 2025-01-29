@@ -631,6 +631,8 @@ def process_docstring(app, what, name, obj, options, lines):
             if is_property:
                 autoproperty = True
                 autoattribute = False
+                if hasattr(attr_value.fget, "__deprecated"):
+                    continue
             else:
                 if hasattr(attr_value, "__name__"):
                     annotation = attr_value.__name__
@@ -709,9 +711,7 @@ def process_docstring(app, what, name, obj, options, lines):
 
 
 def skip_deprecated(app, what, name, obj, skip, options):
-    if hasattr(obj, "__deprecated"):
-        return True
-    return skip
+    return hasattr(obj, "__deprecated") or skip
 
 
 def setup(app: Sphinx):
