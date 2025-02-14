@@ -547,6 +547,7 @@ def process_docstring(app, what, name, obj, options, lines):
             Record,
             RegistryInfo,
             Run,
+            Schema,
             Transform,
             User,
         )
@@ -580,6 +581,11 @@ def process_docstring(app, what, name, obj, options, lines):
                 field_lines.append("-----------------")
                 field_lines.append("")
             for field in core_relations:
+                if obj is Schema and field.name in {
+                    "validated_by",
+                    "validated_schemas",
+                }:
+                    continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             # external relations don't work & maybe we don't need them in the docs
             # for module_name, module_relations in external_relations.items():
