@@ -584,6 +584,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 if obj is Schema and field.name in {
                     "validated_by",
                     "validated_schemas",
+                    "composite",
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
