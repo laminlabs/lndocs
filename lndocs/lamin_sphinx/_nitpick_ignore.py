@@ -112,5 +112,6 @@ nitpick_ignore = [
     ("py:obj", "typing.BinaryIO"),
     ("py:class", "bionty.base._public_ontology.PublicOntologyField"),
     ("py:class", "collections.abc.Iterable"),
+    ("py:class", "collections.abc.Mapping"),
     ("py:class", "pyarrow._dataset.Dataset"),
 ]
