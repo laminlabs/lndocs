@@ -540,7 +540,6 @@ def process_docstring(app, what, name, obj, options, lines):
 
     try:
         from django.db import models
-        from lamimdb.models.run import ParamManager
         from lamindb.models import (
             Artifact,
             Collection,
@@ -552,14 +551,14 @@ def process_docstring(app, what, name, obj, options, lines):
         )
         from lamindb.models._feature_manager import FeatureManager
         from lamindb.models.record import RecordInfo
+        from lamindb.models.run import ParamManager
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
         Run.params = ParamManager("dummy")
-    except ImportError:
+    except ImportError as err:
         Record = int
-        print("quitting")
-        quit()
+        print("WARNING: DID NOT IMPORT LAMINDB", err)
 
     if inspect.isclass(obj):
         field_lines = []
