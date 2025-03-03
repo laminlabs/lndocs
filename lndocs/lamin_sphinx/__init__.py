@@ -535,35 +535,136 @@ def get_instance_methods(cls, excludes=None):
     return instance_methods
 
 
+def attach_func_to_class_method(func_name, cls, globals):
+    implementation = globals[func_name]
+    target = getattr(cls, func_name)
+    # assigning the original class definition docstring
+    # to the implementation only has an effect for regular methods
+    # not for class methods
+    # this is why we need @doc_args for class methods
+    implementation.__doc__ = target.__doc__
+    setattr(cls, func_name, implementation)
+
+
+from typing import NamedTuple  # noqa
+
+import pandas as pd  # noqa
+from lamindb.base import doc_args  # noqa
+from lamindb.base.types import StrField  # noqa
+from lamindb.models import QuerySet, Record  # noqa
+
+
+@classmethod  # type:ignore
+@doc_args(Record.filter.__doc__)
+def filter(cls, *queries, **expressions) -> QuerySet:
+    """{}"""  # noqa: D415
+    pass
+
+
+@classmethod  # type:ignore
+@doc_args(Record.get.__doc__)
+def get(
+    cls,
+    idlike: int | str | None = None,
+    **expressions,
+) -> Record:
+    """{}"""  # noqa: D415
+    pass
+
+
+@classmethod  # type:ignore
+@doc_args(Record.df.__doc__)
+def df(
+    cls,
+    include: str | list[str] | None = None,
+    features: bool | list[str] = False,
+    limit: int = 100,
+) -> pd.DataFrame:
+    """{}"""  # noqa: D415
+    pass
+
+
+@classmethod  # type: ignore
+@doc_args(Record.search.__doc__)
+def search(
+    cls,
+    string: str,
+    *,
+    field: StrField | None = None,
+    limit: int | None = 20,
+    case_sensitive: bool = False,
+) -> QuerySet:
+    """{}"""  # noqa: D415
+    pass
+
+
+@classmethod  # type: ignore
+@doc_args(Record.lookup.__doc__)
+def lookup(
+    cls,
+    field: StrField | None = None,
+    return_field: StrField | None = None,
+) -> NamedTuple:
+    """{}"""  # noqa: D415
+    pass
+
+
+@classmethod  # type: ignore
+@doc_args(Record.using.__doc__)
+def using(
+    cls,
+    instance: str | None,
+) -> QuerySet:
+    """{}"""  # noqa: D415
+    pass
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
 
     try:
         from django.db import models
-        from lamindb.core._feature_manager import FeatureManager, ParamManager
         from lamindb.models import (
             Artifact,
+            BasicRecord,
             Collection,
             Record,
-            RegistryInfo,
+            Registry,
             Run,
             Schema,
             Transform,
             User,
         )
+        from lamindb.models._feature_manager import FeatureManager
+        from lamindb.models.record import RecordInfo
+        from lamindb.models.run import ParamManager
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
         Run.params = ParamManager("dummy")
-    except ImportError:
-        Record = int  # a hack
+
+        METHOD_NAMES = [
+            "filter",
+            "get",
+            "df",
+            "search",
+            "lookup",
+            "using",
+        ]
+
+        for name in METHOD_NAMES:
+            attach_func_to_class_method(name, BasicRecord, globals())
+            attach_func_to_class_method(name, Record, globals())
+    except ImportError as err:
+        Record = int
+        print("WARNING: DID NOT IMPORT LAMINDB", err)
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, Record):
-            registry_info = RegistryInfo(obj)
+            registry_info = RecordInfo(obj)
             field_lines.append("")
             field_lines.append("Simple fields")
             field_lines.append("-------------")
