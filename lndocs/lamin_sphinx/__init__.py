@@ -540,30 +540,33 @@ def process_docstring(app, what, name, obj, options, lines):
 
     try:
         from django.db import models
-        from lamindb.core._feature_manager import FeatureManager, ParamManager
+        from lamimdb.models.run import ParamManager
         from lamindb.models import (
             Artifact,
             Collection,
             Record,
-            RegistryInfo,
             Run,
             Schema,
             Transform,
             User,
         )
+        from lamindb.models._feature_manager import FeatureManager
+        from lamindb.models.record import RecordInfo
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
         Run.params = ParamManager("dummy")
     except ImportError:
-        Record = int  # a hack
+        Record = int
+        print("quitting")
+        quit()
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, Record):
-            registry_info = RegistryInfo(obj)
+            registry_info = RecordInfo(obj)
             field_lines.append("")
             field_lines.append("Simple fields")
             field_lines.append("-------------")
