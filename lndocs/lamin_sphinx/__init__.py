@@ -535,6 +535,17 @@ def get_instance_methods(cls, excludes=None):
     return instance_methods
 
 
+def attach_func_to_class_method(func_name, cls, metaclass):
+    implementation = getattr(metaclass, func_name)
+    target = getattr(cls, func_name)
+    # assigning the original class definition docstring
+    # to the implementation only has an effect for regular methods
+    # not for class methods
+    # this is why we need @doc_args for class methods
+    implementation.__doc__ = target.__doc__
+    setattr(cls, func_name, implementation)
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
 
@@ -542,8 +553,10 @@ def process_docstring(app, what, name, obj, options, lines):
         from django.db import models
         from lamindb.models import (
             Artifact,
+            BasicRecord,
             Collection,
             Record,
+            Registry,
             Run,
             Schema,
             Transform,
@@ -556,6 +569,19 @@ def process_docstring(app, what, name, obj, options, lines):
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
         Run.params = ParamManager("dummy")
+
+        METHOD_NAMES = [
+            "filter",
+            "get",
+            "df",
+            "search",
+            "lookup",
+            "using",
+        ]
+
+        for name in METHOD_NAMES:
+            attach_func_to_class_method(name, BasicRecord, Registry)
+            attach_func_to_class_method(name, Record, Registry)
     except ImportError as err:
         Record = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
