@@ -667,12 +667,16 @@ def process_docstring(app, what, name, obj, options, lines):
             Artifact,
             BasicRecord,
             Collection,
+            Feature,
+            Project,
             Record,
+            Reference,
             Registry,
             Run,
             Schema,
             Space,
             Transform,
+            ULabel,
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
@@ -699,6 +703,15 @@ def process_docstring(app, what, name, obj, options, lines):
         types = {
             "Space": Space,
             "User": User,
+            "Run": Run,
+            "Schema": Schema,
+            "Collection": Collection,
+            "Feature": Feature,
+            "ULabel": ULabel,
+            "Transform": Transform,
+            "Artifact": Artifact,
+            "Project": Project,
+            "Reference": Project,
         }
     except ImportError as err:
         Record = int
