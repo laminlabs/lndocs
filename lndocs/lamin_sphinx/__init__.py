@@ -738,7 +738,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "Transform": Transform,
             "Artifact": Artifact,
             "Project": Project,
-            "Reference": Project,
+            "Reference": Reference,
             "Storage": Storage,
         }
     except ImportError as err:
