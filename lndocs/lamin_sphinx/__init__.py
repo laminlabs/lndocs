@@ -108,9 +108,9 @@ ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
-intersphinx_mapping = dict(
-    docs=("https://docs.lamin.ai", None),
-)
+# intersphinx_mapping = dict(
+#     docs=("https://docs.lamin.ai", None),
+# )
 
 # myst_nb options
 nb_execution_mode = "off"
@@ -619,6 +619,45 @@ def using(
     pass
 
 
+def get_all_annotations(obj):
+    """Get all annotations, including inherited ones."""
+    all_annotations = {}
+
+    # Get the class or use the object's class
+    if isinstance(obj, type):
+        cls = obj
+    else:
+        cls = obj.__class__
+
+    # Traverse the MRO (Method Resolution Order) in reverse to
+    # prioritize direct class annotations
+    for base in reversed(cls.__mro__):
+        if hasattr(base, "__annotations__"):
+            all_annotations.update(base.__annotations__)
+
+    return all_annotations
+
+
+def update_all_annotations(obj, types_dict):
+    """Update annotations with actual types from types_dict."""
+    # First, get all annotations including inherited ones
+    all_annotations = get_all_annotations(obj)
+
+    # Update the annotations with resolved types
+    resolved_annotations = {
+        key: types_dict.get(str(value), value) for key, value in all_annotations.items()
+    }
+
+    # Ensure obj has an __annotations__ attribute
+    if not hasattr(obj, "__annotations__"):
+        obj.__annotations__ = {}
+
+    # Update the object's annotations with all resolved annotations
+    obj.__annotations__.update(resolved_annotations)
+
+    return obj.__annotations__
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
 
@@ -632,6 +671,7 @@ def process_docstring(app, what, name, obj, options, lines):
             Registry,
             Run,
             Schema,
+            Space,
             Transform,
             User,
         )
@@ -655,6 +695,11 @@ def process_docstring(app, what, name, obj, options, lines):
         for name in METHOD_NAMES:
             attach_func_to_class_method(name, BasicRecord, globals())
             attach_func_to_class_method(name, Record, globals())
+
+        types = {
+            "Space": Space,
+            "User": User,
+        }
     except ImportError as err:
         Record = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
@@ -664,6 +709,7 @@ def process_docstring(app, what, name, obj, options, lines):
         provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, Record):
+            update_all_annotations(obj, types)
             registry_info = RecordInfo(obj)
             field_lines.append("")
             field_lines.append("Simple fields")
