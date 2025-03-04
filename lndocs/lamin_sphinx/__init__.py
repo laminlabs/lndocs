@@ -108,9 +108,9 @@ ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
 
-# intersphinx_mapping = dict(
-#     docs=("https://docs.lamin.ai", None),
-# )
+intersphinx_mapping = dict(
+    docs=("https://docs.lamin.ai", None),
+)
 
 # myst_nb options
 nb_execution_mode = "off"
@@ -638,14 +638,40 @@ def get_all_annotations(obj):
     return all_annotations
 
 
+from typing import Union  # noqa
+
+
 def update_all_annotations(obj, types_dict):
     """Update annotations with actual types from types_dict."""
     # First, get all annotations including inherited ones
     all_annotations = get_all_annotations(obj)
 
+    # Create a function to resolve complex annotation strings
+    def resolve_type(type_annotation):
+        # If it's already a type (not a string), return it
+        if not isinstance(type_annotation, str):
+            return type_annotation
+
+        # Handle union types with | syntax (Python 3.10+)
+        if "|" in type_annotation:
+            # Split by | and strip whitespace
+            parts = [part.strip() for part in type_annotation.split("|")]
+            # Resolve each part
+            resolved_parts = [types_dict.get(part, part) for part in parts]
+            # Attempt to create a union
+            try:
+                # For Python 3.10+
+                return Union[tuple(resolved_parts)]
+            except (TypeError, SyntaxError):
+                # Fall back to string if we can't create a proper Union
+                return type_annotation
+
+        # Handle simple types
+        return types_dict.get(type_annotation, type_annotation)
+
     # Update the annotations with resolved types
     resolved_annotations = {
-        key: types_dict.get(str(value), value) for key, value in all_annotations.items()
+        key: resolve_type(value) for key, value in all_annotations.items()
     }
 
     # Ensure obj has an __annotations__ attribute
@@ -675,6 +701,7 @@ def process_docstring(app, what, name, obj, options, lines):
             Run,
             Schema,
             Space,
+            Storage,
             Transform,
             ULabel,
             User,
@@ -712,6 +739,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "Artifact": Artifact,
             "Project": Project,
             "Reference": Project,
+            "Storage": Storage,
         }
     except ImportError as err:
         Record = int
