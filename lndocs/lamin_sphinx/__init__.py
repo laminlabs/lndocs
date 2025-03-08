@@ -739,6 +739,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "Project": Project,
             "Reference": Reference,
             "Storage": Storage,
+            "FeatureManager": FeatureManager,
         }
     except ImportError as err:
         Record = int
@@ -834,8 +835,6 @@ def process_docstring(app, what, name, obj, options, lines):
                     autoattribute = True
                     annotation = type(attr_value).__name__
                 docstring = attr_value.__doc__
-            if annotation in {"FeatureManagerArtifact", "FeatureManagerCollection"}:
-                annotation = "FeatureManager"
             if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
                 annotation = "ParamManager"
             if autoattribute:
