@@ -713,6 +713,9 @@ def process_docstring(app, what, name, obj, options, lines):
         Artifact.params = ParamManager("dummy")
         Run.params = ParamManager("dummy")
 
+        # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
+        # interpret the methods added through the Registry metaclass as classmethods
+        # but out-of-the-box it just doesn't and so we're hacking this
         METHOD_NAMES = [
             "filter",
             "get",
@@ -721,7 +724,6 @@ def process_docstring(app, what, name, obj, options, lines):
             "lookup",
             "using",
         ]
-
         for name in METHOD_NAMES:
             attach_func_to_class_method(name, BasicRecord, globals())
             attach_func_to_class_method(name, Record, globals())
