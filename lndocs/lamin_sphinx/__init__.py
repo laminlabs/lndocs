@@ -554,6 +554,7 @@ try:
     from lamindb.base import doc_args  # noqa
     from lamindb.base.types import StrField  # noqa
     from lamindb.models import QuerySet, Record  # noqa
+    from lamindb.models.record import T  # noqa
 
     @classmethod  # type:ignore
     @doc_args(Record.filter.__doc__)
@@ -567,7 +568,7 @@ try:
         cls,
         idlike: int | str | None = None,
         **expressions,
-    ) -> Record:
+    ) -> T:
         """{}"""  # noqa: D415
         pass
 
