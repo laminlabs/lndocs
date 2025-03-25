@@ -28,6 +28,7 @@ nitpick_ignore = [
     ("py:class", "pronto.ontology._OntologyTerms"),
     ("py:class", "django.db.models.base.ModelBase"),
     ("py:class", "Dtype"),
+    ("py:class", "FeatureDtype"),
     ("py:class", "TransformType"),
     ("py:class", "ArtifactType"),
     ("py:class", "pydantic_core._pydantic_core.MultiHostUrl"),
