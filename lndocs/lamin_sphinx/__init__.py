@@ -96,7 +96,13 @@ autodoc_type_aliases = {
 autodoc_default_options = {
     "inherited-members": False,
 }
-autodoc_mock_imports = ["vitessce", "mudata", "tiledbsoma", "universal-pathlib"]
+autodoc_mock_imports = [
+    "vitessce",
+    "mudata",
+    "tiledbsoma",
+    "universal-pathlib",
+    "pronto",
+]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
