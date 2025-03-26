@@ -27,6 +27,10 @@ html[data-theme="dark"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="dark"] .highlight .nf {
+  color: #9146cc;
+}
+
 html[data-theme="dark"] .highlight .go {
   color: #6ee7b7;
 }
@@ -60,6 +64,10 @@ html[data-theme="light"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="light"] .highlight .nf {
+  color: #204a87;
+}
+
 /* docstring examples output */
 html[data-theme="light"] .highlight .go {
   color: #21af90;
@@ -83,7 +91,7 @@ html[data-theme="light"] .highlight .nc {
   color: #14b8a6;
 }
 
-/* python code type */
+/* code type */
 html[data-theme="light"] .highlight .nb {
   color: #60a5fa;
 }
