@@ -554,9 +554,8 @@ def attach_func_to_class_method(func_name, cls, globals):
 
 from typing import NamedTuple  # noqa
 
-import pandas as pd  # noqa
-
 try:
+    import pandas as pd  # noqa
     from lamindb.base import doc_args  # noqa
     from lamindb.base.types import StrField  # noqa
     from lamindb.models import QuerySet, Record  # noqa
