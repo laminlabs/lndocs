@@ -649,6 +649,15 @@ a {
   color: var(--link-color);
 }
 
+a:visited {
+  color: #551a8b;
+}
+
+/* Dark theme visited links */
+html[data-theme="dark"] a:visited {
+  color: #bb86fc; /* Lighter purple that stands out on dark backgrounds */
+}
+
 .ablog-post-title a {
   color: var(--pst-text-color-base);
   font-size: 2.5rem;
