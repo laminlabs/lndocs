@@ -1,6 +1,6 @@
 nitpick_ignore = [
     ("py:class", "hard unique constraint"),
-    ("py:class", "graphviz.graphs.Digraph"),    
+    ("py:class", "graphviz.graphs.Digraph"),
     ("py:class", "DateType"),
     ("py:class", "feature"),
     ("py:class", "Name"),
@@ -47,6 +47,7 @@ nitpick_ignore = [
     ("py:class", "ListLike"),
     ("py:class", "Path"),
     ("py:class", "mudata.MuData"),
+    ("py:class", "MuData"),
     ("py:class", "AnnData"),
     ("py:class", "UPathStr"),
     ("py:class", "pd.DataFrame"),
