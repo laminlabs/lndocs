@@ -142,4 +142,5 @@ nitpick_ignore = [
     ("py:class", "collections.abc.Iterator"),
     ("py:class", "collections.abc.Mapping"),
     ("py:class", "pyarrow._dataset.Dataset"),
+    ("py:class", "polars.LazyFrame"),
 ]
