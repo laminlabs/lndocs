@@ -117,6 +117,7 @@ nitpick_ignore = [
     ("py:class", "anndata._core.anndata.AnnData"),
     ("py:class", "enum.Enum"),
     ("py:class", "pathlib.Path"),
+    ("py:class", "pathlib._local.Path"),
     ("py:class", "Model"),
     ("py:class", "sqlmodel.main.SQLModel"),
     ("py:class", "MetaData"),
