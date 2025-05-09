@@ -96,15 +96,26 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         else:
             affiliation = {}
 
+        def get_name(k):
+            return lndocs.authors[k.rstrip("*")][0]
+
+        def get_link(k):
+            return lndocs.authors[k.rstrip("*")][1]
+
         def format_title(k):
-            return f'title="{affiliation[k]}"' if affiliation else ""
+            return f'title="{affiliation[k.rstrip("*")]}"' if affiliation else ""
+
+        def add_star(k):
+            if k.endswith("*"):
+                return "*"
+            return ""
 
         import lndocs
 
         return ", ".join(
             [
-                f'<a href="{lndocs.authors[k][1]}"'
-                f" {format_title(k)}>{lndocs.authors[k][0]}</a>"
+                f'<a href="{get_link(k)}"'
+                f" {format_title(k)}>{get_name(k)}{add_star(k)}</a>"
                 for k in data["author"].split(", ")
             ]
         )
