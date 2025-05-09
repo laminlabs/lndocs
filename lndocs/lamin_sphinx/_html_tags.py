@@ -35,7 +35,7 @@ def add_authors(context, fields):
         for key in fields["author"].split(", "):
             # does not work with tag dict as key is the same for all authors
             context["metatags"] += "\n" + make_tag(
-                "citation_author", lndocs.authors[key][0]
+                "citation_author", lndocs.authors[key.rstrip("*")][0]
             )
 
 
