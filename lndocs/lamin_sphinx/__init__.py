@@ -559,28 +559,28 @@ try:
     import pandas as pd  # noqa
     from lamindb.base import doc_args  # noqa
     from lamindb.base.types import StrField  # noqa
-    from lamindb.models import QuerySet, Record  # noqa
+    from lamindb.models import DBRecord, QuerySet  # noqa
 
     # from lamindb.models.record import T  # noqa
 
     @classmethod  # type:ignore
-    @doc_args(Record.filter.__doc__)
+    @doc_args(DBRecord.filter.__doc__)
     def filter(cls, *queries, **expressions) -> QuerySet:
         """{}"""  # noqa: D415
         pass
 
     @classmethod  # type:ignore
-    @doc_args(Record.get.__doc__)
+    @doc_args(DBRecord.get.__doc__)
     def get(
         cls,
         idlike: int | str | None = None,
         **expressions,
-    ) -> Record:  # adding T as a type hint doesn't resolve on Sphinx
+    ) -> DBRecord:  # adding T as a type hint doesn't resolve on Sphinx
         """{}"""  # noqa: D415
         pass
 
     @classmethod  # type:ignore
-    @doc_args(Record.df.__doc__)
+    @doc_args(DBRecord.df.__doc__)
     def df(
         cls,
         include: str | list[str] | None = None,
@@ -591,7 +591,7 @@ try:
         pass
 
     @classmethod  # type: ignore
-    @doc_args(Record.search.__doc__)
+    @doc_args(DBRecord.search.__doc__)
     def search(
         cls,
         string: str,
@@ -604,7 +604,7 @@ try:
         pass
 
     @classmethod  # type: ignore
-    @doc_args(Record.lookup.__doc__)
+    @doc_args(DBRecord.lookup.__doc__)
     def lookup(
         cls,
         field: StrField | None = None,
@@ -614,7 +614,7 @@ try:
         pass
 
     @classmethod  # type: ignore
-    @doc_args(Record.using.__doc__)
+    @doc_args(DBRecord.using.__doc__)
     def using(
         cls,
         instance: str | None,
@@ -698,11 +698,11 @@ def process_docstring(app, what, name, obj, options, lines):
         from django.db import models
         from lamindb.models import (
             Artifact,
-            BasicRecord,
+            BasicDBRecord,
             Collection,
+            DBRecord,
             Feature,
             Project,
-            Record,
             Reference,
             Registry,
             Run,
@@ -714,7 +714,7 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.record import RecordInfo
+        from lamindb.models.record import DBRecordInfo
         from lamindb.models.run import ParamManager
 
         Artifact.features = FeatureManager("dummy")
@@ -733,8 +733,8 @@ def process_docstring(app, what, name, obj, options, lines):
             "using",
         ]
         for name in METHOD_NAMES:
-            attach_func_to_class_method(name, BasicRecord, globals())
-            attach_func_to_class_method(name, Record, globals())
+            attach_func_to_class_method(name, BasicDBRecord, globals())
+            attach_func_to_class_method(name, DBRecord, globals())
 
         types = {
             "Space": Space,
@@ -752,16 +752,16 @@ def process_docstring(app, what, name, obj, options, lines):
             "FeatureManager": FeatureManager,
         }
     except ImportError as err:
-        Record = int
+        DBRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
-        if issubclass(obj, Record):
+        if issubclass(obj, DBRecord):
             update_all_annotations(obj, types)
-            registry_info = RecordInfo(obj)
+            registry_info = DBRecordInfo(obj)
             field_lines.append("")
             field_lines.append("Simple fields")
             field_lines.append("-------------")
