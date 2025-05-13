@@ -33,7 +33,7 @@ def remove_lines_with_db_args(path: Path):
     # now, find the line that contains *db_args and remove it
     previous_line = ""
     found_db_args = False
-    for line in content.split("\n")[:700]:
+    for line in content.split("\n")[:1000]:
         if (
             "db_args" in line
             and line.endswith("</dt>")
