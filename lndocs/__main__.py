@@ -9,7 +9,7 @@ from typing import Any
 
 from dirsync import sync
 
-from lndocs._generate_conf import generate_conf
+from lndocs._generate_conf import generate_conf, get_variables
 
 HERE = Path(__file__).parent
 
@@ -483,6 +483,8 @@ def main():
             generate_conf_check = True
     if generate_conf_check:
         variables = generate_conf(args.docs)
+    else:
+        variables = get_variables()
 
     if args.live:
         build_command = "sphinx-autobuild"
@@ -543,7 +545,7 @@ def main():
             )
 
     if args.export_text:
-        filename = f"{variables['package_name']}.txt"
+        filename = f"{variables['repository_name']}.txt"
         text_status = generate_single_text_file(str(docs_dir), args.site, filename)
         if text_status != 0:
             print("Warning: Text export failed")
