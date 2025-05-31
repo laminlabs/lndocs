@@ -1,13 +1,15 @@
 import argparse
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from subprocess import call
+from typing import Any
 
 from dirsync import sync
 
-from lndocs._generate_conf import generate_conf
+from lndocs._generate_conf import generate_conf, get_variables
 
 HERE = Path(__file__).parent
 
@@ -100,8 +102,334 @@ def additional_ansi_colors():
         )
 
 
+def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
+    """
+    Parse the toctree structure from Sphinx documentation to get the correct ordering.
+
+    Returns:
+        List of (filename, depth) tuples in toctree order
+    """
+    docs_path = Path(docs_dir)
+    toctree_order: list[Any] = []
+
+    def parse_rst_file(file_path: Path, current_depth: int = 0):
+        """Recursively parse RST files for toctree directives"""
+        if not file_path.exists():
+            return
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return
+
+        # Add the current file to the order
+        stem = file_path.stem
+        if stem not in [item[0] for item in toctree_order]:  # Avoid duplicates
+            toctree_order.append((stem, current_depth))
+
+        # Find toctree directives
+        toctree_pattern = r"^\.\. toctree::\s*\n((?:\s+.*\n)*)"
+        matches = re.finditer(toctree_pattern, content, re.MULTILINE)
+
+        for match in matches:
+            toctree_content = match.group(1)
+
+            # Parse options and entries
+            lines = toctree_content.split("\n")
+            entries = []
+
+            for line in lines:
+                line = line.strip()
+                if not line or line.startswith(":"):  # Skip options
+                    continue
+
+                # Remove inline titles (format: "title <filename>")
+                if "<" in line and line.endswith(">"):
+                    line = line.split("<")[1].rstrip(">")
+
+                # Handle different file extensions
+                if not line.endswith((".rst", ".md", ".ipynb")):
+                    # Try common extensions
+                    for ext in [".rst", ".md", ".ipynb"]:
+                        if (docs_path / (line + ext)).exists():
+                            line = line + ext
+                            break
+
+                entries.append(line)
+
+            # Recursively process toctree entries
+            for entry in entries:
+                # Try to find the actual file with different extensions
+                found_file = False
+
+                # First try with common extensions
+                for ext in [".rst", ".md", ".ipynb"]:
+                    entry_path = docs_path / (entry + ext)
+                    if entry_path.exists() and entry_path.is_file():
+                        parse_rst_file(entry_path, current_depth + 1)
+                        found_file = True
+                        break
+
+                # If not found, try the entry as-is (in case it already has extension)
+                if not found_file:
+                    entry_path = docs_path / entry
+                    if entry_path.exists() and entry_path.is_file():
+                        parse_rst_file(entry_path, current_depth + 1)
+                        found_file = True
+                    elif entry_path.is_dir():
+                        # Look for index files in the directory
+                        for index_name in ["index.rst", "index.md", "index.ipynb"]:
+                            index_path = entry_path / index_name
+                            if index_path.exists():
+                                parse_rst_file(index_path, current_depth + 1)
+                                found_file = True
+                                break
+
+                # If still not found, add to order anyway
+                if not found_file:
+                    base_name = entry.split(".")[0] if "." in entry else entry
+                    if base_name not in [item[0] for item in toctree_order]:
+                        toctree_order.append((base_name, current_depth + 1))
+
+    def parse_md_file(file_path: Path, current_depth: int = 0):
+        """Parse Markdown files for MyST toctree directives"""
+        if not file_path.exists():
+            return
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return
+
+        # Add the current file to the order
+        stem = file_path.stem
+        if stem not in [item[0] for item in toctree_order]:
+            toctree_order.append((stem, current_depth))
+
+        # Find MyST toctree directives - more flexible pattern
+        # Matches ```{toctree} followed by optional options, then entries
+        toctree_pattern = r"```\{toctree\}([^`]*?)```"
+        matches = re.finditer(toctree_pattern, content, re.DOTALL)
+
+        for match in matches:
+            full_toctree_content = match.group(1).strip()
+            lines = full_toctree_content.split("\n")
+
+            # Skip option lines (starting with :) and empty lines
+            entry_lines = []
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith(":"):
+                    continue  # Skip options like :maxdepth:, :hidden:, etc.
+                entry_lines.append(line)
+
+            # Process each entry
+            for entry in entry_lines:
+                entry = entry.strip()
+                if not entry:
+                    continue
+
+                # Handle inline titles (format: "title <filename>")
+                if "<" in entry and entry.endswith(">"):
+                    entry = entry.split("<")[1].rstrip(">")
+
+                # Try to find the actual file
+                found_file = False
+
+                # First try with common extensions
+                for ext in [".md", ".rst", ".ipynb"]:
+                    test_path = docs_path / (entry + ext)
+                    if test_path.exists() and test_path.is_file():
+                        if test_path.suffix == ".md":
+                            parse_md_file(test_path, current_depth + 1)
+                        else:
+                            parse_rst_file(test_path, current_depth + 1)
+                        found_file = True
+                        break
+
+                # If not found, try the entry as-is (in case it already has extension)
+                if not found_file:
+                    test_path = docs_path / entry
+                    if test_path.exists() and test_path.is_file():
+                        if test_path.suffix == ".md":
+                            parse_md_file(test_path, current_depth + 1)
+                        else:
+                            parse_rst_file(test_path, current_depth + 1)
+                        found_file = True
+                    elif test_path.is_dir():
+                        # Look for index files in the directory
+                        for index_name in ["index.md", "index.rst", "index.ipynb"]:
+                            index_path = test_path / index_name
+                            if index_path.exists():
+                                if index_name.endswith(".md"):
+                                    parse_md_file(index_path, current_depth + 1)
+                                else:
+                                    parse_rst_file(index_path, current_depth + 1)
+                                found_file = True
+                                break
+
+                # If still not found, add to order anyway
+                if not found_file:
+                    base_name = entry.split(".")[0] if "." in entry else entry
+                    if base_name not in [item[0] for item in toctree_order]:
+                        toctree_order.append((base_name, current_depth + 1))
+
+    # Start with index file
+    index_files = ["index.rst", "index.md"]
+    for index_file_name in index_files:
+        index_file = docs_path / index_file_name
+        if index_file.exists():
+            if index_file_name.endswith(".md"):
+                parse_md_file(index_file)
+            else:
+                parse_rst_file(index_file)
+            break
+    else:
+        print("Warning: No index.rst or index.md found, using alphabetical order")
+        # Fallback to all files if no index found
+        for file_path in sorted(docs_path.glob("**/*.rst")):
+            stem = file_path.stem
+            if stem not in [item[0] for item in toctree_order]:
+                toctree_order.append((stem, 0))
+        for file_path in sorted(docs_path.glob("**/*.md")):
+            stem = file_path.stem
+            if stem not in [item[0] for item in toctree_order]:
+                toctree_order.append((stem, 0))
+
+    return toctree_order
+
+
+def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
+    """
+    Generate a single text file containing the entire documentation.
+    Also keeps individual text files in _build/text directory.
+    Follows the toctree structure for proper ordering.
+
+    Args:
+        docs_dir: Source documentation directory (e.g., "_docs_tmp")
+        site: Main build directory (e.g., "_build/html")
+        output_filename: Name of the output text file
+    """
+    build_dir = Path(site).parent  # Get _build directory
+    text_build_dir = build_dir / "text"
+
+    # Build documentation as text using Sphinx text builder
+    print("Building documentation in text format...")
+    build_status = call(f"sphinx-build -b text {docs_dir} {text_build_dir}", shell=True)
+
+    if build_status != 0:
+        print("Error: Failed to build text documentation")
+        return build_status
+
+    # Get the toctree order
+    print("Parsing toctree structure...")
+    toctree_order = parse_toctree_structure(docs_dir)
+
+    # Collect all .txt files from the text build
+    all_txt_files = {f.stem: f for f in text_build_dir.glob("**/*.txt")}
+
+    if not all_txt_files:
+        print("Warning: No text files found in build output")
+        return 1
+
+    # Order files according to toctree structure
+    ordered_files = []
+    found_files = set()
+
+    print("Ordering files according to toctree structure:")
+    for file_stem, depth in toctree_order:
+        if file_stem in all_txt_files:
+            ordered_files.append((all_txt_files[file_stem], depth))
+            found_files.add(file_stem)
+            print(f"  {'  ' * depth}- {file_stem}")
+
+    # Add any remaining files that weren't in the toctree
+    remaining_files = [
+        (f, 0) for stem, f in all_txt_files.items() if stem not in found_files
+    ]
+    if remaining_files:
+        print("Additional files not in toctree:")
+        for f, _ in remaining_files:
+            print(f"  - {f.stem}")
+        ordered_files.extend(remaining_files)
+
+    # Combine all text files into one following toctree order
+    output_path = build_dir / output_filename
+
+    print(f"Combining {len(ordered_files)} text files into {output_path}...")
+
+    with open(output_path, "w", encoding="utf-8") as outfile:
+        outfile.write("=" * 80 + "\n")
+        outfile.write("COMPLETE DOCUMENTATION\n")
+        outfile.write("=" * 80 + "\n\n")
+        outfile.write(
+            "This file contains all documentation pages combined into a single text"
+            " file.\n"
+        )
+        outfile.write(
+            "Individual text files are available in the _build/text directory.\n"
+        )
+        outfile.write(
+            "Content is ordered according to the Sphinx toctree structure.\n\n"
+        )
+
+        # Add table of contents with hierarchical structure
+        outfile.write("TABLE OF CONTENTS:\n")
+        outfile.write("-" * 40 + "\n")
+        for txt_file, depth in ordered_files:
+            rel_path = txt_file.relative_to(text_build_dir)
+            indent = "  " * depth
+            outfile.write(f"{indent}- {rel_path}\n")
+        outfile.write("\n")
+
+        # Add content from each file in toctree order
+        for txt_file, depth in ordered_files:
+            try:
+                with open(txt_file, "r", encoding="utf-8") as infile:
+                    content = infile.read().strip()
+
+                    if content:  # Only include non-empty files
+                        rel_path = txt_file.relative_to(text_build_dir)
+
+                        # Add file header with depth indication
+                        header_char = "=" if depth == 0 else "-" if depth == 1 else "~"
+                        header_line = header_char * 80
+
+                        outfile.write(f"\n{header_line}\n")
+                        outfile.write(f"{'  ' * depth}{rel_path}\n")
+                        outfile.write(f"{header_line}\n\n")
+
+                        # Add content
+                        outfile.write(content)
+                        outfile.write("\n\n")
+
+            except Exception as e:
+                print(f"Warning: Could not read {txt_file}: {e}")
+                continue
+
+    print(f"✓ Individual text files available in: {text_build_dir}")
+    print(f"✓ Complete documentation saved to: {output_path}")
+
+    # Show file statistics
+    total_size = sum(f.stat().st_size for f, _ in ordered_files if f.exists())
+    combined_size = output_path.stat().st_size
+
+    print(f"  Individual files total: {total_size / 1024 / 1024:.1f} MB")
+    print(f"  Combined file size: {combined_size / 1024 / 1024:.1f} MB")
+    print(f"  Files processed: {len(ordered_files)}")
+    print(f"  Toctree entries found: {len(toctree_order)}")
+
+    return 0
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Build Lamin website.")
+    parser = argparse.ArgumentParser(description="Build Lamin docs site.")
     aa = parser.add_argument
     aa("--show", action="store_true", help="launch server & show")
     aa("--docs", type=str, default="docs", help="directory with docs sources")
@@ -118,6 +446,11 @@ def main():
     )
     aa("--strip-prefix", action="store_true", help="error upon warning")
     aa("--clean", action="store_true", help="clean build directory")
+    aa(
+        "--export-text",
+        action="store_true",
+        help="generate single text file with all docs",
+    )
     args = parser.parse_args()
 
     if args.clean:
@@ -149,7 +482,9 @@ def main():
         if first_line == "# auto-generated by lndocs\n":
             generate_conf_check = True
     if generate_conf_check:
-        generate_conf(args.docs)
+        variables = generate_conf(args.docs)
+    else:
+        variables = get_variables()
 
     if args.live:
         build_command = "sphinx-autobuild"
@@ -203,14 +538,17 @@ def main():
         "omop",
         "lrex",
         "wetlab",
-        "findrefs",
-        "ourprojects",
-        "cellregistry",
     ]:
         for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
             remove_lines_with_db_args(
                 Path(args.site) / generated.with_suffix(".html").name
             )
+
+    if args.export_text:
+        filename = f"{variables['repository_name']}.txt"
+        text_status = generate_single_text_file(str(docs_dir), args.site, filename)
+        if text_status != 0:
+            print("Warning: Text export failed")
 
     if not args.show:
         return build_status

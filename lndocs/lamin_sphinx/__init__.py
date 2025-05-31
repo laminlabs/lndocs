@@ -1,5 +1,6 @@
 import inspect
 import os
+import sys
 from datetime import datetime
 
 from docutils.writers._html_base import HTMLTranslator  # type: ignore  # noqa
@@ -93,8 +94,9 @@ autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
+building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
-    "inherited-members": False,
+    "inherited-members": False if building_text else True,
 }
 autodoc_mock_imports = [
     "vitessce",
@@ -693,6 +695,11 @@ def update_all_annotations(obj, types_dict):
 
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
+    show_inherited = options.get("inherited-members", False)
+    print("show_inherited", show_inherited)
+    if show_inherited:
+        print("showing inherited members")
+        quit()
 
     try:
         from django.db import models
@@ -821,7 +828,14 @@ def process_docstring(app, what, name, obj, options, lines):
                 ]
             )
 
-        attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+        if show_inherited:
+            attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+        else:
+            attributes = [
+                (name, value)
+                for name, value in obj.__dict__.items()
+                if not inspect.isroutine(value)
+            ]
         attributes = [
             a
             for a in attributes
@@ -880,7 +894,10 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
 
         # class methods
-        class_methods = get_class_methods(obj)
+        if show_inherited:
+            class_methods = get_class_methods(obj)
+        else:
+            class_methods = get_class_methods(obj, excludes=obj.__bases__)
         class_methods = [
             a
             for a in class_methods
@@ -896,7 +913,10 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
 
         # instance methods
-        methods = get_instance_methods(obj)
+        if show_inherited:
+            methods = get_instance_methods(obj)
+        else:
+            methods = get_instance_methods(obj, excludes=obj.__bases__)
         methods = [
             a
             for a in methods
