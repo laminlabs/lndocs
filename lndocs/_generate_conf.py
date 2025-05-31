@@ -4,7 +4,7 @@ import jinja2
 import yaml  # type: ignore
 
 
-def generate_conf(directory):
+def generate_conf(directory) -> dict[str, str]:
     HERE = Path(__file__).parent
     templateLoader = jinja2.FileSystemLoader(searchpath=HERE)
     templateEnv = jinja2.Environment(loader=templateLoader)
@@ -47,4 +47,4 @@ def generate_conf(directory):
     with open(Path(directory) / "conf.py", "w") as f:
         f.write(outputText)
 
-    return outputText
+    return variables
