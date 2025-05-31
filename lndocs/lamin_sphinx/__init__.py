@@ -696,10 +696,6 @@ def update_all_annotations(obj, types_dict):
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
     show_inherited = options.get("inherited-members", False)
-    print("show_inherited", show_inherited)
-    if show_inherited:
-        print("showing inherited members")
-        quit()
 
     try:
         from django.db import models
