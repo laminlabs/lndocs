@@ -717,12 +717,10 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.run import ParamManager
         from lamindb.models.sqlrecord import SQLRecordInfo
 
         Artifact.features = FeatureManager("dummy")
-        Artifact.params = ParamManager("dummy")
-        Run.params = ParamManager("dummy")
+        Run.features = FeatureManager("dummy")
 
         # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
         # interpret the methods added through the Registry metaclass as classmethods
