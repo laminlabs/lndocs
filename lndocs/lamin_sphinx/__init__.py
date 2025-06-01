@@ -96,7 +96,7 @@ autodoc_type_aliases = {
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
-    "inherited-members": False if building_text else True,
+    "inherited-members": False,
 }
 autodoc_mock_imports = [
     "vitessce",
@@ -695,7 +695,7 @@ def update_all_annotations(obj, types_dict):
 
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
-    show_inherited = options.get("inherited-members", False)
+    show_inherited = True
 
     try:
         from django.db import models
