@@ -21,6 +21,8 @@ nitpick_ignore = [
     ("py:class", "django.db.models.fields.URLField"),
     ("py:class", "django.db.models.fields.UUIDField"),
     ("py:class", "hard unique constraint"),
+    ("py:class", "tiledbsoma._experiment.Experiment"),
+    ("py:class", "lamindb.curators._legacy.CatManager"),
     ("py:class", "graphviz.graphs.Digraph"),
     ("py:class", "DateType"),
     ("py:class", "feature"),
