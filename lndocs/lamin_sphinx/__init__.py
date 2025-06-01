@@ -717,8 +717,8 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.record import SQLRecordInfo
         from lamindb.models.run import ParamManager
+        from lamindb.models.sqlrecord import SQLRecordInfo
 
         Artifact.features = FeatureManager("dummy")
         Artifact.params = ParamManager("dummy")
