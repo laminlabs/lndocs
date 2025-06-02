@@ -753,14 +753,14 @@ def process_docstring(app, what, name, obj, options, lines):
             "FeatureManager": FeatureManager,
         }
     except ImportError as err:
-        SQLRecord = int
+        BaseSQLRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
-        if issubclass(obj, SQLRecord):
+        if issubclass(obj, BaseSQLRecord):
             update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
             field_lines.append("")
