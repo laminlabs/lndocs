@@ -719,9 +719,6 @@ def process_docstring(app, what, name, obj, options, lines):
         from lamindb.models._feature_manager import FeatureManager
         from lamindb.models.sqlrecord import SQLRecordInfo
 
-        Artifact.features = FeatureManager("dummy")
-        Run.features = FeatureManager("dummy")
-
         # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
         # interpret the methods added through the Registry metaclass as classmethods
         # but out-of-the-box it just doesn't and so we're hacking this
@@ -838,7 +835,6 @@ def process_docstring(app, what, name, obj, options, lines):
         attr_lines = []
         for attr_name, attr_value in attributes:
             docstring = ""
-            annotation = ""
             autoattribute = True
             is_property = isinstance(attr_value, property)
             if is_property:
@@ -847,14 +843,9 @@ def process_docstring(app, what, name, obj, options, lines):
                 if hasattr(attr_value.fget, "__deprecated"):
                     continue
             else:
-                if hasattr(attr_value, "__name__"):
-                    annotation = attr_value.__name__
-                else:
+                if not hasattr(attr_value, "__name__"):
                     autoattribute = True
-                    annotation = type(attr_value).__name__
                 docstring = attr_value.__doc__
-            if annotation in {"FeatureManagerArtifact", "FeatureManagerRun"}:
-                annotation = "FeatureManager"
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             elif autoproperty:
