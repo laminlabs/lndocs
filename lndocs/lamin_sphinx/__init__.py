@@ -883,18 +883,24 @@ def process_docstring(app, what, name, obj, options, lines):
             class_methods = get_class_methods(obj)
         else:
             class_methods = get_class_methods(obj, excludes=obj.__bases__)
-        class_methods = [
-            a
-            for a in class_methods
-            if not a.startswith(("__", "_", "from_db", "check"))
-        ]
-        if class_methods:
+        filtered_class_methods = []
+        for method_name in class_methods:
+            if method_name.startswith(("__", "_", "from_db", "check")):
+                continue
+            try:
+                method_obj = getattr(obj, method_name)
+                if hasattr(method_obj, "__deprecated"):
+                    continue
+            except AttributeError:
+                pass
+            filtered_class_methods.append(method_name)
+        if filtered_class_methods:
             lines.append("Class methods")
             lines.append("-------------")
             lines.append("")
-        for meth in class_methods:
+        for meth in filtered_class_methods:
             lines.append(f".. automethod:: {meth}\n")
-        if class_methods:
+        if filtered_class_methods:
             lines.append("")
 
         # instance methods
@@ -902,22 +908,32 @@ def process_docstring(app, what, name, obj, options, lines):
             methods = get_instance_methods(obj)
         else:
             methods = get_instance_methods(obj, excludes=obj.__bases__)
-        methods = [
-            a
-            for a in methods
-            if not a.startswith(("__", "_", "get_next", "get_previous", "full_clean"))
-        ]
-        if methods:
+        filtered_methods = []
+        for method_name in methods:
+            if method_name.startswith(
+                ("__", "_", "get_next", "get_previous", "full_clean")
+            ):
+                continue
+            try:
+                method_obj = getattr(obj, method_name)
+                if hasattr(method_obj, "__deprecated"):
+                    continue
+            except AttributeError:
+                pass
+            filtered_methods.append(method_name)
+        if filtered_methods:
             lines.append("Methods")
             lines.append("-------")
             lines.append("")
-        for meth in methods:
+        for meth in filtered_methods:
             lines.append(f".. automethod:: {meth}\n")
-        if methods:
+        if filtered_methods:
             lines.append("")
     return lines
 
 
+# this here _might_ work for non-class methods, need to double check
+# all class members are handled above
 def skip_deprecated(app, what, name, obj, skip, options):
     return hasattr(obj, "__deprecated") or skip
 
