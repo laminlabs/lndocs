@@ -527,7 +527,7 @@ def main():
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
-    build_status = call(f"{build_command} {docs_dir} {args.site}", shell=True)
+    build_status = call(f"{build_command} -vv {docs_dir} {args.site}", shell=True)
     if args.strict:
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
