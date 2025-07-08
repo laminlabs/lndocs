@@ -36,4 +36,5 @@ html_theme_options["icon_links"] = [
 
 # in lamindb, fix display of lamindb.setup.settings
 if "{{ lamin_package_name }}" == "lamindb":
-    lamindb.setup.core.SetupSettings.__repr__ = lambda x: "<lamindb_setup.core._settings.SetupSettings object>"
+    lamindb.setup.core.SetupSettings.__repr__ = lambda x: "<SetupSettings>"
+    lamindb.core.SetupSettings.__repr__ = lambda x: "<Settings>"
