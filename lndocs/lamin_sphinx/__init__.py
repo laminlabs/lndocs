@@ -875,7 +875,6 @@ def process_docstring(app, what, name, obj, options, lines):
         if show_inherited:
             class_methods = get_class_methods(obj)
         else:
-            print("show_inherited", show_inherited)
             class_methods = get_class_methods(obj, include_inherited=False)
         filtered_class_methods = []
         for method_name in class_methods:
