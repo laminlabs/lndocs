@@ -98,6 +98,9 @@ building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
     "inherited-members": False,
 }
+show_inherited = os.environ.get(
+    "LNDOCS_NO_INHERITED_MEMBERS", True
+)  # we need this because we're handling things manually
 autodoc_mock_imports = [
     "vitessce",
     "mudata",
@@ -688,8 +691,6 @@ def update_all_annotations(obj, types_dict):
 
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
-    show_inherited = False
-
     try:
         from django.db import models
         from lamindb.models import (
