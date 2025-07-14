@@ -355,8 +355,9 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     remaining_files = [
         (f, 0) for stem, f in all_txt_files.items() if stem not in found_files
     ]
+    remaining_files.sort(key=lambda x: x[0].stem)  # Sort by filename stem
     if remaining_files:
-        print("Additional files not in toctree:")
+        print(f"Additional files not in toctree: {len(remaining_files)}")
         for f, _ in remaining_files:
             print(f"  - {f.stem}")
         ordered_files.extend(remaining_files)
@@ -422,6 +423,38 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     total_size = sum(f.stat().st_size for f, _ in ordered_files if f.exists())
     combined_size = output_path.stat().st_size
 
+    # Read the combined file to get content statistics
+    with open(output_path, "r", encoding="utf-8") as f:  # type: ignore
+        content = f.read()  # type: ignore
+
+    # Calculate metrics
+    char_count = len(content)
+    word_count = len(content.split())
+
+    # Estimate tokens using different methods
+    # Method 1: Simple approximation (4 chars per token average for English)
+    tokens_simple = char_count / 4
+
+    # Method 2: Word-based approximation (0.75 tokens per word average)
+    tokens_word_based = word_count * 0.75
+
+    # Method 3: More sophisticated approximation accounting for code/technical content
+    # Technical documentation tends to have more tokens
+    # per word due to code, symbols, etc.
+    tokens_technical = word_count * 0.85
+
+    print("\n📊 Content Statistics:")
+    print(f"  Characters: {char_count:,}")
+    print(f"  Words: {word_count:,}")
+    print(f"  Estimated tokens (simple): {tokens_simple:,.0f}")
+    print(f"  Estimated tokens (word-based): {tokens_word_based:,.0f}")
+    print(f"  Estimated tokens (technical): {tokens_technical:,.0f}")
+    print(
+        "  Average token estimate:"
+        f" {(tokens_simple + tokens_word_based + tokens_technical) / 3:,.0f}"
+    )
+
+    print("\n📁 File Statistics:")
     print(f"  Individual files total: {total_size / 1024 / 1024:.1f} MB")
     print(f"  Combined file size: {combined_size / 1024 / 1024:.1f} MB")
     print(f"  Files processed: {len(ordered_files)}")
