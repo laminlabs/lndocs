@@ -368,26 +368,13 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
     with open(output_path, "w", encoding="utf-8") as outfile:
-        outfile.write("# Complete Documentation\n\n")
-        outfile.write(
-            "This file contains all documentation pages combined into a single markdown"
-            " file.\n"
-        )
-        outfile.write(
-            "Individual text files are available in the _build/text directory.\n"
-        )
-        outfile.write(
-            "Content is ordered according to the Sphinx toctree structure.\n\n"
-        )
-
         # Add table of contents with hierarchical structure
         outfile.write("## Table of Contents\n\n")
         for txt_file, depth in ordered_files:
             rel_path = txt_file.relative_to(text_build_dir)
             indent = "  " * depth
-            # Create anchor link from filename
-            anchor = rel_path.stem.lower().replace(" ", "-").replace("_", "-")
-            outfile.write(f"{indent}- [{rel_path.stem}](#{anchor})\n")
+            # Simple list without links
+            outfile.write(f"{indent}- {rel_path.stem}\n")
         outfile.write("\n")
 
         # Add content from each file in toctree order
@@ -399,15 +386,14 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
                     if content:  # Only include non-empty files
                         rel_path = txt_file.relative_to(text_build_dir)
 
-                        # Add file header with proper markdown heading level
-                        heading_level = "#" * min(
-                            depth + 2, 6
-                        )  # Start at ## since we used # for main title
-
-                        outfile.write(f"\n{heading_level} {rel_path.stem}\n\n")
+                        # Add invisible page marker for reference
+                        outfile.write(f"\n<!-- page: {rel_path.stem} -->\n\n")
 
                         # Clean up the content to be markdown-friendly
-                        cleaned_content = clean_text_to_markdown(content)
+                        # No page separator, content flows directly
+                        cleaned_content = clean_text_to_markdown(
+                            content, base_depth=depth
+                        )
 
                         # Add content
                         outfile.write(cleaned_content)
@@ -457,10 +443,14 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
     return 0
 
 
-def clean_text_to_markdown(content: str) -> str:
+def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
     """
     Convert Sphinx text builder output to clean markdown.
     Removes excessive dashes and converts to proper markdown syntax.
+
+    Args:
+        content: Raw text content from Sphinx
+        base_depth: Base depth for heading adjustment (from toctree)
     """
     lines = content.split("\n")
     cleaned_lines = []
@@ -478,12 +468,22 @@ def clean_text_to_markdown(content: str) -> str:
         # Check for heading patterns (text followed by === or ---)
         if i + 1 < len(lines):
             next_line = lines[i + 1]
-            if re.match(r"^[=-]{3,}$", next_line.strip()):
-                # This is a heading - convert to markdown
-                if "=" in next_line:
-                    cleaned_lines.append(f"### {line.strip()}")
-                else:
-                    cleaned_lines.append(f"#### {line.strip()}")
+            if re.match(r"^[=*\-~^]{3,}$", next_line.strip()):
+                # This is a heading - convert to markdown with proper depth
+                heading_char = next_line.strip()[0]
+
+                # Determine heading level based on Sphinx conventions
+                # = is usually h1, * is h2, - is h3, ~ is h4, ^ is h5
+                sphinx_level = {"=": 1, "*": 2, "-": 3, "~": 4, "^": 5}.get(
+                    heading_char, 2
+                )
+
+                # Adjust level based on toctree depth
+                # Start at h1 for top-level pages (no main title reserved)
+                final_level = min(sphinx_level + base_depth, 6)
+
+                heading_prefix = "#" * final_level
+                cleaned_lines.append(f"{heading_prefix} {line.strip()}")
                 i += 2  # Skip both the heading and underline
                 continue
 
