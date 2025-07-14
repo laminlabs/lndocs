@@ -305,7 +305,9 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
     return toctree_order
 
 
-def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str):
+def generate_single_markdown_file(
+    docs_dir: str, site: str, output_filename: str, skip_patterns: list[str] = None
+):
     """
     Generate a single markdown file containing the entire documentation.
     Uses Sphinx text builder and converts output to clean markdown.
@@ -315,7 +317,11 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
         site: Main build directory (e.g., "_build/html")
         output_filename: Name of the output markdown file
+        skip_patterns: List of patterns to skip files whose stem
+            contains any of these patterns
     """
+    if skip_patterns is None:
+        skip_patterns = []
     build_dir = Path(site).parent  # Get _build directory
     text_build_dir = build_dir / "text"
 
@@ -347,14 +353,25 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
     print("Ordering files according to toctree structure:")
     for file_stem, depth in toctree_order:
         if file_stem in all_txt_files:
+            # Check if this file should be skipped
+            should_skip = any(pattern in file_stem for pattern in skip_patterns)
+            if should_skip:
+                print(f"  {'  ' * depth}× {file_stem} (skipped)")
+                continue
+
             ordered_files.append((all_txt_files[file_stem], depth))
             found_files.add(file_stem)
             print(f"  {'  ' * depth}- {file_stem}")
 
     # Add any remaining files that weren't in the toctree
-    remaining_files = [
-        (f, 0) for stem, f in all_txt_files.items() if stem not in found_files
-    ]
+    remaining_files = []
+    for stem, f in all_txt_files.items():
+        if stem not in found_files:
+            # Check if this file should be skipped
+            should_skip = any(pattern in stem for pattern in skip_patterns)
+            if not should_skip:
+                remaining_files.append((f, 0))
+
     remaining_files.sort(key=lambda x: x[0].stem)
     if remaining_files:
         print(f"Additional files not in toctree: {len(remaining_files)}")
@@ -387,7 +404,7 @@ def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str
                         rel_path = txt_file.relative_to(text_build_dir)
 
                         # Add invisible page marker for reference
-                        outfile.write(f"\n<!-- page: {rel_path.stem} -->\n\n")
+                        outfile.write(f"\n<!-- Page: {rel_path.stem} -->\n\n")
 
                         # Clean up the content to be markdown-friendly
                         # No page separator, content flows directly
@@ -658,7 +675,18 @@ def main():
         )  # to debug, add -vv
     elif args.format == "text":
         filename = f"{variables['repository_name']}.txt"
-        build_status = generate_single_markdown_file(str(docs_dir), args.site, filename)
+        skip_patterns = [
+            "wetlab.",
+            "lamindb.base.fields",
+            "lamindb.base.uids",
+            "lamindb.core.datasets",
+            "lamindb.curators.core",
+            "lamindb.core.loaders",
+            "lamindb.base.types",
+        ]
+        build_status = generate_single_markdown_file(
+            str(docs_dir), args.site, filename, skip_patterns=skip_patterns
+        )
         if build_status != 0:
             print("Warning: Text export failed")
     else:
