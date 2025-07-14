@@ -688,6 +688,7 @@ def main():
             "lamindb.setup.errors",
             "bionty.base",
             "bionty.core",
+            "lamindb.setup",
         ]
         build_status = generate_single_markdown_file(
             str(docs_dir), args.site, filename, skip_patterns=skip_patterns
