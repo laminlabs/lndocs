@@ -98,12 +98,7 @@ building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
     "inherited-members": False,
 }
-show_inherited = os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() not in (
-    "false",
-    "0",
-    "no",
-    "off",
-)
+show_inherited = os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
 print("show inherited members:", show_inherited)
 autodoc_mock_imports = [
     "vitessce",
