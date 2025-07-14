@@ -689,6 +689,19 @@ def main():
             "bionty.base",
             "bionty.core",
             "lamindb.setup",
+            "bionty.celltype",
+            "bionty.developmentalstage",
+            "bionty.disease",
+            "bionty.ethnicity",
+            "bionty.experimentalfactor",
+            "bionty.gene",
+            "bionty.organism",
+            "bionty.pathway",
+            "bionty.phenotype",
+            "bionty.protein",
+            "bionty.settings",
+            "bionty.source",
+            "bionty.tissue",
         ]
         build_status = generate_single_markdown_file(
             str(docs_dir), args.site, filename, skip_patterns=skip_patterns
