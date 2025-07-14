@@ -305,16 +305,16 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
     return toctree_order
 
 
-def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
+def generate_single_markdown_file(docs_dir: str, site: str, output_filename: str):
     """
-    Generate a single text file containing the entire documentation.
-    Also keeps individual text files in _build/text directory.
+    Generate a single markdown file containing the entire documentation.
+    Uses Sphinx text builder and converts output to clean markdown.
     Follows the toctree structure for proper ordering.
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
         site: Main build directory (e.g., "_build/html")
-        output_filename: Name of the output text file
+        output_filename: Name of the output markdown file
     """
     build_dir = Path(site).parent  # Get _build directory
     text_build_dir = build_dir / "text"
@@ -355,24 +355,22 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     remaining_files = [
         (f, 0) for stem, f in all_txt_files.items() if stem not in found_files
     ]
-    remaining_files.sort(key=lambda x: x[0].stem)  # Sort by filename stem
+    remaining_files.sort(key=lambda x: x[0].stem)
     if remaining_files:
         print(f"Additional files not in toctree: {len(remaining_files)}")
         for f, _ in remaining_files:
             print(f"  - {f.stem}")
         ordered_files.extend(remaining_files)
 
-    # Combine all text files into one following toctree order
+    # Combine all text files into one markdown file
     output_path = build_dir / "html/llms.txt"
 
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
     with open(output_path, "w", encoding="utf-8") as outfile:
-        outfile.write("=" * 80 + "\n")
-        outfile.write("COMPLETE DOCUMENTATION\n")
-        outfile.write("=" * 80 + "\n\n")
+        outfile.write("# Complete Documentation\n\n")
         outfile.write(
-            "This file contains all documentation pages combined into a single text"
+            "This file contains all documentation pages combined into a single markdown"
             " file.\n"
         )
         outfile.write(
@@ -383,12 +381,13 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
         )
 
         # Add table of contents with hierarchical structure
-        outfile.write("TABLE OF CONTENTS:\n")
-        outfile.write("-" * 40 + "\n")
+        outfile.write("## Table of Contents\n\n")
         for txt_file, depth in ordered_files:
             rel_path = txt_file.relative_to(text_build_dir)
             indent = "  " * depth
-            outfile.write(f"{indent}- {rel_path}\n")
+            # Create anchor link from filename
+            anchor = rel_path.stem.lower().replace(" ", "-").replace("_", "-")
+            outfile.write(f"{indent}- [{rel_path.stem}](#{anchor})\n")
         outfile.write("\n")
 
         # Add content from each file in toctree order
@@ -400,16 +399,18 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
                     if content:  # Only include non-empty files
                         rel_path = txt_file.relative_to(text_build_dir)
 
-                        # Add file header with depth indication
-                        header_char = "=" if depth == 0 else "-" if depth == 1 else "~"
-                        header_line = header_char * 80
+                        # Add file header with proper markdown heading level
+                        heading_level = "#" * min(
+                            depth + 2, 6
+                        )  # Start at ## since we used # for main title
 
-                        outfile.write(f"\n{header_line}\n")
-                        outfile.write(f"{'  ' * depth}{rel_path}\n")
-                        outfile.write(f"{header_line}\n\n")
+                        outfile.write(f"\n{heading_level} {rel_path.stem}\n\n")
+
+                        # Clean up the content to be markdown-friendly
+                        cleaned_content = clean_text_to_markdown(content)
 
                         # Add content
-                        outfile.write(content)
+                        outfile.write(cleaned_content)
                         outfile.write("\n\n")
 
             except Exception as e:
@@ -432,15 +433,8 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     word_count = len(content.split())
 
     # Estimate tokens using different methods
-    # Method 1: Simple approximation (4 chars per token average for English)
     tokens_simple = char_count / 4
-
-    # Method 2: Word-based approximation (0.75 tokens per word average)
     tokens_word_based = word_count * 0.75
-
-    # Method 3: More sophisticated approximation accounting for code/technical content
-    # Technical documentation tends to have more tokens
-    # per word due to code, symbols, etc.
     tokens_technical = word_count * 0.85
 
     print("\n📊 Content Statistics:")
@@ -461,6 +455,106 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     print(f"  Toctree entries found: {len(toctree_order)}")
 
     return 0
+
+
+def clean_text_to_markdown(content: str) -> str:
+    """
+    Convert Sphinx text builder output to clean markdown.
+    Removes excessive dashes and converts to proper markdown syntax.
+    """
+    lines = content.split("\n")
+    cleaned_lines = []
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # Skip empty lines (will be preserved)
+        if not line.strip():
+            cleaned_lines.append(line)
+            i += 1
+            continue
+
+        # Check for heading patterns (text followed by === or ---)
+        if i + 1 < len(lines):
+            next_line = lines[i + 1]
+            if re.match(r"^[=-]{3,}$", next_line.strip()):
+                # This is a heading - convert to markdown
+                if "=" in next_line:
+                    cleaned_lines.append(f"### {line.strip()}")
+                else:
+                    cleaned_lines.append(f"#### {line.strip()}")
+                i += 2  # Skip both the heading and underline
+                continue
+
+        # Clean up excessive dashes used for horizontal rules (10+ dashes)
+        if re.match(r"^-{10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up excessive equals signs (10+ equals)
+        if re.match(r"^={10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up box-drawing characters and convert to markdown tables
+        if "|" in line or re.match(r"^[\s\-\+]+$", line):
+            line = clean_table_line(line)
+
+        # Clean up excessive whitespace
+        line = re.sub(r" {3,}", " ", line)
+
+        cleaned_lines.append(line)
+        i += 1
+
+    # Join lines and clean up multiple consecutive blank lines
+    content = "\n".join(cleaned_lines)
+    content = re.sub(r"\n{3,}", "\n\n", content)
+
+    return content.strip()
+
+
+def clean_table_line(line: str) -> str:
+    """
+    Clean up table formatting to be markdown-friendly.
+    Converts ASCII table borders to markdown table syntax.
+    """
+    # If line is mostly dashes, pipes, and plus signs, it's likely a table border
+    if re.match(r"^[\s\-\+\|]+$", line):
+        # Count the number of columns based on pipes or plus signs
+        column_indicators = line.count("|") + line.count("+")
+        if column_indicators > 1:
+            # Create a clean markdown table separator
+            # Subtract 1 because markdown table separators have n-1 pipes for n columns
+            return "|" + " --- |" * (column_indicators - 1)
+        else:
+            # Single column or not a table, convert to horizontal rule
+            return "---"
+
+    # If line has pipes, clean up spacing for table rows
+    if "|" in line:
+        # Split by pipes and clean each cell
+        parts = line.split("|")
+        cleaned_parts = []
+
+        for part in parts:
+            # Clean up whitespace and remove box-drawing characters
+            cleaned_part = re.sub(r"[┌┐└┘├┤┬┴┼─│]", "", part)
+            cleaned_part = cleaned_part.strip()
+            cleaned_parts.append(cleaned_part)
+
+        # Filter out empty parts at the beginning and end
+        while cleaned_parts and not cleaned_parts[0]:
+            cleaned_parts.pop(0)
+        while cleaned_parts and not cleaned_parts[-1]:
+            cleaned_parts.pop()
+
+        if cleaned_parts:
+            return "| " + " | ".join(cleaned_parts) + " |"
+
+    return line
 
 
 def main():
@@ -564,7 +658,7 @@ def main():
         )  # to debug, add -vv
     elif args.format == "text":
         filename = f"{variables['repository_name']}.txt"
-        build_status = generate_single_text_file(str(docs_dir), args.site, filename)
+        build_status = generate_single_markdown_file(str(docs_dir), args.site, filename)
         if build_status != 0:
             print("Warning: Text export failed")
     else:
