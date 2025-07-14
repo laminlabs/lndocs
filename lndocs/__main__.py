@@ -448,11 +448,7 @@ def main():
     )
     aa("--strip-prefix", action="store_true", help="error upon warning")
     aa("--clean", action="store_true", help="clean build directory")
-    aa(
-        "--export-text",
-        action="store_true",
-        help="generate single text file with all docs",
-    )
+    aa("--format", type=str, default="html", help="provide 'text' or 'html'")
     args = parser.parse_args()
 
     if args.clean:
@@ -529,30 +525,33 @@ def main():
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
-    build_status = call(
-        f"{build_command} {docs_dir} {args.site}", shell=True
-    )  # to debug, add -vv
+    if args.format == "html":
+        build_status = call(
+            f"{build_command} {docs_dir} {args.site}", shell=True
+        )  # to debug, add -vv
+    elif args.format == "text":
+        filename = f"{variables['repository_name']}.txt"
+        build_status = generate_single_text_file(str(docs_dir), args.site, filename)
+        if build_status != 0:
+            print("Warning: Text export failed")
+    else:
+        raise ValueError(f"Unknown format: {args.format}. Use 'html' or 'text'.")
     if args.strict:
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
 
-    # remove db_args from registries documentation
-    for package_name in [
-        "lamindb",
-        "bionty",
-        "omop",
-        "lrex",
-        "wetlab",
-    ]:
-        for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
-            remove_lines_with_db_args(
-                Path(args.site) / generated.with_suffix(".html").name
-            )
-
-    if args.export_text:
-        filename = f"{variables['repository_name']}.txt"
-        text_status = generate_single_text_file(str(docs_dir), args.site, filename)
-        if text_status != 0:
-            print("Warning: Text export failed")
+    if args.format == "html":
+        # remove db_args from registries documentation
+        for package_name in [
+            "lamindb",
+            "bionty",
+            "omop",
+            "lrex",
+            "wetlab",
+        ]:
+            for generated in Path(docs_dir).glob(f"{package_name}.*.rst"):
+                remove_lines_with_db_args(
+                    Path(args.site) / generated.with_suffix(".html").name
+                )
 
     if not args.show:
         return build_status
