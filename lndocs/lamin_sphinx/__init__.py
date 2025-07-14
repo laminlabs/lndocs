@@ -98,6 +98,8 @@ building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
     "inherited-members": False,
 }
+show_inherited = os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
+print("show inherited members:", show_inherited)
 autodoc_mock_imports = [
     "vitessce",
     "mudata",
@@ -509,35 +511,28 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
-def get_class_methods(cls, excludes=None):
-    if excludes is None:
-        excludes = []
+def get_class_methods(cls, include_inherited=True):
     class_methods = []
-    for c in cls.__mro__:
-        if c in excludes:
-            continue
-        for name, _ in inspect.getmembers(c):
-            if (
-                isinstance(inspect.getattr_static(c, name), classmethod)
-                and name not in class_methods
-            ):
+    classes_to_check = cls.__mro__ if include_inherited else [cls]
+
+    for c in classes_to_check:
+        # Use __dict__ to get only attributes defined directly on this class
+        for name, obj in c.__dict__.items():
+            if isinstance(obj, classmethod) and name not in class_methods:
                 class_methods.append(name)
     return class_methods
 
 
-def get_instance_methods(cls, excludes=None):
-    if excludes is None:
-        excludes = []
+def get_instance_methods(cls, include_inherited=True):
     instance_methods = []
-    for c in cls.__mro__:
-        if c in excludes:
-            continue
-        for name, method in inspect.getmembers(c):
+    classes_to_check = cls.__mro__ if include_inherited else [cls]
+
+    for c in classes_to_check:
+        # Use __dict__ to get only attributes defined directly on this class
+        for name, obj in c.__dict__.items():
             if (
-                inspect.isfunction(method)
-                and not isinstance(
-                    inspect.getattr_static(c, name), (classmethod, staticmethod)
-                )
+                inspect.isfunction(obj)
+                and not isinstance(obj, (classmethod, staticmethod))
                 and name not in instance_methods
             ):
                 instance_methods.append(name)
@@ -695,8 +690,6 @@ def update_all_annotations(obj, types_dict):
 
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
-    show_inherited = True
-
     try:
         from django.db import models
         from lamindb.models import (
@@ -882,7 +875,7 @@ def process_docstring(app, what, name, obj, options, lines):
         if show_inherited:
             class_methods = get_class_methods(obj)
         else:
-            class_methods = get_class_methods(obj, excludes=obj.__bases__)
+            class_methods = get_class_methods(obj, include_inherited=False)
         filtered_class_methods = []
         for method_name in class_methods:
             if method_name.startswith(("__", "_", "from_db", "check")):
@@ -907,7 +900,7 @@ def process_docstring(app, what, name, obj, options, lines):
         if show_inherited:
             methods = get_instance_methods(obj)
         else:
-            methods = get_instance_methods(obj, excludes=obj.__bases__)
+            methods = get_instance_methods(obj, include_inherited=False)
         filtered_methods = []
         for method_name in methods:
             if method_name.startswith(

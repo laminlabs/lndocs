@@ -321,7 +321,9 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
 
     # Build documentation as text using Sphinx text builder
     print("Building documentation in text format...")
+    os.environ["LNDOCS_SHOW_INHERITED_MEMBERS"] = "false"
     build_status = call(f"sphinx-build -b text {docs_dir} {text_build_dir}", shell=True)
+    del os.environ["LNDOCS_SHOW_INHERITED_MEMBERS"]
 
     if build_status != 0:
         print("Error: Failed to build text documentation")
@@ -360,7 +362,7 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
         ordered_files.extend(remaining_files)
 
     # Combine all text files into one following toctree order
-    output_path = build_dir / output_filename
+    output_path = build_dir / "html/llms.txt"
 
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
