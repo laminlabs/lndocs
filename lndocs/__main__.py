@@ -362,7 +362,7 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
         ordered_files.extend(remaining_files)
 
     # Combine all text files into one following toctree order
-    output_path = build_dir / output_filename
+    output_path = build_dir / "html/llms.txt"
 
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
