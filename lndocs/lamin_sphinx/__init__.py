@@ -1,5 +1,6 @@
 import inspect
 import os
+import sys
 from datetime import datetime
 
 from docutils.writers._html_base import HTMLTranslator  # type: ignore
@@ -93,10 +94,20 @@ autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
 }
+building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
     "inherited-members": False,
 }
-autodoc_mock_imports = ["vitessce", "mudata", "tiledbsoma", "universal-pathlib"]
+show_inherited = os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
+print("show inherited members:", show_inherited)
+autodoc_mock_imports = [
+    "vitessce",
+    "mudata",
+    "tiledbsoma",
+    "universal-pathlib",
+    "pronto",
+    "polars",
+]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
@@ -498,69 +509,248 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
 pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
-def get_class_methods(cls, excludes=None):
-    if excludes is None:
-        excludes = []
+def get_class_methods(cls, include_inherited=True):
     class_methods = []
-    for c in cls.__mro__:
-        if c in excludes:
-            continue
-        for name, _ in inspect.getmembers(c):
-            if (
-                isinstance(inspect.getattr_static(c, name), classmethod)
-                and name not in class_methods
-            ):
+    classes_to_check = cls.__mro__ if include_inherited else [cls]
+
+    for c in classes_to_check:
+        # Use __dict__ to get only attributes defined directly on this class
+        for name, obj in c.__dict__.items():
+            if isinstance(obj, classmethod) and name not in class_methods:
                 class_methods.append(name)
     return class_methods
 
 
-def get_instance_methods(cls, excludes=None):
-    if excludes is None:
-        excludes = []
+def get_instance_methods(cls, include_inherited=True):
     instance_methods = []
-    for c in cls.__mro__:
-        if c in excludes:
-            continue
-        for name, method in inspect.getmembers(c):
+    classes_to_check = cls.__mro__ if include_inherited else [cls]
+
+    for c in classes_to_check:
+        # Use __dict__ to get only attributes defined directly on this class
+        for name, obj in c.__dict__.items():
             if (
-                inspect.isfunction(method)
-                and not isinstance(
-                    inspect.getattr_static(c, name), (classmethod, staticmethod)
-                )
+                inspect.isfunction(obj)
+                and not isinstance(obj, (classmethod, staticmethod))
                 and name not in instance_methods
             ):
                 instance_methods.append(name)
     return instance_methods
 
 
+def attach_func_to_class_method(func_name, cls, globals):
+    implementation = globals[func_name]
+    target = getattr(cls, func_name)
+    # assigning the original class definition docstring
+    # to the implementation only has an effect for regular methods
+    # not for class methods
+    # this is why we need @doc_args for class methods
+    implementation.__doc__ = target.__doc__
+    setattr(cls, func_name, implementation)
+
+
+from typing import NamedTuple  # noqa
+
+try:
+    import pandas as pd  # noqa
+    from lamindb.base import doc_args  # noqa
+    from lamindb.base.types import StrField  # noqa
+    from lamindb.models import QuerySet, SQLRecord  # noqa
+
+    # from lamindb.models.record import T  # noqa
+
+    @classmethod  # type:ignore
+    @doc_args(SQLRecord.filter.__doc__)
+    def filter(cls, *queries, **expressions) -> QuerySet:
+        """{}"""  # noqa: D415
+        pass
+
+    @classmethod  # type:ignore
+    @doc_args(SQLRecord.get.__doc__)
+    def get(
+        cls,
+        idlike: int | str | None = None,
+        **expressions,
+    ) -> SQLRecord:  # adding T as a type hint doesn't resolve on Sphinx
+        """{}"""  # noqa: D415
+        pass
+
+    @classmethod  # type:ignore
+    @doc_args(SQLRecord.df.__doc__)
+    def df(
+        cls,
+        include: str | list[str] | None = None,
+        features: bool | list[str] = False,
+        limit: int = 100,
+    ) -> pd.DataFrame:
+        """{}"""  # noqa: D415
+        pass
+
+    @classmethod  # type: ignore
+    @doc_args(SQLRecord.search.__doc__)
+    def search(
+        cls,
+        string: str,
+        *,
+        field: StrField | None = None,
+        limit: int | None = 20,
+        case_sensitive: bool = False,
+    ) -> QuerySet:
+        """{}"""  # noqa: D415
+        pass
+
+    @classmethod  # type: ignore
+    @doc_args(SQLRecord.lookup.__doc__)
+    def lookup(
+        cls,
+        field: StrField | None = None,
+        return_field: StrField | None = None,
+    ) -> NamedTuple:
+        """{}"""  # noqa: D415
+        pass
+
+    @classmethod  # type: ignore
+    @doc_args(SQLRecord.using.__doc__)
+    def using(
+        cls,
+        instance: str | None,
+    ) -> QuerySet:
+        """{}"""  # noqa: D415
+        pass
+
+except Exception as err:
+    print("WARNING: DID NOT IMPORT LAMINDB", err)
+
+
+def get_all_annotations(obj):
+    """Get all annotations, including inherited ones."""
+    all_annotations = {}
+
+    # Get the class or use the object's class
+    if isinstance(obj, type):
+        cls = obj
+    else:
+        cls = obj.__class__
+
+    # Traverse the MRO (Method Resolution Order) in reverse to
+    # prioritize direct class annotations
+    for base in reversed(cls.__mro__):
+        if hasattr(base, "__annotations__"):
+            all_annotations.update(base.__annotations__)
+
+    return all_annotations
+
+
+from typing import Union  # noqa
+
+
+def update_all_annotations(obj, types_dict):
+    """Update annotations with actual types from types_dict."""
+    # First, get all annotations including inherited ones
+    all_annotations = get_all_annotations(obj)
+
+    # Create a function to resolve complex annotation strings
+    def resolve_type(type_annotation):
+        # If it's already a type (not a string), return it
+        if not isinstance(type_annotation, str):
+            return type_annotation
+
+        # Handle union types with | syntax (Python 3.10+)
+        if "|" in type_annotation:
+            # Split by | and strip whitespace
+            parts = [part.strip() for part in type_annotation.split("|")]
+            # Resolve each part
+            resolved_parts = [types_dict.get(part, part) for part in parts]
+            # Attempt to create a union
+            try:
+                # For Python 3.10+
+                return Union[tuple(resolved_parts)]
+            except (TypeError, SyntaxError):
+                # Fall back to string if we can't create a proper Union
+                return type_annotation
+
+        # Handle simple types
+        return types_dict.get(type_annotation, type_annotation)
+
+    # Update the annotations with resolved types
+    resolved_annotations = {
+        key: resolve_type(value) for key, value in all_annotations.items()
+    }
+
+    # Ensure obj has an __annotations__ attribute
+    if not hasattr(obj, "__annotations__"):
+        obj.__annotations__ = {}
+
+    # Update the object's annotations with all resolved annotations
+    obj.__annotations__.update(resolved_annotations)
+
+    return obj.__annotations__
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
-
     try:
         from django.db import models
-        from lamindb.core._feature_manager import FeatureManager, ParamManager
         from lamindb.models import (
             Artifact,
+            BaseSQLRecord,
             Collection,
-            Record,
-            RegistryInfo,
+            Feature,
+            Project,
+            Reference,
+            Registry,
             Run,
+            Schema,
+            Space,
+            SQLRecord,
+            Storage,
             Transform,
+            ULabel,
             User,
         )
+        from lamindb.models._feature_manager import FeatureManager
+        from lamindb.models.sqlrecord import SQLRecordInfo
 
-        Artifact.features = FeatureManager("dummy")
-        Artifact.params = ParamManager("dummy")
-        Run.params = ParamManager("dummy")
-    except ImportError:
-        Record = int  # a hack
+        # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
+        # interpret the methods added through the Registry metaclass as classmethods
+        # but out-of-the-box it just doesn't and so we're hacking this
+        METHOD_NAMES = [
+            "filter",
+            "get",
+            "df",
+            "search",
+            "lookup",
+            "using",
+        ]
+        for name in METHOD_NAMES:
+            attach_func_to_class_method(name, BaseSQLRecord, globals())
+            attach_func_to_class_method(name, SQLRecord, globals())
+
+        types = {
+            "Space": Space,
+            "User": User,
+            "Run": Run,
+            "Schema": Schema,
+            "Collection": Collection,
+            "Feature": Feature,
+            "ULabel": ULabel,
+            "Transform": Transform,
+            "Artifact": Artifact,
+            "Project": Project,
+            "Reference": Reference,
+            "Storage": Storage,
+            "FeatureManager": FeatureManager,
+        }
+    except ImportError as err:
+        BaseSQLRecord = int
+        print("WARNING: DID NOT IMPORT LAMINDB", err)
 
     if inspect.isclass(obj):
         field_lines = []
         provenance_field_lines = []
         attributes_to_exclude = set()
-        if issubclass(obj, Record):
-            registry_info = RegistryInfo(obj)
+        if issubclass(obj, BaseSQLRecord):
+            update_all_annotations(obj, types)
+            registry_info = SQLRecordInfo(obj)
             field_lines.append("")
             field_lines.append("Simple fields")
             field_lines.append("-------------")
@@ -578,6 +768,12 @@ def process_docstring(app, what, name, obj, options, lines):
                 field_lines.append("-----------------")
                 field_lines.append("")
             for field in core_relations:
+                if obj is Schema and field.name in {
+                    "validated_by",
+                    "validated_schemas",
+                    "composite",
+                }:
+                    continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             # external relations don't work & maybe we don't need them in the docs
             # for module_name, module_relations in external_relations.items():
@@ -614,7 +810,14 @@ def process_docstring(app, what, name, obj, options, lines):
                 ]
             )
 
-        attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+        if show_inherited:
+            attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
+        else:
+            attributes = [
+                (name, value)
+                for name, value in obj.__dict__.items()
+                if not inspect.isroutine(value)
+            ]
         attributes = [
             a
             for a in attributes
@@ -623,23 +826,17 @@ def process_docstring(app, what, name, obj, options, lines):
         attr_lines = []
         for attr_name, attr_value in attributes:
             docstring = ""
-            annotation = ""
             autoattribute = True
             is_property = isinstance(attr_value, property)
             if is_property:
                 autoproperty = True
                 autoattribute = False
+                if hasattr(attr_value.fget, "__deprecated"):
+                    continue
             else:
-                if hasattr(attr_value, "__name__"):
-                    annotation = attr_value.__name__
-                else:
+                if not hasattr(attr_value, "__name__"):
                     autoattribute = True
-                    annotation = type(attr_value).__name__
                 docstring = attr_value.__doc__
-            if annotation in {"FeatureManagerArtifact", "FeatureManagerCollection"}:
-                annotation = "FeatureManager"
-            if annotation in {"ParamManagerArtifact", "ParamManagerRun"}:
-                annotation = "ParamManager"
             if autoattribute:
                 attr_lines.append(f".. autoattribute:: {attr_name}")
             elif autoproperty:
@@ -673,43 +870,63 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
 
         # class methods
-        class_methods = get_class_methods(obj)
-        class_methods = [
-            a
-            for a in class_methods
-            if not a.startswith(("__", "_", "from_db", "check"))
-        ]
-        if class_methods:
+        if show_inherited:
+            class_methods = get_class_methods(obj)
+        else:
+            class_methods = get_class_methods(obj, include_inherited=False)
+        filtered_class_methods = []
+        for method_name in class_methods:
+            if method_name.startswith(("__", "_", "from_db", "check")):
+                continue
+            try:
+                method_obj = getattr(obj, method_name)
+                if hasattr(method_obj, "__deprecated"):
+                    continue
+            except AttributeError:
+                pass
+            filtered_class_methods.append(method_name)
+        if filtered_class_methods:
             lines.append("Class methods")
             lines.append("-------------")
             lines.append("")
-        for meth in class_methods:
+        for meth in filtered_class_methods:
             lines.append(f".. automethod:: {meth}\n")
-        if class_methods:
+        if filtered_class_methods:
             lines.append("")
 
         # instance methods
-        methods = get_instance_methods(obj)
-        methods = [
-            a
-            for a in methods
-            if not a.startswith(("__", "_", "get_next", "get_previous", "full_clean"))
-        ]
-        if methods:
+        if show_inherited:
+            methods = get_instance_methods(obj)
+        else:
+            methods = get_instance_methods(obj, include_inherited=False)
+        filtered_methods = []
+        for method_name in methods:
+            if method_name.startswith(
+                ("__", "_", "get_next", "get_previous", "full_clean")
+            ):
+                continue
+            try:
+                method_obj = getattr(obj, method_name)
+                if hasattr(method_obj, "__deprecated"):
+                    continue
+            except AttributeError:
+                pass
+            filtered_methods.append(method_name)
+        if filtered_methods:
             lines.append("Methods")
             lines.append("-------")
             lines.append("")
-        for meth in methods:
+        for meth in filtered_methods:
             lines.append(f".. automethod:: {meth}\n")
-        if methods:
+        if filtered_methods:
             lines.append("")
     return lines
 
 
+# this here _might_ work for non-class methods, need to double check
+# all class members are handled above
 def skip_deprecated(app, what, name, obj, skip, options):
-    if hasattr(obj, "__deprecated"):
-        return True
-    return skip
+    return hasattr(obj, "__deprecated") or skip
 
 
 def setup(app: Sphinx):

@@ -4,13 +4,7 @@ import jinja2
 import yaml  # type: ignore
 
 
-def generate_conf(directory):
-    HERE = Path(__file__).parent
-    templateLoader = jinja2.FileSystemLoader(searchpath=HERE)
-    templateEnv = jinja2.Environment(loader=templateLoader)
-    TEMPLATE_FILE = "_template_conf.py"
-    template = templateEnv.get_template(TEMPLATE_FILE)
-
+def get_variables() -> dict[str, str]:
     if Path("./lamin-project.yaml").exists():
         with open("./lamin-project.yaml") as f:
             try:
@@ -34,6 +28,18 @@ def generate_conf(directory):
     if "package_name" not in variables:
         variables["package_name"] = variables["project_slug"].lower().replace("-", "_")
 
+    return variables
+
+
+def generate_conf(directory) -> dict[str, str]:
+    HERE = Path(__file__).parent
+    templateLoader = jinja2.FileSystemLoader(searchpath=HERE)
+    templateEnv = jinja2.Environment(loader=templateLoader)
+    TEMPLATE_FILE = "_template_conf.py"
+    template = templateEnv.get_template(TEMPLATE_FILE)
+
+    variables = get_variables()
+
     # prefix with `lamin_` and logg out
     variables_template = {}
     print("generating docs using:")
@@ -47,4 +53,4 @@ def generate_conf(directory):
     with open(Path(directory) / "conf.py", "w") as f:
         f.write(outputText)
 
-    return outputText
+    return variables

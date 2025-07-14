@@ -27,6 +27,10 @@ html[data-theme="dark"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="dark"] .highlight .nf {
+  color: #9146cc;
+}
+
 html[data-theme="dark"] .highlight .go {
   color: #6ee7b7;
 }
@@ -60,6 +64,10 @@ html[data-theme="light"] .highlight .kn {
   color: #f67107;
 }
 
+html[data-theme="light"] .highlight .nf {
+  color: #204a87;
+}
+
 /* docstring examples output */
 html[data-theme="light"] .highlight .go {
   color: #21af90;
@@ -83,7 +91,7 @@ html[data-theme="light"] .highlight .nc {
   color: #14b8a6;
 }
 
-/* python code type */
+/* code type */
 html[data-theme="light"] .highlight .nb {
   color: #60a5fa;
 }
@@ -143,6 +151,37 @@ div[class*="highlight-"] {
   margin: 0 0; /* was 1em 0 */
 }
 
+/* ------------------------- */
+/* Hide code in hidden cells */
+/* ------------------------- */
+
+.cell.tag_hide-cell .cell_input {
+  display: none;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Additional specificity to ensure it takes effect */
+.cell.tag_hide-cell details .cell_input {
+  position: absolute;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+/* Ensure the parent doesn't reserve space for it */
+.cell.tag_hide-cell details .cell_input * {
+  display: none;
+  height: 0;
+}
+
 /* --------- */
 /* Notebooks */
 /* --------- */
@@ -174,6 +213,7 @@ span.highlighted {
 
 .sd-tab-set {
   margin-top: 0em !important;
+  margin-bottom: 0em !important;
 }
 
 .sd-tab-content {
@@ -184,9 +224,12 @@ span.highlighted {
 }
 
 .sd-tab-set > label {
-  font-size: 1rem !important;
-  font-weight: 400 !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
   padding-top: 0 !important;
+  padding-bottom: 0.3rem !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
 }
 
 /* ------ */
@@ -609,6 +652,15 @@ body {
 
 a {
   color: var(--link-color);
+}
+
+a:visited {
+  color: #551a8b;
+}
+
+/* Dark theme visited links */
+html[data-theme="dark"] a:visited {
+  color: #bb86fc; /* Lighter purple that stands out on dark backgrounds */
 }
 
 .ablog-post-title a {

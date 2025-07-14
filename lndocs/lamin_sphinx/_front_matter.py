@@ -83,8 +83,8 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     float_right = ""
     if data.get("date"):
         float_right = f"<li> ⸻ {format_date()}</li>"
-    if html != "":
-        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""
+    if html != "" or float_right != "":
+        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
         self.nested_render_text(f"{html}", 0)
 
     if data.get("title") and self.md_config.title_to_header:
@@ -96,15 +96,26 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         else:
             affiliation = {}
 
+        def get_name(k):
+            return lndocs.authors[k.rstrip("*")][0]
+
+        def get_link(k):
+            return lndocs.authors[k.rstrip("*")][1]
+
         def format_title(k):
-            return f'title="{affiliation[k]}"' if affiliation else ""
+            return f'title="{affiliation[k.rstrip("*")]}"' if affiliation else ""
+
+        def add_star(k):
+            if k.endswith("*"):
+                return "*"
+            return ""
 
         import lndocs
 
         return ", ".join(
             [
-                f'<a href="{lndocs.authors[k][1]}"'
-                f" {format_title(k)}>{lndocs.authors[k][0]}</a>"
+                f'<a href="{get_link(k)}"'
+                f" {format_title(k)}>{get_name(k)}{add_star(k)}</a>"
                 for k in data["author"].split(", ")
             ]
         )
