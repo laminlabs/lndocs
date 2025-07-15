@@ -386,7 +386,7 @@ def generate_single_markdown_file(
 
     with open(output_path, "w", encoding="utf-8") as outfile:
         # Add table of contents with hierarchical structure
-        outfile.write("## Table of Contents\n\n")
+        outfile.write("## Table of contents\n\n")
         for txt_file, depth in ordered_files:
             rel_path = txt_file.relative_to(text_build_dir)
             indent = "  " * depth
