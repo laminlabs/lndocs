@@ -380,7 +380,7 @@ def generate_single_markdown_file(
         ordered_files.extend(remaining_files)
 
     # Combine all text files into one markdown file
-    output_path = build_dir / "html/llms.txt"
+    output_path = build_dir / f"html/{output_filename}"
 
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
@@ -674,7 +674,9 @@ def main():
             f"{build_command} {docs_dir} {args.site}", shell=True
         )  # to debug, add -vv
     elif args.format == "text":
-        filename = f"{variables['repository_name']}.txt"
+        filename = f"{variables['repository_name']}.md"
+        if filename == "lamin-docs.md":
+            filename = "summary.md"
         skip_patterns = [
             "wetlab.",
             "clinicore.",
