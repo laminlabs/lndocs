@@ -677,9 +677,9 @@ def main():
         filename = f"{variables['repository_name']}.txt"
         skip_patterns = [
             "wetlab.",
-            "lamindb.base.fields",
-            "lamindb.base.uids",
-            "lamindb.core.datasets",
+            "lamindb.base",
+            "lamindb.core",
+            "lamindb.models",
             "lamindb.curators.core",
             "lamindb.core.loaders",
             "lamindb.base.types",
