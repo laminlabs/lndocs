@@ -677,6 +677,7 @@ def main():
         filename = f"{variables['repository_name']}.txt"
         skip_patterns = [
             "wetlab.",
+            "clinicore.",
             "lamindb.base",
             "lamindb.core",
             "lamindb.models",
