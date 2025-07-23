@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -574,6 +575,20 @@ def clean_table_line(line: str) -> str:
     return line
 
 
+def strip_notebook_outputs(directory="."):
+    """Simple function to strip outputs from all notebooks in directory."""
+    notebook_files = list(Path(directory).rglob("*.ipynb"))
+
+    if not notebook_files:
+        print("No notebooks found")
+        return
+
+    for nb_file in notebook_files:
+        subprocess.run(["nbstripout", str(nb_file)])
+
+    print(f"Processed {len(notebook_files)} notebooks")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin docs site.")
     aa = parser.add_argument
@@ -705,6 +720,7 @@ def main():
             "bionty.source",
             "bionty.tissue",
         ]
+        strip_notebook_outputs(str(docs_dir))
         build_status = generate_single_markdown_file(
             str(docs_dir), args.site, filename, skip_patterns=skip_patterns
         )
