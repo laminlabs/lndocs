@@ -675,8 +675,7 @@ def main():
         )  # to debug, add -vv
     elif args.format == "text":
         filename = f"{variables['repository_name']}.md"
-        if filename == "lamin-docs.md":
-            filename = "summary.md"
+        filename = "summary.md"  # actually better
         skip_patterns = [
             "wetlab.",
             "clinicore.",
