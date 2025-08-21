@@ -93,6 +93,8 @@ autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
+    "Ontology": "bionty.base._ontology.Ontology",
+    "InspectResult": "bionty.base.dev.InspectResult",
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
