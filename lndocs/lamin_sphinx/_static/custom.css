@@ -303,6 +303,10 @@ div.cell_output tbody tr:nth-child(odd) {
 /* Images */
 /* ------ */
 
+img {
+  padding-bottom: 0.75rem;
+}
+
 html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
   background: transparent;
 }
