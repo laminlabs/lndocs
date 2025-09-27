@@ -551,12 +551,8 @@ details.sd-dropdown {
   box-shadow: none !important;
 }
 
-details.sd-dropdown summary.sd-card-header {
-  font-weight: 400;
-}
-
 details.sd-dropdown summary.sd-summary-title {
-  font-weight: 500;
+  font-weight: 500 !important;
 }
 
 details.sd-dropdown summary.sd-card-header,
