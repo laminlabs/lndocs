@@ -579,8 +579,8 @@ try:
         pass
 
     @classmethod  # type:ignore
-    @doc_args(SQLRecord.df.__doc__)
-    def df(
+    @doc_args(SQLRecord.to_dataframe.__doc__)
+    def to_dataframe(
         cls,
         include: str | list[str] | None = None,
         features: bool | list[str] = False,
@@ -720,7 +720,7 @@ def process_docstring(app, what, name, obj, options, lines):
         METHOD_NAMES = [
             "filter",
             "get",
-            "df",
+            "to_dataframe",
             "search",
             "lookup",
             "using",
