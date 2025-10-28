@@ -876,7 +876,9 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
 
         # class methods
-        if show_inherited:
+        if issubclass(obj, models.Field):
+            class_methods = []
+        elif show_inherited:
             class_methods = get_class_methods(obj)
         else:
             class_methods = get_class_methods(obj, include_inherited=False)
@@ -901,7 +903,9 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
 
         # instance methods
-        if show_inherited:
+        if issubclass(obj, models.Field):
+            class_methods = []
+        elif show_inherited:
             methods = get_instance_methods(obj)
         else:
             methods = get_instance_methods(obj, include_inherited=False)
