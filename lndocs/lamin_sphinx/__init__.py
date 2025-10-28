@@ -904,7 +904,7 @@ def process_docstring(app, what, name, obj, options, lines):
 
         # instance methods
         if issubclass(obj, models.Field):
-            class_methods = []
+            methods = []
         elif show_inherited:
             methods = get_instance_methods(obj)
         else:
