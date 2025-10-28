@@ -752,7 +752,6 @@ def process_docstring(app, what, name, obj, options, lines):
 
     if inspect.isclass(obj):
         field_lines = []
-        provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, BaseSQLRecord):
             update_all_annotations(obj, types)
@@ -861,8 +860,6 @@ def process_docstring(app, what, name, obj, options, lines):
             for line in attr_lines:
                 lines.append(line)
         for line in field_lines:
-            lines.append(line)
-        for line in provenance_field_lines:
             lines.append(line)
         # empty line in any case
         lines.append("")
