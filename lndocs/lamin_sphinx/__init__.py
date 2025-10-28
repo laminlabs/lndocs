@@ -694,6 +694,7 @@ def update_all_annotations(obj, types_dict):
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
     try:
+        from bionty.base import PublicOntology
         from django.db import models
         from lamindb.models import (
             Artifact,
@@ -814,7 +815,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     "backed",
                 ]
             )
-        if issubclass(obj, (Exception, SystemExit, models.Field)):
+        if issubclass(obj, (Exception, SystemExit, models.Field, PublicOntology)):
             attributes = []
         elif show_inherited:
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
@@ -876,7 +877,7 @@ def process_docstring(app, what, name, obj, options, lines):
         lines.append("")
 
         # class methods
-        if issubclass(obj, models.Field):
+        if issubclass(obj, (models.Field, PublicOntology)):
             class_methods = []
         elif show_inherited:
             class_methods = get_class_methods(obj)
@@ -903,7 +904,7 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
 
         # instance methods
-        if issubclass(obj, models.Field):
+        if issubclass(obj, (models.Field, PublicOntology)):
             methods = []
         elif show_inherited:
             methods = get_instance_methods(obj)
