@@ -781,15 +781,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
-            # external relations don't work & maybe we don't need them in the docs
-            # for module_name, module_relations in external_relations.items():
-            #     field_lines.append("")
-            #     field_lines.append(f"{module_name.capitalize()} fields")
-            #     field_lines.append(len(f"{module_name} fields") * "-")
-            #     field_lines.append("")
-            #     for field in module_relations:
-            #         field_lines.append(f".. autoattribute:: {field.name}\n")
-            # clean up
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
