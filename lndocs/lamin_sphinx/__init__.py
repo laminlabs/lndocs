@@ -814,7 +814,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     "backed",
                 ]
             )
-        if issubclass(obj, (Exception, SystemExit)):
+        if issubclass(obj, (Exception, SystemExit, models.Field)):
             attributes = []
         elif show_inherited:
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
