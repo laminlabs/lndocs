@@ -699,6 +699,7 @@ def process_docstring(app, what, name, obj, options, lines):
         from lamindb.models import (
             Artifact,
             BaseSQLRecord,
+            Branch,
             Collection,
             Feature,
             Project,
@@ -739,6 +740,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "Schema": Schema,
             "Collection": Collection,
             "Feature": Feature,
+            "Branch": Branch,
             "ULabel": ULabel,
             "Record": Record,
             "Transform": Transform,
