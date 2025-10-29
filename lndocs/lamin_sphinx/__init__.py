@@ -694,7 +694,6 @@ def update_all_annotations(obj, types_dict):
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
     try:
-        from bionty.base import PublicOntology
         from django.db import models
         from lamindb.models import (
             Artifact,
@@ -717,6 +716,7 @@ def process_docstring(app, what, name, obj, options, lines):
         )
         from lamindb.models._feature_manager import FeatureManager
         from lamindb.models.sqlrecord import SQLRecordInfo
+        from lamindb_setup.errors import ModuleWasntConfigured
 
         # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
         # interpret the methods added through the Registry metaclass as classmethods
@@ -753,6 +753,11 @@ def process_docstring(app, what, name, obj, options, lines):
     except ImportError as err:
         BaseSQLRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
+
+    try:
+        from bionty.base import PublicOntology
+    except ModuleWasntConfigured:
+        PublicOntology = int  # mock
 
     if inspect.isclass(obj):
         field_lines = []
