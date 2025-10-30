@@ -86,6 +86,7 @@ panels_add_bootstrap_css = False
 myst_enable_extensions = [
     "deflist",
     "colon_fence",
+    "linkify",  # urls are clickable
 ]
 myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
