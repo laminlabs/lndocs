@@ -22,7 +22,7 @@ dependencies = [
     "sphinx-design>=0.6.0",  # dropdowns etc.
     "sphinxcontrib-jquery",
     "sphinx-copybutton",
-    "linkify"
+    "linkify-it-py"
 ]
 
 [project.urls]
