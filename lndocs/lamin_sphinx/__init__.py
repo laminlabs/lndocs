@@ -914,6 +914,7 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("Attributes")
             lines.append("----------")
             lines.append("")
+        if attr_lines:
             for line in attr_lines:
                 lines.append(line)
         for line in field_lines:
