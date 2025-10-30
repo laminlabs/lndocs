@@ -861,18 +861,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 attr_lines.append("")
                 attr_lines.append("")
 
-        # print attributes and fields
-        if attr_lines:
-            lines.append("Attributes")
-            lines.append("----------")
-            lines.append("")
-            for line in attr_lines:
-                lines.append(line)
-        for line in field_lines:
-            lines.append(line)
-        # empty line in any case
-        lines.append("")
-
         # class methods
         if issubclass(obj, (models.Field, PublicOntology)):
             class_methods = []
@@ -891,14 +879,6 @@ def process_docstring(app, what, name, obj, options, lines):
             except AttributeError:
                 pass
             filtered_class_methods.append(method_name)
-        if filtered_class_methods:
-            lines.append("Class methods")
-            lines.append("-------------")
-            lines.append("")
-        for meth in filtered_class_methods:
-            lines.append(f".. automethod:: {meth}\n")
-        if filtered_class_methods:
-            lines.append("")
 
         # instance methods
         if issubclass(obj, (models.Field, PublicOntology)):
@@ -920,7 +900,34 @@ def process_docstring(app, what, name, obj, options, lines):
             except AttributeError:
                 pass
             filtered_methods.append(method_name)
-        if filtered_methods:
+
+        # print attributes and fields
+        # we don't want to print big headings if there is only one section
+        at_least_two_sections = (
+            bool(attr_lines)
+            + bool(field_lines)
+            + bool(filtered_class_methods)
+            + bool(filtered_methods)
+            >= 2
+        )
+        if attr_lines and at_least_two_sections:
+            lines.append("Attributes")
+            lines.append("----------")
+            lines.append("")
+            for line in attr_lines:
+                lines.append(line)
+        for line in field_lines:
+            lines.append(line)
+        lines.append("")
+        if filtered_class_methods and at_least_two_sections:
+            lines.append("Class methods")
+            lines.append("-------------")
+            lines.append("")
+        for meth in filtered_class_methods:
+            lines.append(f".. automethod:: {meth}\n")
+        if filtered_class_methods:
+            lines.append("")
+        if filtered_methods and at_least_two_sections:
             lines.append("Methods")
             lines.append("-------")
             lines.append("")
