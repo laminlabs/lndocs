@@ -903,13 +903,15 @@ def process_docstring(app, what, name, obj, options, lines):
             filtered_methods.append(method_name)
 
         # print attributes and fields
-        # we don't want to print big headings if there is only one section
+        # we don't want to print big headings if there are only 2 sections
+        # actually we only want these headings if we have one page per class
+        # but we haven't figured out a reliable way to detect that yet
         at_least_two_sections = (
             bool(attr_lines)
             + bool(field_lines)
             + bool(filtered_class_methods)
             + bool(filtered_methods)
-            >= 2
+            >= 3
         )
         if attr_lines and at_least_two_sections:
             lines.append("Attributes")
