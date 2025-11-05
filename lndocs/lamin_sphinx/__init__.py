@@ -766,11 +766,13 @@ def process_docstring(app, what, name, obj, options, lines):
         if issubclass(obj, BaseSQLRecord):
             update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
-            field_lines.append("")
-            field_lines.append("Simple fields")
-            field_lines.append("-------------")
-            field_lines.append("")
-            for field in registry_info.get_simple_fields():
+            simple_fields = registry_info.get_simple_fields()
+            if simple_fields:
+                field_lines.append("")
+                field_lines.append("Simple fields")
+                field_lines.append("-------------")
+                field_lines.append("")
+            for field in simple_fields:
                 attributes_to_exclude.add(field.name)
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             (
