@@ -751,6 +751,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "Storage": Storage,
             "FeatureManager": FeatureManager,
         }
+
     except ImportError as err:
         BaseSQLRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
@@ -760,24 +761,29 @@ def process_docstring(app, what, name, obj, options, lines):
     except ModuleWasntConfigured:
         PublicOntology = int  # mock
 
+    add_headings = False
     if inspect.isclass(obj):
         field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, BaseSQLRecord):
+            if obj not in {BaseSQLRecord, SQLRecord}:
+                add_headings = True
             update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
-            field_lines.append("")
-            field_lines.append("Simple fields")
-            field_lines.append("-------------")
-            field_lines.append("")
-            for field in registry_info.get_simple_fields():
+            simple_fields = registry_info.get_simple_fields()
+            if simple_fields and add_headings:
+                field_lines.append("")
+                field_lines.append("Simple fields")
+                field_lines.append("-------------")
+                field_lines.append("")
+            for field in simple_fields:
                 attributes_to_exclude.add(field.name)
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             (
                 core_relations,
                 _,
             ) = registry_info.get_relational_fields()
-            if core_relations:  # in fact always true
+            if core_relations and add_headings:
                 field_lines.append("")
                 field_lines.append("Relational fields")
                 field_lines.append("-----------------")
@@ -906,7 +912,7 @@ def process_docstring(app, what, name, obj, options, lines):
         # we don't want to print big headings if there are only 2 sections
         # actually we only want these headings if we have one page per class
         # but we haven't figured out a reliable way to detect that yet
-        at_least_two_sections = (
+        at_least_two_sections = add_headings and (
             bool(attr_lines)
             + bool(field_lines)
             + bool(filtered_class_methods)
