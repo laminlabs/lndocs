@@ -728,7 +728,7 @@ def process_docstring(app, what, name, obj, options, lines):
             "to_dataframe",
             "search",
             "lookup",
-            "using",
+            "connect",
         ]
         for name in METHOD_NAMES:
             attach_func_to_class_method(name, BaseSQLRecord, globals())
