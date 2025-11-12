@@ -615,8 +615,8 @@ try:
         pass
 
     @classmethod  # type: ignore
-    @doc_args(SQLRecord.using.__doc__)
-    def using(
+    @doc_args(SQLRecord.connect.__doc__)
+    def connect(
         cls,
         instance: str | None,
     ) -> QuerySet:
