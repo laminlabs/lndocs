@@ -793,6 +793,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     "validated_by",
                     "validated_schemas",
                     "composite",
+                    "slot",
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
