@@ -778,6 +778,10 @@ def process_docstring(app, what, name, obj, options, lines):
                 field_lines.append("")
             for field in simple_fields:
                 attributes_to_exclude.add(field.name)
+                if obj is Schema and field.name in {
+                    "slot",
+                }:
+                    continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             (
                 core_relations,
@@ -793,7 +797,6 @@ def process_docstring(app, what, name, obj, options, lines):
                     "validated_by",
                     "validated_schemas",
                     "composite",
-                    "slot",
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
