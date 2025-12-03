@@ -249,8 +249,8 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             links_html.append(
                 f"""
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="{ external_link["url"] }">
-                    { external_link["name"] }
+                  <a class="nav-link nav-external" href="{external_link["url"]}">
+                    {external_link["name"]}
                   </a>
                 </li>
                 """
@@ -765,6 +765,7 @@ def process_docstring(app, what, name, obj, options, lines):
     if inspect.isclass(obj):
         field_lines = []
         attributes_to_exclude = set()
+
         if issubclass(obj, BaseSQLRecord):
             if obj not in {BaseSQLRecord, SQLRecord}:
                 add_headings = True
@@ -840,8 +841,37 @@ def process_docstring(app, what, name, obj, options, lines):
             for a in attributes
             if (not a[0].startswith(("__", "_")) and a[0] not in attributes_to_exclude)
         ]
+
         attr_lines = []
+        documented_attrs = set()
+        if hasattr(obj, "__annotations__"):
+            for attr_name, attr_type in obj.__annotations__.items():
+                if (
+                    attr_name not in attributes_to_exclude
+                    and not attr_name.startswith("_")
+                    and attr_name not in documented_attrs
+                ):
+                    # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
+                    if obj.__name__ == "QueryDB":
+                        type_str = (
+                            str(attr_type)
+                            .replace("typing.", "")
+                            .replace("<class ", "")
+                            .replace(">", "")
+                            .strip("'")
+                        )
+                        attr_lines.append(f".. attribute:: {attr_name}")
+                        attr_lines.append(f"   :type: {type_str}")
+                        attr_lines.append("")
+                        attr_lines.append(f"   QuerySet for {attr_name} registry")
+                        attr_lines.append("")
+                    else:
+                        attr_lines.append(f".. autoattribute:: {attr_name}")
+                    documented_attrs.add(attr_name)
+
         for attr_name, attr_value in attributes:
+            if attr_name in documented_attrs:
+                continue
             docstring = ""
             autoattribute = True
             is_property = isinstance(attr_value, property)
@@ -859,15 +889,13 @@ def process_docstring(app, what, name, obj, options, lines):
             elif autoproperty:
                 attr_lines.append(f".. autoproperty:: {attr_name}")
             else:
-                # don't use this anymore because formatting the docstring
-                # becomes impossible
+                # don't use this anymore because formatting the docstring becomes impossible
                 attr_lines.append(f".. attribute:: {attr_name}")
             if docstring and not autoattribute:
                 attr_lines.append("")
                 attr_lines.append("")
                 for line in docstring.split("\n"):
-                    # I don't get why we have to unindent with the replace below
-                    # but that seems to be required
+                    # Unclear why we have to unindent with the replace below but that seems to be required
                     attr_lines.append("    " + line.replace("        ", ""))
                 attr_lines.append("")
                 attr_lines.append("")
