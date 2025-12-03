@@ -765,6 +765,7 @@ def process_docstring(app, what, name, obj, options, lines):
     if inspect.isclass(obj):
         field_lines = []
         attributes_to_exclude = set()
+
         if issubclass(obj, BaseSQLRecord):
             if obj not in {BaseSQLRecord, SQLRecord}:
                 add_headings = True
@@ -840,7 +841,22 @@ def process_docstring(app, what, name, obj, options, lines):
             for a in attributes
             if (not a[0].startswith(("__", "_")) and a[0] not in attributes_to_exclude)
         ]
+
         attr_lines = []
+        if hasattr(obj, "__annotations__"):
+            for attr_name in obj.__annotations__:
+                if attr_name not in attributes_to_exclude and not attr_name.startswith(
+                    "_"
+                ):
+                    if obj.__name__ == "QueryDB":
+                        attr_lines.append(f".. attribute:: {attr_name}")
+                        attr_lines.append("   :type: QuerySet")
+                        attr_lines.append("")
+                        attr_lines.append(f"   QuerySet for {attr_name} registry")
+                        attr_lines.append("")
+                    else:
+                        attr_lines.append(f".. autoattribute:: {attr_name}")
+
         for attr_name, attr_value in attributes:
             docstring = ""
             autoattribute = True
