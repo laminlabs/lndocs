@@ -79,7 +79,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     if data.get("doi"):
         if html != "" and not html.endswith(" · "):
             html += " · "
-        html += f'<a href=https://doi.org/{data["doi"]}>DOI</a>'
+        html += f"<a href=https://doi.org/{data['doi']}>DOI</a>"
     float_right = ""
     if data.get("date"):
         float_right = f"<li> ⸻ {format_date()}</li>"

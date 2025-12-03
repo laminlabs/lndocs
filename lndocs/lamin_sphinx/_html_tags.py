@@ -52,9 +52,9 @@ def add_scholar_tags(
     tags = {}
 
     fix_og_url(context, config)
-    tags[
-        "twitter:image"
-    ] = "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
+    tags["twitter:image"] = (
+        "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
+    )
 
     # add citation tags and overwrite ogp tags
     if "doi" in fields:

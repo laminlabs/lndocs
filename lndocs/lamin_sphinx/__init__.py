@@ -249,8 +249,8 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             links_html.append(
                 f"""
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="{ external_link["url"] }">
-                    { external_link["name"] }
+                  <a class="nav-link nav-external" href="{external_link["url"]}">
+                    {external_link["name"]}
                   </a>
                 </li>
                 """
@@ -844,11 +844,22 @@ def process_docstring(app, what, name, obj, options, lines):
 
         attr_lines = []
         documented_attrs = set()
-        if hasattr(obj, '__annotations__'):
+        if hasattr(obj, "__annotations__"):
             for attr_name, attr_type in obj.__annotations__.items():
-                if attr_name not in attributes_to_exclude and not attr_name.startswith('_'):
+                if (
+                    attr_name not in attributes_to_exclude
+                    and not attr_name.startswith("_")
+                    and attr_name not in documented_attrs
+                ):
+                    # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
                     if obj.__name__ == "QueryDB":
-                        type_str = str(attr_type).replace('typing.', '').replace('<class ', '').replace('>', '').strip("'")
+                        type_str = (
+                            str(attr_type)
+                            .replace("typing.", "")
+                            .replace("<class ", "")
+                            .replace(">", "")
+                            .strip("'")
+                        )
                         attr_lines.append(f".. attribute:: {attr_name}")
                         attr_lines.append(f"   :type: {type_str}")
                         attr_lines.append("")
