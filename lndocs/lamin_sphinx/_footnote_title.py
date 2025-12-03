@@ -1,9 +1,9 @@
 # -------------------------------------------------------------------------------------
 # this enables a footnote tooltip by setting the title element
 
-from io import StringIO  # type: ignore  # noqa
+from io import StringIO  # type: ignore
 
-from markdown import Markdown  # type: ignore  # noqa
+from markdown import Markdown  # type: ignore
 
 
 def unmark_element(element, stream=None):
@@ -28,7 +28,7 @@ def unmark(text):
     return __md.convert(text)
 
 
-from docutils.nodes import footnote  # type: ignore  # noqa
+from docutils.nodes import footnote  # type: ignore
 
 
 def visit_footnote_reference(self, node):
