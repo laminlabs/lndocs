@@ -843,21 +843,24 @@ def process_docstring(app, what, name, obj, options, lines):
         ]
 
         attr_lines = []
-        if hasattr(obj, "__annotations__"):
-            for attr_name in obj.__annotations__:
-                if attr_name not in attributes_to_exclude and not attr_name.startswith(
-                    "_"
-                ):
+        documented_attrs = set()
+        if hasattr(obj, '__annotations__'):
+            for attr_name, attr_type in obj.__annotations__.items():
+                if attr_name not in attributes_to_exclude and not attr_name.startswith('_'):
                     if obj.__name__ == "QueryDB":
+                        type_str = str(attr_type).replace('typing.', '').replace('<class ', '').replace('>', '').strip("'")
                         attr_lines.append(f".. attribute:: {attr_name}")
-                        attr_lines.append("   :type: QuerySet")
+                        attr_lines.append(f"   :type: {type_str}")
                         attr_lines.append("")
                         attr_lines.append(f"   QuerySet for {attr_name} registry")
                         attr_lines.append("")
                     else:
                         attr_lines.append(f".. autoattribute:: {attr_name}")
+                    documented_attrs.add(attr_name)
 
         for attr_name, attr_value in attributes:
+            if attr_name in documented_attrs:
+                continue
             docstring = ""
             autoattribute = True
             is_property = isinstance(attr_value, property)
@@ -875,15 +878,13 @@ def process_docstring(app, what, name, obj, options, lines):
             elif autoproperty:
                 attr_lines.append(f".. autoproperty:: {attr_name}")
             else:
-                # don't use this anymore because formatting the docstring
-                # becomes impossible
+                # don't use this anymore because formatting the docstring becomes impossible
                 attr_lines.append(f".. attribute:: {attr_name}")
             if docstring and not autoattribute:
                 attr_lines.append("")
                 attr_lines.append("")
                 for line in docstring.split("\n"):
-                    # I don't get why we have to unindent with the replace below
-                    # but that seems to be required
+                    # Unclear why we have to unindent with the replace below but that seems to be required
                     attr_lines.append("    " + line.replace("        ", ""))
                 attr_lines.append("")
                 attr_lines.append("")

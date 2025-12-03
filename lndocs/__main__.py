@@ -16,7 +16,7 @@ HERE = Path(__file__).parent
 
 
 # https://stackoverflow.com/questions/41129921
-def datetime_valid(s: str):
+def datetime_valid(s: str) -> bool:
     try:
         datetime.fromisoformat(s)
     except ValueError:
@@ -104,8 +104,7 @@ def additional_ansi_colors():
 
 
 def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
-    """
-    Parse the toctree structure from Sphinx documentation to get the correct ordering.
+    """Parse the toctree structure from Sphinx documentation to get the correct ordering.
 
     Returns:
         List of (filename, depth) tuples in toctree order
@@ -309,8 +308,8 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
 def generate_single_markdown_file(
     docs_dir: str, site: str, output_filename: str, skip_patterns: list[str] = None
 ):
-    """
-    Generate a single markdown file containing the entire documentation.
+    """Generate a single markdown file containing the entire documentation.
+
     Uses Sphinx text builder and converts output to clean markdown.
     Follows the toctree structure for proper ordering.
 
@@ -462,8 +461,8 @@ def generate_single_markdown_file(
 
 
 def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
-    """
-    Convert Sphinx text builder output to clean markdown.
+    """Convert Sphinx text builder output to clean markdown.
+    
     Removes excessive dashes and converts to proper markdown syntax.
 
     Args:
