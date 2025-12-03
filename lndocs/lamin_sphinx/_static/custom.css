@@ -305,6 +305,10 @@ div.cell_output tbody tr:nth-child(odd) {
 /* Images */
 /* ------ */
 
+img {
+  padding-bottom: 0.75rem;
+}
+
 html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
   background: transparent;
 }
@@ -432,6 +436,7 @@ nav {
   height: 1.5rem;
   margin-right: 0rem;
   vertical-align: text-bottom;
+  padding-bottom: 0;
 }
 
 .navbar-brand p {
@@ -548,8 +553,8 @@ details.sd-dropdown {
   box-shadow: none !important;
 }
 
-details.sd-dropdown summary.sd-card-header {
-  font-weight: 400;
+details.sd-dropdown summary.sd-summary-title {
+  font-weight: 500 !important;
 }
 
 details.sd-dropdown summary.sd-card-header,

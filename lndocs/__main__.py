@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -305,17 +306,23 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
     return toctree_order
 
 
-def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
+def generate_single_markdown_file(
+    docs_dir: str, site: str, output_filename: str, skip_patterns: list[str] = None
+):
     """
-    Generate a single text file containing the entire documentation.
-    Also keeps individual text files in _build/text directory.
+    Generate a single markdown file containing the entire documentation.
+    Uses Sphinx text builder and converts output to clean markdown.
     Follows the toctree structure for proper ordering.
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
         site: Main build directory (e.g., "_build/html")
-        output_filename: Name of the output text file
+        output_filename: Name of the output markdown file
+        skip_patterns: List of patterns to skip files whose stem
+            contains any of these patterns
     """
+    if skip_patterns is None:
+        skip_patterns = []
     build_dir = Path(site).parent  # Get _build directory
     text_build_dir = build_dir / "text"
 
@@ -347,47 +354,45 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     print("Ordering files according to toctree structure:")
     for file_stem, depth in toctree_order:
         if file_stem in all_txt_files:
+            # Check if this file should be skipped
+            should_skip = any(pattern in file_stem for pattern in skip_patterns)
+            if should_skip:
+                print(f"  {'  ' * depth}× {file_stem} (skipped)")
+                continue
+
             ordered_files.append((all_txt_files[file_stem], depth))
             found_files.add(file_stem)
             print(f"  {'  ' * depth}- {file_stem}")
 
     # Add any remaining files that weren't in the toctree
-    remaining_files = [
-        (f, 0) for stem, f in all_txt_files.items() if stem not in found_files
-    ]
+    remaining_files = []
+    for stem, f in all_txt_files.items():
+        if stem not in found_files:
+            # Check if this file should be skipped
+            should_skip = any(pattern in stem for pattern in skip_patterns)
+            if not should_skip:
+                remaining_files.append((f, 0))
+
+    remaining_files.sort(key=lambda x: x[0].stem)
     if remaining_files:
-        print("Additional files not in toctree:")
+        print(f"Additional files not in toctree: {len(remaining_files)}")
         for f, _ in remaining_files:
             print(f"  - {f.stem}")
         ordered_files.extend(remaining_files)
 
-    # Combine all text files into one following toctree order
-    output_path = build_dir / "html/llms.txt"
+    # Combine all text files into one markdown file
+    output_path = build_dir / f"html/{output_filename}"
 
     print(f"Combining {len(ordered_files)} text files into {output_path}...")
 
     with open(output_path, "w", encoding="utf-8") as outfile:
-        outfile.write("=" * 80 + "\n")
-        outfile.write("COMPLETE DOCUMENTATION\n")
-        outfile.write("=" * 80 + "\n\n")
-        outfile.write(
-            "This file contains all documentation pages combined into a single text"
-            " file.\n"
-        )
-        outfile.write(
-            "Individual text files are available in the _build/text directory.\n"
-        )
-        outfile.write(
-            "Content is ordered according to the Sphinx toctree structure.\n\n"
-        )
-
         # Add table of contents with hierarchical structure
-        outfile.write("TABLE OF CONTENTS:\n")
-        outfile.write("-" * 40 + "\n")
+        outfile.write("## Table of contents\n\n")
         for txt_file, depth in ordered_files:
             rel_path = txt_file.relative_to(text_build_dir)
             indent = "  " * depth
-            outfile.write(f"{indent}- {rel_path}\n")
+            # Simple list without links
+            outfile.write(f"{indent}- {rel_path.stem}\n")
         outfile.write("\n")
 
         # Add content from each file in toctree order
@@ -399,16 +404,17 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
                     if content:  # Only include non-empty files
                         rel_path = txt_file.relative_to(text_build_dir)
 
-                        # Add file header with depth indication
-                        header_char = "=" if depth == 0 else "-" if depth == 1 else "~"
-                        header_line = header_char * 80
+                        # Add invisible page marker for reference
+                        outfile.write(f"\n<!-- Page: {rel_path.stem} -->\n\n")
 
-                        outfile.write(f"\n{header_line}\n")
-                        outfile.write(f"{'  ' * depth}{rel_path}\n")
-                        outfile.write(f"{header_line}\n\n")
+                        # Clean up the content to be markdown-friendly
+                        # No page separator, content flows directly
+                        cleaned_content = clean_text_to_markdown(
+                            content, base_depth=depth
+                        )
 
                         # Add content
-                        outfile.write(content)
+                        outfile.write(cleaned_content)
                         outfile.write("\n\n")
 
             except Exception as e:
@@ -422,12 +428,165 @@ def generate_single_text_file(docs_dir: str, site: str, output_filename: str):
     total_size = sum(f.stat().st_size for f, _ in ordered_files if f.exists())
     combined_size = output_path.stat().st_size
 
+    # Read the combined file to get content statistics
+    with open(output_path, "r", encoding="utf-8") as f:  # type: ignore
+        content = f.read()  # type: ignore
+
+    # Calculate metrics
+    char_count = len(content)
+    word_count = len(content.split())
+
+    # Estimate tokens using different methods
+    tokens_simple = char_count / 4
+    tokens_word_based = word_count * 0.75
+    tokens_technical = word_count * 0.85
+
+    print("\n📊 Content Statistics:")
+    print(f"  Characters: {char_count:,}")
+    print(f"  Words: {word_count:,}")
+    print(f"  Estimated tokens (simple): {tokens_simple:,.0f}")
+    print(f"  Estimated tokens (word-based): {tokens_word_based:,.0f}")
+    print(f"  Estimated tokens (technical): {tokens_technical:,.0f}")
+    print(
+        "  Average token estimate:"
+        f" {(tokens_simple + tokens_word_based + tokens_technical) / 3:,.0f}"
+    )
+
+    print("\n📁 File Statistics:")
     print(f"  Individual files total: {total_size / 1024 / 1024:.1f} MB")
     print(f"  Combined file size: {combined_size / 1024 / 1024:.1f} MB")
     print(f"  Files processed: {len(ordered_files)}")
     print(f"  Toctree entries found: {len(toctree_order)}")
 
     return 0
+
+
+def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
+    """
+    Convert Sphinx text builder output to clean markdown.
+    Removes excessive dashes and converts to proper markdown syntax.
+
+    Args:
+        content: Raw text content from Sphinx
+        base_depth: Base depth for heading adjustment (from toctree)
+    """
+    lines = content.split("\n")
+    cleaned_lines = []
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # Skip empty lines (will be preserved)
+        if not line.strip():
+            cleaned_lines.append(line)
+            i += 1
+            continue
+
+        # Check for heading patterns (text followed by === or ---)
+        if i + 1 < len(lines):
+            next_line = lines[i + 1]
+            if re.match(r"^[=*\-~^]{3,}$", next_line.strip()):
+                # This is a heading - convert to markdown with proper depth
+                heading_char = next_line.strip()[0]
+
+                # Determine heading level based on Sphinx conventions
+                # = is usually h1, * is h2, - is h3, ~ is h4, ^ is h5
+                sphinx_level = {"=": 1, "*": 2, "-": 3, "~": 4, "^": 5}.get(
+                    heading_char, 2
+                )
+
+                # Adjust level based on toctree depth
+                # Start at h1 for top-level pages (no main title reserved)
+                final_level = min(sphinx_level + base_depth, 6)
+
+                heading_prefix = "#" * final_level
+                cleaned_lines.append(f"{heading_prefix} {line.strip()}")
+                i += 2  # Skip both the heading and underline
+                continue
+
+        # Clean up excessive dashes used for horizontal rules (10+ dashes)
+        if re.match(r"^-{10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up excessive equals signs (10+ equals)
+        if re.match(r"^={10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up box-drawing characters and convert to markdown tables
+        if "|" in line or re.match(r"^[\s\-\+]+$", line):
+            line = clean_table_line(line)
+
+        # Clean up excessive whitespace
+        line = re.sub(r" {3,}", " ", line)
+
+        cleaned_lines.append(line)
+        i += 1
+
+    # Join lines and clean up multiple consecutive blank lines
+    content = "\n".join(cleaned_lines)
+    content = re.sub(r"\n{3,}", "\n\n", content)
+
+    return content.strip()
+
+
+def clean_table_line(line: str) -> str:
+    """
+    Clean up table formatting to be markdown-friendly.
+    Converts ASCII table borders to markdown table syntax.
+    """
+    # If line is mostly dashes, pipes, and plus signs, it's likely a table border
+    if re.match(r"^[\s\-\+\|]+$", line):
+        # Count the number of columns based on pipes or plus signs
+        column_indicators = line.count("|") + line.count("+")
+        if column_indicators > 1:
+            # Create a clean markdown table separator
+            # Subtract 1 because markdown table separators have n-1 pipes for n columns
+            return "|" + " --- |" * (column_indicators - 1)
+        else:
+            # Single column or not a table, convert to horizontal rule
+            return "---"
+
+    # If line has pipes, clean up spacing for table rows
+    if "|" in line:
+        # Split by pipes and clean each cell
+        parts = line.split("|")
+        cleaned_parts = []
+
+        for part in parts:
+            # Clean up whitespace and remove box-drawing characters
+            cleaned_part = re.sub(r"[┌┐└┘├┤┬┴┼─│]", "", part)
+            cleaned_part = cleaned_part.strip()
+            cleaned_parts.append(cleaned_part)
+
+        # Filter out empty parts at the beginning and end
+        while cleaned_parts and not cleaned_parts[0]:
+            cleaned_parts.pop(0)
+        while cleaned_parts and not cleaned_parts[-1]:
+            cleaned_parts.pop()
+
+        if cleaned_parts:
+            return "| " + " | ".join(cleaned_parts) + " |"
+
+    return line
+
+
+def strip_notebook_outputs(directory="."):
+    """Simple function to strip outputs from all notebooks in directory."""
+    notebook_files = list(Path(directory).rglob("*.ipynb"))
+
+    if not notebook_files:
+        print("No notebooks found")
+        return
+
+    for nb_file in notebook_files:
+        subprocess.run(["nbstripout", str(nb_file)])
+
+    print(f"Processed {len(notebook_files)} notebooks")
 
 
 def main():
@@ -530,8 +689,41 @@ def main():
             f"{build_command} {docs_dir} {args.site}", shell=True
         )  # to debug, add -vv
     elif args.format == "text":
-        filename = f"{variables['repository_name']}.txt"
-        build_status = generate_single_text_file(str(docs_dir), args.site, filename)
+        filename = f"{variables['repository_name']}.md"
+        filename = "summary.md"  # actually better
+        skip_patterns = [
+            "wetlab.",
+            "clinicore.",
+            "lamindb.base",
+            "lamindb.core",
+            "lamindb.models",
+            "lamindb.curators.core",
+            "lamindb.core.loaders",
+            "lamindb.base.types",
+            "lamindb.core.storage",
+            "lamindb.errors",
+            "lamindb.setup.errors",
+            "bionty.base",
+            "bionty.core",
+            "lamindb.setup",
+            "bionty.celltype",
+            "bionty.developmentalstage",
+            "bionty.disease",
+            "bionty.ethnicity",
+            "bionty.experimentalfactor",
+            "bionty.gene",
+            "bionty.organism",
+            "bionty.pathway",
+            "bionty.phenotype",
+            "bionty.protein",
+            "bionty.settings",
+            "bionty.source",
+            "bionty.tissue",
+        ]
+        strip_notebook_outputs(str(docs_dir))
+        build_status = generate_single_markdown_file(
+            str(docs_dir), args.site, filename, skip_patterns=skip_patterns
+        )
         if build_status != 0:
             print("Warning: Text export failed")
     else:

@@ -86,6 +86,7 @@ panels_add_bootstrap_css = False
 myst_enable_extensions = [
     "deflist",
     "colon_fence",
+    "linkify",  # urls are clickable
 ]
 myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
@@ -93,6 +94,8 @@ autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
+    "Ontology": "bionty.base._ontology.Ontology",
+    "InspectResult": "bionty.base.dev.InspectResult",
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
@@ -107,6 +110,7 @@ autodoc_mock_imports = [
     "universal-pathlib",
     "pronto",
     "polars",
+    "lightning",
 ]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
@@ -575,8 +579,8 @@ try:
         pass
 
     @classmethod  # type:ignore
-    @doc_args(SQLRecord.df.__doc__)
-    def df(
+    @doc_args(SQLRecord.to_dataframe.__doc__)
+    def to_dataframe(
         cls,
         include: str | list[str] | None = None,
         features: bool | list[str] = False,
@@ -609,8 +613,8 @@ try:
         pass
 
     @classmethod  # type: ignore
-    @doc_args(SQLRecord.using.__doc__)
-    def using(
+    @doc_args(SQLRecord.connect.__doc__)
+    def connect(
         cls,
         instance: str | None,
     ) -> QuerySet:
@@ -693,9 +697,11 @@ def process_docstring(app, what, name, obj, options, lines):
         from lamindb.models import (
             Artifact,
             BaseSQLRecord,
+            Branch,
             Collection,
             Feature,
             Project,
+            Record,
             Reference,
             Registry,
             Run,
@@ -709,6 +715,7 @@ def process_docstring(app, what, name, obj, options, lines):
         )
         from lamindb.models._feature_manager import FeatureManager
         from lamindb.models.sqlrecord import SQLRecordInfo
+        from lamindb_setup.errors import ModuleWasntConfigured
 
         # What follows under METHOD_NAMES is ridiculous because Sphinx should be able to
         # interpret the methods added through the Registry metaclass as classmethods
@@ -716,10 +723,10 @@ def process_docstring(app, what, name, obj, options, lines):
         METHOD_NAMES = [
             "filter",
             "get",
-            "df",
+            "to_dataframe",
             "search",
             "lookup",
-            "using",
+            "connect",
         ]
         for name in METHOD_NAMES:
             attach_func_to_class_method(name, BaseSQLRecord, globals())
@@ -732,7 +739,9 @@ def process_docstring(app, what, name, obj, options, lines):
             "Schema": Schema,
             "Collection": Collection,
             "Feature": Feature,
+            "Branch": Branch,
             "ULabel": ULabel,
+            "Record": Record,
             "Transform": Transform,
             "Artifact": Artifact,
             "Project": Project,
@@ -740,29 +749,43 @@ def process_docstring(app, what, name, obj, options, lines):
             "Storage": Storage,
             "FeatureManager": FeatureManager,
         }
+
     except ImportError as err:
         BaseSQLRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
 
+    try:
+        from bionty.base import PublicOntology
+    except ModuleWasntConfigured:
+        PublicOntology = int  # mock
+
+    add_headings = False
     if inspect.isclass(obj):
         field_lines = []
-        provenance_field_lines = []
         attributes_to_exclude = set()
         if issubclass(obj, BaseSQLRecord):
+            if obj not in {BaseSQLRecord, SQLRecord}:
+                add_headings = True
             update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
-            field_lines.append("")
-            field_lines.append("Simple fields")
-            field_lines.append("-------------")
-            field_lines.append("")
-            for field in registry_info.get_simple_fields():
+            simple_fields = registry_info.get_simple_fields()
+            if simple_fields and add_headings:
+                field_lines.append("")
+                field_lines.append("Simple fields")
+                field_lines.append("-------------")
+                field_lines.append("")
+            for field in simple_fields:
                 attributes_to_exclude.add(field.name)
+                if obj is Schema and field.name in {
+                    "slot",
+                }:
+                    continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
             (
                 core_relations,
                 _,
             ) = registry_info.get_relational_fields()
-            if core_relations:  # in fact always true
+            if core_relations and add_headings:
                 field_lines.append("")
                 field_lines.append("Relational fields")
                 field_lines.append("-----------------")
@@ -775,15 +798,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
-            # external relations don't work & maybe we don't need them in the docs
-            # for module_name, module_relations in external_relations.items():
-            #     field_lines.append("")
-            #     field_lines.append(f"{module_name.capitalize()} fields")
-            #     field_lines.append(len(f"{module_name} fields") * "-")
-            #     field_lines.append("")
-            #     for field in module_relations:
-            #         field_lines.append(f".. autoattribute:: {field.name}\n")
-            # clean up
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
@@ -809,8 +823,9 @@ def process_docstring(app, what, name, obj, options, lines):
                     "backed",
                 ]
             )
-
-        if show_inherited:
+        if issubclass(obj, (Exception, SystemExit, models.Field, PublicOntology)):
+            attributes = []
+        elif show_inherited:
             attributes = inspect.getmembers(obj, lambda a: not (inspect.isroutine(a)))
         else:
             attributes = [
@@ -855,22 +870,10 @@ def process_docstring(app, what, name, obj, options, lines):
                 attr_lines.append("")
                 attr_lines.append("")
 
-        # print attributes and fields
-        if attr_lines:
-            lines.append("Attributes")
-            lines.append("----------")
-            lines.append("")
-            for line in attr_lines:
-                lines.append(line)
-        for line in field_lines:
-            lines.append(line)
-        for line in provenance_field_lines:
-            lines.append(line)
-        # empty line in any case
-        lines.append("")
-
         # class methods
-        if show_inherited:
+        if issubclass(obj, (models.Field, PublicOntology)):
+            class_methods = []
+        elif show_inherited:
             class_methods = get_class_methods(obj)
         else:
             class_methods = get_class_methods(obj, include_inherited=False)
@@ -885,17 +888,11 @@ def process_docstring(app, what, name, obj, options, lines):
             except AttributeError:
                 pass
             filtered_class_methods.append(method_name)
-        if filtered_class_methods:
-            lines.append("Class methods")
-            lines.append("-------------")
-            lines.append("")
-        for meth in filtered_class_methods:
-            lines.append(f".. automethod:: {meth}\n")
-        if filtered_class_methods:
-            lines.append("")
 
         # instance methods
-        if show_inherited:
+        if issubclass(obj, (models.Field, PublicOntology)):
+            methods = []
+        elif show_inherited:
             methods = get_instance_methods(obj)
         else:
             methods = get_instance_methods(obj, include_inherited=False)
@@ -912,7 +909,37 @@ def process_docstring(app, what, name, obj, options, lines):
             except AttributeError:
                 pass
             filtered_methods.append(method_name)
-        if filtered_methods:
+
+        # print attributes and fields
+        # we don't want to print big headings if there are only 2 sections
+        # actually we only want these headings if we have one page per class
+        # but we haven't figured out a reliable way to detect that yet
+        at_least_two_sections = add_headings and (
+            bool(attr_lines)
+            + bool(field_lines)
+            + bool(filtered_class_methods)
+            + bool(filtered_methods)
+            >= 3
+        )
+        if attr_lines and at_least_two_sections:
+            lines.append("Attributes")
+            lines.append("----------")
+            lines.append("")
+        if attr_lines:
+            for line in attr_lines:
+                lines.append(line)
+        for line in field_lines:
+            lines.append(line)
+        lines.append("")
+        if filtered_class_methods and at_least_two_sections:
+            lines.append("Class methods")
+            lines.append("-------------")
+            lines.append("")
+        for meth in filtered_class_methods:
+            lines.append(f".. automethod:: {meth}\n")
+        if filtered_class_methods:
+            lines.append("")
+        if filtered_methods and at_least_two_sections:
             lines.append("Methods")
             lines.append("-------")
             lines.append("")
