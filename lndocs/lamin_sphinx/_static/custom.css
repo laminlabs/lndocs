@@ -217,7 +217,9 @@ span.highlighted {
 }
 
 .sd-tab-content {
-  box-shadow: 0 -0.0625rem var(--sd-color-tabs-underline), 0 0 !important;
+  box-shadow:
+    0 -0.0625rem var(--sd-color-tabs-underline),
+    0 0 !important;
   padding-bottom: 0.75rem !important;
 }
 
