@@ -552,15 +552,15 @@ def attach_func_to_class_method(func_name, cls, globals):
     setattr(cls, func_name, implementation)
 
 
-from typing import NamedTuple  # noqa
+from typing import NamedTuple
 
 try:
-    import pandas as pd  # noqa
-    from lamindb.base import doc_args  # noqa
-    from lamindb.base.types import StrField  # noqa
-    from lamindb.models import QuerySet, SQLRecord  # noqa
+    import pandas as pd
+    from lamindb.base import doc_args
+    from lamindb.base.types import StrField
+    from lamindb.models import QuerySet, SQLRecord
 
-    # from lamindb.models.record import T  # noqa
+    # from lamindb.models.record import T
 
     @classmethod  # type:ignore
     @doc_args(SQLRecord.filter.__doc__)
@@ -644,7 +644,7 @@ def get_all_annotations(obj):
     return all_annotations
 
 
-from typing import Union  # noqa
+from typing import Union
 
 
 def update_all_annotations(obj, types_dict):
@@ -937,6 +937,12 @@ def process_docstring(app, what, name, obj, options, lines):
             except AttributeError:
                 pass
             filtered_methods.append(method_name)
+        if obj is Record:
+            if "to_dataframe" in filtered_class_methods:
+                filtered_class_methods.remove("to_dataframe")
+            if "to_dataframe" not in filtered_methods:
+                filtered_methods.append("to_dataframe")
+                filtered_methods = sorted(filtered_methods)
 
         # print attributes and fields
         # we don't want to print big headings if there are only 2 sections
