@@ -84,7 +84,7 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
     if data.get("date"):
         float_right = f"<li> ⸻ {format_date()}</li>"
     if html != "" or float_right != "":
-        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""  # noqa
+        html = f"""<ul class="ablog-archive" style="padding-left: 0px"><li>{html}</li>{float_right}</ul>"""
         self.nested_render_text(f"{html}", 0)
 
     if data.get("title") and self.md_config.title_to_header:
