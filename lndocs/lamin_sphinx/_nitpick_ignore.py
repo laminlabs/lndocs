@@ -1,4 +1,8 @@
 nitpick_ignore = [
+    ("py:class", "zarr.core.group.Group"),
+    ("py:class", "zarr.core.group.Group"),
+    ("py:class", "h5py._hl.files.File"),
+    ("py:class", "fsspec.core.OpenFile"),
     ("py:class", "django.db.models.fields.BigIntegerField"),
     ("py:class", "django.db.models.fields.BinaryField"),
     ("py:class", "django.db.models.fields.BooleanField"),
@@ -93,6 +97,7 @@ nitpick_ignore = [
     ("py:class", "lamindb.base.mocks.QuerySet"),
     ("py:class", "lamindb.core.storage._backed_access._AnnDataAttrsMixin"),
     ("py:class", "lamindb.core.storage._anndata_accessor._AnnDataAttrsMixin"),
+    ("py:class", "django.db.models.base.Model.*"),
     ("py:class", "django.db.models.base.Model"),
     ("py:class", "django.db.models.manager.Manager"),
     ("py:class", "django.db.models.query.QuerySet"),

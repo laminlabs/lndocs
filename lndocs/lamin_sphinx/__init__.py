@@ -604,7 +604,7 @@ try:
 
     @classmethod  # type: ignore
     @doc_args(SQLRecord.lookup.__doc__)
-    def lookup(
+    def lookup(  # type: ignore
         cls,
         field: StrField | None = None,
         return_field: StrField | None = None,
@@ -667,7 +667,7 @@ def update_all_annotations(obj, types_dict):
             # Attempt to create a union
             try:
                 # For Python 3.10+
-                return Union[tuple(resolved_parts)]
+                return Union[tuple(resolved_parts)]  # noqa
             except (TypeError, SyntaxError):
                 # Fall back to string if we can't create a proper Union
                 return type_annotation
