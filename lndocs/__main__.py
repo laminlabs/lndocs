@@ -113,12 +113,12 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
     toctree_order: list[Any] = []
 
     def parse_rst_file(file_path: Path, current_depth: int = 0):
-        """Recursively parse RST files for toctree directives"""
+        """Recursively parse RST files for toctree directives."""
         if not file_path.exists():
             return
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             print(f"Warning: Could not read {file_path}: {e}")
@@ -194,12 +194,12 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                         toctree_order.append((base_name, current_depth + 1))
 
     def parse_md_file(file_path: Path, current_depth: int = 0):
-        """Parse Markdown files for MyST toctree directives"""
+        """Parse Markdown files for MyST toctree directives."""
         if not file_path.exists():
             return
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
             print(f"Warning: Could not read {file_path}: {e}")
@@ -306,7 +306,10 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
 
 
 def generate_single_markdown_file(
-    docs_dir: str, site: str, output_filename: str, skip_patterns: list[str] = None
+    docs_dir: str,
+    site: str,
+    output_filename: str,
+    skip_patterns: list[str] | None = None,
 ):
     """Generate a single markdown file containing the entire documentation.
 
@@ -397,7 +400,7 @@ def generate_single_markdown_file(
         # Add content from each file in toctree order
         for txt_file, depth in ordered_files:
             try:
-                with open(txt_file, "r", encoding="utf-8") as infile:
+                with open(txt_file, encoding="utf-8") as infile:
                     content = infile.read().strip()
 
                     if content:  # Only include non-empty files
@@ -428,7 +431,7 @@ def generate_single_markdown_file(
     combined_size = output_path.stat().st_size
 
     # Read the combined file to get content statistics
-    with open(output_path, "r", encoding="utf-8") as f:  # type: ignore
+    with open(output_path, encoding="utf-8") as f:  # type: ignore
         content = f.read()  # type: ignore
 
     # Calculate metrics
@@ -462,7 +465,7 @@ def generate_single_markdown_file(
 
 def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
     """Convert Sphinx text builder output to clean markdown.
-    
+
     Removes excessive dashes and converts to proper markdown syntax.
 
     Args:
@@ -534,8 +537,8 @@ def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
 
 
 def clean_table_line(line: str) -> str:
-    """
-    Clean up table formatting to be markdown-friendly.
+    """Clean up table formatting to be markdown-friendly.
+
     Converts ASCII table borders to markdown table syntax.
     """
     # If line is mostly dashes, pipes, and plus signs, it's likely a table border
