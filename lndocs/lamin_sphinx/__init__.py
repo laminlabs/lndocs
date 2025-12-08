@@ -867,7 +867,7 @@ def process_docstring(app, what, name, obj, options, lines):
                         attr_lines.append(f".. attribute:: {attr_name}")
                         attr_lines.append(f"   :type: {type_str}")
                         attr_lines.append("")
-                        attr_lines.append(f"   Query {plural}.")
+                        attr_lines.append(f"   Query {plural.lower()}.")
                         attr_lines.append("")
                     else:
                         attr_lines.append(f".. autoattribute:: {attr_name}")
