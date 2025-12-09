@@ -714,6 +714,7 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
+        from lamindb.models.query_set import BiontyQueryDB, WetlabQueryDB
         from lamindb.models.sqlrecord import SQLRecordInfo
         from lamindb_setup.errors import ModuleWasntConfigured
 
@@ -851,27 +852,42 @@ def process_docstring(app, what, name, obj, options, lines):
                 ):
                     # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
                     if obj.__name__ == "QueryDB":
-                        type_str = (
-                            str(attr_type)
-                            .replace("typing.", "")
-                            .replace("<class ", "")
-                            .replace(">", "")
-                            .strip("'")
-                        )
-                        # e.g. branch -> branches
-                        plural = (
-                            f"{attr_name}es"
-                            if attr_name.endswith(("ch", "s", "x", "z"))
-                            else f"{attr_name}s"
-                        )
-                        attr_lines.append(f".. attribute:: {attr_name}")
-                        attr_lines.append(f"   :type: {type_str}")
-                        attr_lines.append("")
-                        attr_lines.append(f"   Query {plural.lower()}.")
-                        attr_lines.append("")
-                    else:
-                        attr_lines.append(f".. autoattribute:: {attr_name}")
-                    documented_attrs.add(attr_name)
+                        if "BiontyQueryDB" in str(attr_type) or "WetlabQueryDB" in str(
+                            attr_type
+                        ):
+                            type_cls = (
+                                BiontyQueryDB
+                                if "Bionty" in str(attr_type)
+                                else WetlabQueryDB
+                            )
+                            docstring = (
+                                type_cls.__doc__
+                                or f"Query {attr_name.capitalize()} registries."
+                            )
+                            attr_lines.append(f".. attribute:: {attr_name}")
+                            attr_lines.append(f"   :type: {attr_type}")
+                            attr_lines.append("")
+                            attr_lines.append(f"   {docstring}")
+                            attr_lines.append("")
+                        else:
+                            type_str = (
+                                str(attr_type)
+                                .replace("typing.", "")
+                                .replace("<class ", "")
+                                .replace(">", "")
+                                .strip("'")
+                            )
+                            plural = (
+                                f"{attr_name}es"
+                                if attr_name.endswith(("ch", "s", "x", "z"))
+                                else f"{attr_name}s"
+                            )
+                            attr_lines.append(f".. attribute:: {attr_name}")
+                            attr_lines.append(f"   :type: {type_str}")
+                            attr_lines.append("")
+                            attr_lines.append(f"   Query {plural.lower()}.")
+                            attr_lines.append("")
+                        documented_attrs.add(attr_name)
 
         for attr_name, attr_value in attributes:
             if attr_name in documented_attrs:
@@ -968,11 +984,11 @@ def process_docstring(app, what, name, obj, options, lines):
             lines.append("")
             for line in attr_lines:
                 lines.append(line)
-        if attr_lines and at_least_two_sections:
+        elif attr_lines and at_least_two_sections:
             lines.append("Attributes")
             lines.append("----------")
             lines.append("")
-        if attr_lines:
+        elif attr_lines:
             for line in attr_lines:
                 lines.append(line)
         for line in field_lines:
