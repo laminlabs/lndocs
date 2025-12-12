@@ -976,18 +976,11 @@ def process_docstring(app, what, name, obj, options, lines):
             + bool(filtered_methods)
             >= 3
         )
-        # Special case for QueryDB: always show Attributes heading
-        if obj.__name__ == "QueryDB" and attr_lines:
+        if attr_lines and (at_least_two_sections or obj.__name__ == "QueryDB"):
             lines.append("Attributes")
             lines.append("----------")
             lines.append("")
-            for line in attr_lines:
-                lines.append(line)
-        elif attr_lines and at_least_two_sections:
-            lines.append("Attributes")
-            lines.append("----------")
-            lines.append("")
-        elif attr_lines:
+        if attr_lines:
             for line in attr_lines:
                 lines.append(line)
         for line in field_lines:
