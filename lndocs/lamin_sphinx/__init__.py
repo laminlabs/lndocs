@@ -843,51 +843,50 @@ def process_docstring(app, what, name, obj, options, lines):
 
         attr_lines = []
         documented_attrs = set()
-        if hasattr(obj, "__annotations__"):
+        # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
+        if obj.__name__ == "QueryDB":
             for attr_name, attr_type in obj.__annotations__.items():
                 if (
                     attr_name not in attributes_to_exclude
                     and not attr_name.startswith("_")
                     and attr_name not in documented_attrs
                 ):
-                    # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
-                    if obj.__name__ == "QueryDB":
-                        if "BiontyQueryDB" in str(attr_type) or "WetlabQueryDB" in str(
-                            attr_type
-                        ):
-                            type_cls = (
-                                BiontyQueryDB
-                                if "Bionty" in str(attr_type)
-                                else WetlabQueryDB
-                            )
-                            docstring = (
-                                type_cls.__doc__
-                                or f"Query {attr_name.capitalize()} registries."
-                            )
-                            attr_lines.append(f".. attribute:: {attr_name}")
-                            attr_lines.append(f"   :type: {attr_type}")
-                            attr_lines.append("")
-                            attr_lines.append(f"   {docstring}")
-                            attr_lines.append("")
-                        else:
-                            type_str = (
-                                str(attr_type)
-                                .replace("typing.", "")
-                                .replace("<class ", "")
-                                .replace(">", "")
-                                .strip("'")
-                            )
-                            plural = (
-                                f"{attr_name}es"
-                                if attr_name.endswith(("ch", "s", "x", "z"))
-                                else f"{attr_name}s"
-                            )
-                            attr_lines.append(f".. attribute:: {attr_name}")
-                            attr_lines.append(f"   :type: {type_str}")
-                            attr_lines.append("")
-                            attr_lines.append(f"   Query {plural.lower()}.")
-                            attr_lines.append("")
-                        documented_attrs.add(attr_name)
+                    if "BiontyQueryDB" in str(attr_type) or "WetlabQueryDB" in str(
+                        attr_type
+                    ):
+                        type_cls = (
+                            BiontyQueryDB
+                            if "Bionty" in str(attr_type)
+                            else WetlabQueryDB
+                        )
+                        docstring = (
+                            type_cls.__doc__
+                            or f"Query {attr_name.capitalize()} registries."
+                        )
+                        attr_lines.append(f".. attribute:: {attr_name}")
+                        attr_lines.append(f"   :type: {attr_type}")
+                        attr_lines.append("")
+                        attr_lines.append(f"   {docstring}")
+                        attr_lines.append("")
+                    else:
+                        type_str = (
+                            str(attr_type)
+                            .replace("typing.", "")
+                            .replace("<class ", "")
+                            .replace(">", "")
+                            .strip("'")
+                        )
+                        plural = (
+                            f"{attr_name}es"
+                            if attr_name.endswith(("ch", "s", "x", "z"))
+                            else f"{attr_name}s"
+                        )
+                        attr_lines.append(f".. attribute:: {attr_name}")
+                        attr_lines.append(f"   :type: {type_str}")
+                        attr_lines.append("")
+                        attr_lines.append(f"   Query {plural.lower()}.")
+                        attr_lines.append("")
+                    documented_attrs.add(attr_name)
 
         for attr_name, attr_value in attributes:
             if attr_name in documented_attrs:
