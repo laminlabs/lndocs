@@ -714,7 +714,7 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.query_set import BiontyQueryDB, WetlabQueryDB
+        from lamindb.models.query_set import BiontyDB, WetlabDB
         from lamindb.models.sqlrecord import SQLRecordInfo
         from lamindb_setup.errors import ModuleWasntConfigured
 
@@ -843,22 +843,16 @@ def process_docstring(app, what, name, obj, options, lines):
 
         attr_lines = []
         documented_attrs = set()
-        # QueryDB has many annotation typehints without explicit docstrings so we autogenerate them here
-        if obj.__name__ == "QueryDB":
+        # DB has many annotation typehints without explicit docstrings so we autogenerate them here
+        if obj.__name__ == "DB":
             for attr_name, attr_type in obj.__annotations__.items():
                 if (
                     attr_name not in attributes_to_exclude
                     and not attr_name.startswith("_")
                     and attr_name not in documented_attrs
                 ):
-                    if "BiontyQueryDB" in str(attr_type) or "WetlabQueryDB" in str(
-                        attr_type
-                    ):
-                        type_cls = (
-                            BiontyQueryDB
-                            if "Bionty" in str(attr_type)
-                            else WetlabQueryDB
-                        )
+                    if "BiontyDB" in str(attr_type) or "WetlabDB" in str(attr_type):
+                        type_cls = BiontyDB if "Bionty" in str(attr_type) else WetlabDB
                         docstring = (
                             type_cls.__doc__
                             or f"Query {attr_name.capitalize()} registries."
@@ -976,7 +970,7 @@ def process_docstring(app, what, name, obj, options, lines):
             + bool(filtered_methods)
             >= 3
         )
-        if attr_lines and (at_least_two_sections or obj.__name__ == "QueryDB"):
+        if attr_lines and (at_least_two_sections or obj.__name__ == "DB"):
             lines.append("Attributes")
             lines.append("----------")
             lines.append("")
