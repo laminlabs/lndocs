@@ -125,6 +125,9 @@ ogp_image = (
 
 intersphinx_mapping = {
     "docs": ("https://docs.lamin.ai", None),
+    "polars": ("https://docs.pola.rs/api/python/stable", None),
+    "tiledbsoma": ("https://tiledbsoma.readthedocs.io/en/stable/", None),
+    "pyarrow": ("https://arrow.apache.org/docs/python", None),
 }
 
 # myst_nb options
