@@ -106,10 +106,8 @@ print("show inherited members:", show_inherited)
 autodoc_mock_imports = [
     "vitessce",
     "mudata",
-    "tiledbsoma",
     "universal-pathlib",
     "pronto",
-    "polars",
     "lightning",
 ]
 autodoc_inherit_docstrings = False
@@ -125,6 +123,9 @@ ogp_image = (
 
 intersphinx_mapping = {
     "docs": ("https://docs.lamin.ai", None),
+    # "polars": ("https://docs.pola.rs/api/python/stable", None),  # polars doesn't maintain their docs canonically https://github.com/laminlabs/lamindb/issues/2736#issuecomment-3703889524
+    "tiledbsoma": ("https://tiledbsoma.readthedocs.io/en/stable/", None),
+    "pyarrow": ("https://arrow.apache.org/docs/", None),
 }
 
 # myst_nb options
