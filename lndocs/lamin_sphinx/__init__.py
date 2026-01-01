@@ -514,27 +514,32 @@ pydata_sphinx_theme.add_toctree_functions = add_toctree_functions
 
 
 def get_class_methods(cls, include_inherited=True):
+    from lamindb.base.utils import strict_classmethod
+
     class_methods = []
     classes_to_check = cls.__mro__ if include_inherited else [cls]
 
     for c in classes_to_check:
-        # Use __dict__ to get only attributes defined directly on this class
         for name, obj in c.__dict__.items():
-            if isinstance(obj, classmethod) and name not in class_methods:
+            if (
+                isinstance(obj, (classmethod, strict_classmethod))
+                and name not in class_methods
+            ):
                 class_methods.append(name)
     return class_methods
 
 
 def get_instance_methods(cls, include_inherited=True):
+    from lamindb.base.utils import class_and_instance_method, strict_classmethod
+
     instance_methods = []
     classes_to_check = cls.__mro__ if include_inherited else [cls]
 
     for c in classes_to_check:
-        # Use __dict__ to get only attributes defined directly on this class
         for name, obj in c.__dict__.items():
             if (
-                inspect.isfunction(obj)
-                and not isinstance(obj, (classmethod, staticmethod))
+                (inspect.isfunction(obj) or isinstance(obj, class_and_instance_method))
+                and not isinstance(obj, (classmethod, staticmethod, strict_classmethod))
                 and name not in instance_methods
             ):
                 instance_methods.append(name)
