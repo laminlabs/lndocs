@@ -109,6 +109,8 @@ autodoc_mock_imports = [
     "universal-pathlib",
     "pronto",
     "lightning",
+    "tiledbsoma",
+    "polars",
 ]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
