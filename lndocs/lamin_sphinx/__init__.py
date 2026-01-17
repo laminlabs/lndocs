@@ -784,6 +784,8 @@ def process_docstring(app, what, name, obj, options, lines):
                     "composite",
                 }:
                     continue
+                # this can likely be simplified to just autoattribute
+                # but currently throws an error
                 if field.name in {"space", "branch"}:
                     field_lines.append(f".. autoattribute:: {field.name}")
                 else:
