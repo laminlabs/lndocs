@@ -698,6 +698,32 @@ def update_all_annotations(obj, types_dict):
     return obj.__annotations__
 
 
+def get_attribute_docstring(cls, attr_name):
+    import ast
+
+    source = inspect.getsource(cls)
+    tree = ast.parse(source)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            for i, stmt in enumerate(node.body):
+                # Look for assignment with matching target
+                if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                    targets = (
+                        stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+                    )
+                    for target in targets:
+                        if isinstance(target, ast.Name) and target.id == attr_name:
+                            # Check if next statement is a docstring
+                            if i + 1 < len(node.body):
+                                next_stmt = node.body[i + 1]
+                                if isinstance(next_stmt, ast.Expr) and isinstance(
+                                    next_stmt.value, ast.Constant
+                                ):
+                                    return next_stmt.value.value
+    return None
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
     try:
@@ -741,24 +767,6 @@ def process_docstring(app, what, name, obj, options, lines):
             attach_func_to_class_method(name, BaseSQLRecord, globals())
             attach_func_to_class_method(name, SQLRecord, globals())
 
-        types = {
-            "Space": Space,
-            "User": User,
-            "Run": Run,
-            "Schema": Schema,
-            "Collection": Collection,
-            "Feature": Feature,
-            "Branch": Branch,
-            "ULabel": ULabel,
-            "Record": Record,
-            "Transform": Transform,
-            "Artifact": Artifact,
-            "Project": Project,
-            "Reference": Reference,
-            "Storage": Storage,
-            "FeatureManager": FeatureManager,
-        }
-
     except ImportError as err:
         BaseSQLRecord = int
         print("WARNING: DID NOT IMPORT LAMINDB", err)
@@ -776,7 +784,7 @@ def process_docstring(app, what, name, obj, options, lines):
         if issubclass(obj, BaseSQLRecord):
             if obj not in {BaseSQLRecord, SQLRecord}:
                 add_headings = True
-            update_all_annotations(obj, types)
+            # update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
             simple_fields = registry_info.get_simple_fields()
             if simple_fields and add_headings:
@@ -807,7 +815,16 @@ def process_docstring(app, what, name, obj, options, lines):
                     "composite",
                 }:
                     continue
-                field_lines.append(f".. autoattribute:: {field.name}\n")
+                attr_type = (
+                    obj.__annotations__.get(field.name)
+                    if hasattr(obj, "__annotations__")
+                    else None
+                )
+                field_lines.append(f".. attribute:: {field.name}")
+                if attr_type is not None:
+                    field_lines.append(f"   :type: {attr_type}")
+                field_lines.append("")
+                field_lines.append(get_attribute_docstring(obj, field.name))
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
