@@ -652,76 +652,46 @@ def get_all_annotations(obj):
     return all_annotations
 
 
-from typing import Union
-
-
-def update_all_annotations(obj, types_dict):
-    """Update annotations with actual types from types_dict."""
-    # First, get all annotations including inherited ones
-    all_annotations = get_all_annotations(obj)
-
-    # Create a function to resolve complex annotation strings
-    def resolve_type(type_annotation):
-        # If it's already a type (not a string), return it
-        if not isinstance(type_annotation, str):
-            return type_annotation
-
-        # Handle union types with | syntax (Python 3.10+)
-        if "|" in type_annotation:
-            # Split by | and strip whitespace
-            parts = [part.strip() for part in type_annotation.split("|")]
-            # Resolve each part
-            resolved_parts = [types_dict.get(part, part) for part in parts]
-            # Attempt to create a union
-            try:
-                # For Python 3.10+
-                return Union[tuple(resolved_parts)]  # noqa
-            except (TypeError, SyntaxError):
-                # Fall back to string if we can't create a proper Union
-                return type_annotation
-
-        # Handle simple types
-        return types_dict.get(type_annotation, type_annotation)
-
-    # Update the annotations with resolved types
-    resolved_annotations = {
-        key: resolve_type(value) for key, value in all_annotations.items()
-    }
-
-    # Ensure obj has an __annotations__ attribute
-    if not hasattr(obj, "__annotations__"):
-        obj.__annotations__ = {}
-
-    # Update the object's annotations with all resolved annotations
-    obj.__annotations__.update(resolved_annotations)
-
-    return obj.__annotations__
+import ast
+from pathlib import Path
 
 
 def get_attribute_docstring(cls, attr_name):
-    import ast
-
-    source = inspect.getsource(cls)
+    # Get the file where the class is defined
+    source_file = inspect.getfile(cls)
+    source = Path(source_file).read_text()
     tree = ast.parse(source)
 
+    # Find the class definition
+    class_def = None
     for node in ast.walk(tree):
-        if isinstance(node, ast.ClassDef):
-            for i, stmt in enumerate(node.body):
-                # Look for assignment with matching target
-                if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
-                    targets = (
-                        stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
-                    )
-                    for target in targets:
-                        if isinstance(target, ast.Name) and target.id == attr_name:
-                            # Check if next statement is a docstring
-                            if i + 1 < len(node.body):
-                                next_stmt = node.body[i + 1]
-                                if isinstance(next_stmt, ast.Expr) and isinstance(
-                                    next_stmt.value, ast.Constant
-                                ):
-                                    return next_stmt.value.value
-    return None
+        if isinstance(node, ast.ClassDef) and node.name == cls.__name__:
+            class_def = node
+            break
+
+    if not class_def:
+        return ""
+
+    for i, stmt in enumerate(class_def.body):
+        target_name = None
+
+        if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
+            target_name = stmt.target.id
+        elif isinstance(stmt, ast.Assign):
+            for target in stmt.targets:
+                if isinstance(target, ast.Name):
+                    target_name = target.id
+                    break
+
+        if target_name == attr_name:
+            if i + 1 < len(class_def.body):
+                next_stmt = class_def.body[i + 1]
+                if isinstance(next_stmt, ast.Expr) and isinstance(
+                    next_stmt.value, ast.Constant
+                ):
+                    return next_stmt.value.value
+
+    return ""
 
 
 def process_docstring(app, what, name, obj, options, lines):
@@ -784,7 +754,6 @@ def process_docstring(app, what, name, obj, options, lines):
         if issubclass(obj, BaseSQLRecord):
             if obj not in {BaseSQLRecord, SQLRecord}:
                 add_headings = True
-            # update_all_annotations(obj, types)
             registry_info = SQLRecordInfo(obj)
             simple_fields = registry_info.get_simple_fields()
             if simple_fields and add_headings:
@@ -815,16 +784,20 @@ def process_docstring(app, what, name, obj, options, lines):
                     "composite",
                 }:
                     continue
-                attr_type = (
-                    obj.__annotations__.get(field.name)
-                    if hasattr(obj, "__annotations__")
-                    else None
-                )
-                field_lines.append(f".. attribute:: {field.name}")
-                if attr_type is not None:
-                    field_lines.append(f"   :type: {attr_type}")
-                field_lines.append("")
-                field_lines.append(get_attribute_docstring(obj, field.name))
+                if obj in {Space, Branch}:
+                    field_lines.append(f".. autoattribute:: {field.name}")
+                else:
+                    attr_type = (
+                        obj.__annotations__.get(field.name)
+                        if hasattr(obj, "__annotations__")
+                        else None
+                    )
+                    field_lines.append(f".. attribute:: {field.name}")
+                    if attr_type is not None:
+                        field_lines.append(f"   :type: {attr_type}")
+                    field_lines.append("")
+                    field_lines.append(f"   {get_attribute_docstring(obj, field.name)}")
+                    field_lines.append("")
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
