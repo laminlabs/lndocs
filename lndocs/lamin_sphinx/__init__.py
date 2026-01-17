@@ -722,7 +722,7 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.query_set import BiontyDB, WetlabDB
+        from lamindb.models.query_set import BiontyDB, PertdbDB
         from lamindb.models.sqlrecord import SQLRecordInfo
         from lamindb_setup.errors import ModuleWasntConfigured
 
@@ -859,8 +859,8 @@ def process_docstring(app, what, name, obj, options, lines):
                     and not attr_name.startswith("_")
                     and attr_name not in documented_attrs
                 ):
-                    if "BiontyDB" in str(attr_type) or "WetlabDB" in str(attr_type):
-                        type_cls = BiontyDB if "Bionty" in str(attr_type) else WetlabDB
+                    if "BiontyDB" in str(attr_type) or "PertdbDB" in str(attr_type):
+                        type_cls = BiontyDB if "Bionty" in str(attr_type) else PertdbDB
                         docstring = (
                             type_cls.__doc__
                             or f"Query {attr_name.capitalize()} registries."
