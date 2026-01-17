@@ -786,14 +786,16 @@ def process_docstring(app, what, name, obj, options, lines):
                     continue
                 # this can likely be simplified to just autoattribute
                 # but currently throws an error
+                attr_type = (
+                    obj.__annotations__.get(field.name)
+                    if hasattr(obj, "__annotations__")
+                    else None
+                )
                 if field.name in {"space", "branch"}:
                     field_lines.append(f".. autoattribute:: {field.name}")
+                    if attr_type is not None:
+                        field_lines.append(f"   :type: {attr_type}")
                 else:
-                    attr_type = (
-                        obj.__annotations__.get(field.name)
-                        if hasattr(obj, "__annotations__")
-                        else None
-                    )
                     field_lines.append(f".. attribute:: {field.name}")
                     if attr_type is not None:
                         field_lines.append(f"   :type: {attr_type}")
