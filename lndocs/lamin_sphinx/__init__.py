@@ -784,7 +784,7 @@ def process_docstring(app, what, name, obj, options, lines):
                     "composite",
                 }:
                     continue
-                if obj in {Space, Branch}:
+                if field.name in {"space", "branch"}:
                     field_lines.append(f".. autoattribute:: {field.name}")
                 else:
                     attr_type = (
