@@ -791,17 +791,19 @@ def process_docstring(app, what, name, obj, options, lines):
                     if hasattr(obj, "__annotations__")
                     else None
                 )
+                field_lines.append(f".. attribute:: {field.name}")
                 if field.name in {"space", "branch"}:
-                    field_lines.append(f".. autoattribute:: {field.name}")
-                    if attr_type is not None:
-                        field_lines.append(f"   :type: {attr_type}")
+                    attr_type = "Space" if field.name == "space" else "Branch"
+                if attr_type is not None:
+                    field_lines.append(f"   :type: {attr_type}")
+                field_lines.append("")
+                if field.name in {"space", "branch"}:
+                    docstring = f"The {field.name}."
                 else:
-                    field_lines.append(f".. attribute:: {field.name}")
-                    if attr_type is not None:
-                        field_lines.append(f"   :type: {attr_type}")
-                    field_lines.append("")
-                    field_lines.append(f"   {get_attribute_docstring(obj, field.name)}")
-                    field_lines.append("")
+                    docstring = get_attribute_docstring(obj, field.name)
+                for line in docstring.split("\n"):
+                    field_lines.append(f"   {line.strip()}")
+                field_lines.append("")
             fields = obj._meta.get_fields()
             non_many_to_many_fields = [
                 field for field in fields if hasattr(field, "verbose_name")
