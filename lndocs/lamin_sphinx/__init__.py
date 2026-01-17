@@ -871,7 +871,7 @@ def process_docstring(app, what, name, obj, options, lines):
                         attr_lines.append(f"   {docstring}")
                         attr_lines.append("")
                     else:
-                        type_str = (
+                        (
                             str(attr_type)
                             .replace("typing.", "")
                             .replace("<class ", "")
@@ -883,8 +883,7 @@ def process_docstring(app, what, name, obj, options, lines):
                             if attr_name.endswith(("ch", "s", "x", "z"))
                             else f"{attr_name}s"
                         )
-                        attr_lines.append(f".. attribute:: {attr_name}")
-                        attr_lines.append(f"   :type: {type_str}")
+                        attr_lines.append(f".. autoattribute:: {attr_name}")
                         attr_lines.append("")
                         attr_lines.append(f"   Query {plural.lower()}.")
                         attr_lines.append("")
