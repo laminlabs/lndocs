@@ -517,8 +517,18 @@ def generate_llms_txt(
                 outfile.write("\n")
             outfile.write(f"## {section_title}\n\n")
             first_section = False
-            for page_path, url, doc_title, _, depth in section_entries:
-                indent = "  " * (depth - 1) if depth >= 1 else ""
+            for page_path, url, doc_title, sk, depth in section_entries:
+                if sk == "api" and "." in page_path:
+                    indent = "  "
+                else:
+                    indent = "  " * (depth - 1) if depth >= 1 else ""
+                if (
+                    doc_title
+                    and len(doc_title) >= 2
+                    and doc_title[0] == '"'
+                    and doc_title[-1] == '"'
+                ):
+                    doc_title = doc_title[1:-1]
                 line = (
                     f"- [{page_path}]({url}): {doc_title}\n"
                     if doc_title
