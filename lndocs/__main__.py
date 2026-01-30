@@ -361,21 +361,19 @@ def generate_llms_txt(
     site: str,
     output_filename: str,
     skip_patterns: list[str] | None = None,
-    base_url: str = "https://docs.lamin.ai",
     project_name: str = "",
     summary: str = "",
 ):
     """Generate llms.txt and per-page .md files in _build/html/, following the llms.txt spec.
 
     Uses Sphinx text builder, copies each page to html/*.md, and writes one llms.txt
-    with H1, blockquote, H2 file list (links to .md URLs), and full inlined content.
+    with H1, blockquote, H2 file list using relative .md links (e.g. "query-search.md - Title").
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
         site: Main build directory (e.g., "_build/html")
         output_filename: Name of the llms.txt file (e.g. "llms.txt")
         skip_patterns: List of patterns to skip files whose stem contains any of these
-        base_url: Base URL for links (e.g. "https://docs.lamin.ai")
         project_name: H1 title for llms.txt
         summary: Optional one-sentence blockquote summary
     """
@@ -455,9 +453,8 @@ def generate_llms_txt(
         except Exception as e:
             print(f"Warning: Could not write {txt_file} to .md: {e}")
 
-    # Write llms.txt (H1, blockquote, H2 file list with [name](url): title per spec)
+    # Write llms.txt (H1, blockquote, H2 file list with relative .md - title)
     output_path = html_dir / output_filename
-    base_url_rstrip = base_url.rstrip("/")
 
     print(f"Writing {output_path}...")
 
@@ -474,8 +471,8 @@ def generate_llms_txt(
         # Pages with "." in path (e.g. lamindb.artifact) are lumped under "API Reference" (api).
         sections_order: list[tuple[str, str]] = []  # (section_key, section_title)
         entries: list[
-            tuple[str, str, str, str, int]
-        ] = []  # (page_path, url, doc_title, section_key, depth)
+            tuple[str, str, str, int]
+        ] = []  # (page_path, doc_title, section_key, depth)
         current_section_key: str | None = None
         current_section_title = ""
 
@@ -490,7 +487,6 @@ def generate_llms_txt(
             except Exception:
                 continue
             doc_title = _extract_document_title(content)
-            url = f"{base_url_rstrip}/{page_path}.md"
             section_key = current_section_key
             if depth == 1:
                 current_section_key = page_path
@@ -506,18 +502,18 @@ def generate_llms_txt(
                 section_key = "api"
                 if not any(s[0] == "api" for s in sections_order):
                     sections_order.append(("api", "API Reference"))
-            entries.append((page_path, url, doc_title, section_key or "", depth))
+            entries.append((page_path, doc_title, section_key or "", depth))
 
         first_section = True
         for section_key, section_title in sections_order:
-            section_entries = [e for e in entries if e[3] == section_key]
+            section_entries = [e for e in entries if e[2] == section_key]
             if not section_entries:
                 continue
             if not first_section:
                 outfile.write("\n")
             outfile.write(f"## {section_title}\n\n")
             first_section = False
-            for page_path, url, doc_title, sk, depth in section_entries:
+            for page_path, doc_title, sk, depth in section_entries:
                 if sk == "api" and "." in page_path:
                     indent = "  "
                 else:
@@ -529,10 +525,9 @@ def generate_llms_txt(
                     and doc_title[-1] == '"'
                 ):
                     doc_title = doc_title[1:-1]
+                rel_link = f"{page_path}.md"
                 line = (
-                    f"- [{page_path}]({url}): {doc_title}\n"
-                    if doc_title
-                    else f"- [{page_path}]({url})\n"
+                    f"- {rel_link} - {doc_title}\n" if doc_title else f"- {rel_link}\n"
                 )
                 outfile.write(f"{indent}{line}")
 
@@ -840,7 +835,6 @@ def main():
             args.site,
             filename,
             skip_patterns=skip_patterns,
-            base_url="https://docs.lamin.ai",
             project_name=variables.get("project_name", "Documentation"),
             summary=variables.get("summary", ""),
         )
