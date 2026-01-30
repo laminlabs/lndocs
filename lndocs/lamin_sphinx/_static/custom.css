@@ -3,10 +3,11 @@
 }
 
 /* Heading badges (reference external) aligned to bottom of line */
-h1 a.reference.external,
-h2 a.reference.external,
-h3 a.reference.external {
+h1 a.reference.external img,
+h2 a.reference.external img,
+h3 a.reference.external img {
   vertical-align: bottom;
+  display: block;
 }
 
 /* ------------ */
