@@ -305,28 +305,85 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
     return toctree_order
 
 
-def generate_single_markdown_file(
+def _extract_document_title(content: str) -> str:
+    """Extract the first heading/title from Sphinx text builder output.
+
+    Sphinx uses a line of text followed by a line of =, *, -, etc. as headings.
+    The first such heading is typically the document title.
+    """
+    lines = content.strip().split("\n")
+    for i in range(len(lines) - 1):
+        line = lines[i].strip()
+        if not line:
+            continue
+        next_line = lines[i + 1].strip()
+        if re.match(r"^[=*\-~^]{3,}$", next_line):
+            return line
+    # Fallback: first non-empty line
+    for line in lines:
+        if line.strip():
+            return line.strip()
+    return ""
+
+
+def _is_toc_only(content: str) -> bool:
+    """True if content has no paragraph, only a bullet/list (TOC-only page)."""
+    lines = content.strip().split("\n")
+    # Remove first heading (title line + underline) if present
+    i = 0
+    if len(lines) >= 2:
+        for i in range(len(lines) - 1):
+            line = lines[i].strip()
+            if not line:
+                continue
+            next_line = lines[i + 1].strip()
+            if re.match(r"^[=*\-~^]{3,}$", next_line):
+                i += 2
+                break
+        else:
+            i = 0
+    remaining = "\n".join(lines[i:]).strip()
+    if not remaining:
+        return True
+    # Any non-empty line that isn't a list item -> has a paragraph
+    list_item = re.compile(r"^\s*(\*|\-|•|\d+\.)\s")
+    for line in remaining.split("\n"):
+        line = line.rstrip()
+        if not line:
+            continue
+        if not list_item.match(line):
+            return False
+    return True
+
+
+def generate_llms_txt(
     docs_dir: str,
     site: str,
     output_filename: str,
     skip_patterns: list[str] | None = None,
+    base_url: str = "https://docs.lamin.ai",
+    project_name: str = "",
+    summary: str = "",
 ):
-    """Generate a single markdown file containing the entire documentation.
+    """Generate llms.txt and per-page .md files in _build/html/, following the llms.txt spec.
 
-    Uses Sphinx text builder and converts output to clean markdown.
-    Follows the toctree structure for proper ordering.
+    Uses Sphinx text builder, copies each page to html/*.md, and writes one llms.txt
+    with H1, blockquote, H2 file list (links to .md URLs), and full inlined content.
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
         site: Main build directory (e.g., "_build/html")
-        output_filename: Name of the output markdown file
-        skip_patterns: List of patterns to skip files whose stem
-            contains any of these patterns
+        output_filename: Name of the llms.txt file (e.g. "llms.txt")
+        skip_patterns: List of patterns to skip files whose stem contains any of these
+        base_url: Base URL for links (e.g. "https://docs.lamin.ai")
+        project_name: H1 title for llms.txt
+        summary: Optional one-sentence blockquote summary
     """
     if skip_patterns is None:
         skip_patterns = []
     build_dir = Path(site).parent  # Get _build directory
     text_build_dir = build_dir / "text"
+    html_dir = build_dir / "html"
 
     # Build documentation as text using Sphinx text builder
     print("Building documentation in text format...")
@@ -382,49 +439,105 @@ def generate_single_markdown_file(
             print(f"  - {f.stem}")
         ordered_files.extend(remaining_files)
 
-    # Combine all text files into one markdown file
-    output_path = build_dir / f"html/{output_filename}"
+    # Copy each .txt to _build/html/*.md (paired markdown pages per llms.txt spec)
+    html_dir.mkdir(parents=True, exist_ok=True)
+    for txt_file, depth in ordered_files:
+        try:
+            rel_path = txt_file.relative_to(text_build_dir)
+            md_path = html_dir / rel_path.with_suffix(".md")
+            md_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(txt_file, encoding="utf-8") as infile:
+                content = infile.read().strip()
+            if content:
+                cleaned = clean_text_to_markdown(content, base_depth=depth)
+                with open(md_path, "w", encoding="utf-8") as fp:
+                    fp.write(cleaned)
+        except Exception as e:
+            print(f"Warning: Could not write {txt_file} to .md: {e}")
 
-    print(f"Combining {len(ordered_files)} text files into {output_path}...")
+    # Write llms.txt (H1, blockquote, H2 file list with [name](url): title per spec)
+    output_path = html_dir / output_filename
+    base_url_rstrip = base_url.rstrip("/")
+
+    print(f"Writing {output_path}...")
 
     with open(output_path, "w", encoding="utf-8") as outfile:
-        # Add table of contents with hierarchical structure
-        outfile.write("## Table of contents\n\n")
+        # H1 (required per llms.txt spec)
+        title = project_name or "Documentation"
+        outfile.write(f"# {title}\n\n")
+
+        # Blockquote summary
+        if summary:
+            outfile.write(f"> {summary}\n\n")
+
+        # Full list of all pages; top-level entries (depth 1) are H2 sections, index excluded.
+        # Pages with "." in path (e.g. lamindb.artifact) are lumped under "API Reference" (api).
+        sections_order: list[tuple[str, str]] = []  # (section_key, section_title)
+        entries: list[
+            tuple[str, str, str, str, int]
+        ] = []  # (page_path, url, doc_title, section_key, depth)
+        current_section_key: str | None = None
+        current_section_title = ""
+
         for txt_file, depth in ordered_files:
             rel_path = txt_file.relative_to(text_build_dir)
-            indent = "  " * depth
-            # Simple list without links
-            outfile.write(f"{indent}- {rel_path.stem}\n")
-        outfile.write("\n")
-
-        # Add content from each file in toctree order
-        for txt_file, depth in ordered_files:
+            page_path = rel_path.with_suffix("").as_posix()
+            if page_path == "index":
+                continue
             try:
                 with open(txt_file, encoding="utf-8") as infile:
                     content = infile.read().strip()
-
-                    if content:  # Only include non-empty files
-                        rel_path = txt_file.relative_to(text_build_dir)
-
-                        # Add invisible page marker for reference
-                        outfile.write(f"\n<!-- Page: {rel_path.stem} -->\n\n")
-
-                        # Clean up the content to be markdown-friendly
-                        # No page separator, content flows directly
-                        cleaned_content = clean_text_to_markdown(
-                            content, base_depth=depth
-                        )
-
-                        # Add content
-                        outfile.write(cleaned_content)
-                        outfile.write("\n\n")
-
-            except Exception as e:
-                print(f"Warning: Could not read {txt_file}: {e}")
+            except Exception:
                 continue
+            doc_title = _extract_document_title(content)
+            url = f"{base_url_rstrip}/{page_path}.md"
+            section_key = current_section_key
+            if depth == 1:
+                current_section_key = page_path
+                current_section_title = doc_title or page_path
+                if not any(s[0] == current_section_key for s in sections_order):
+                    sections_order.append((current_section_key, current_section_title))
+                if _is_toc_only(content):
+                    continue
+                section_key = (
+                    current_section_key  # this page belongs to its own section
+                )
+            elif "." in page_path:
+                section_key = "api"
+                if not any(s[0] == "api" for s in sections_order):
+                    sections_order.append(("api", "API Reference"))
+            entries.append((page_path, url, doc_title, section_key or "", depth))
 
-    print(f"✓ Individual text files available in: {text_build_dir}")
-    print(f"✓ Complete documentation saved to: {output_path}")
+        first_section = True
+        for section_key, section_title in sections_order:
+            section_entries = [e for e in entries if e[3] == section_key]
+            if not section_entries:
+                continue
+            if not first_section:
+                outfile.write("\n")
+            outfile.write(f"## {section_title}\n\n")
+            first_section = False
+            for page_path, url, doc_title, sk, depth in section_entries:
+                if sk == "api" and "." in page_path:
+                    indent = "  "
+                else:
+                    indent = "  " * (depth - 1) if depth >= 1 else ""
+                if (
+                    doc_title
+                    and len(doc_title) >= 2
+                    and doc_title[0] == '"'
+                    and doc_title[-1] == '"'
+                ):
+                    doc_title = doc_title[1:-1]
+                line = (
+                    f"- [{page_path}]({url}): {doc_title}\n"
+                    if doc_title
+                    else f"- [{page_path}]({url})\n"
+                )
+                outfile.write(f"{indent}{line}")
+
+    print(f"✓ Per-page .md files written to: {html_dir}")
+    print(f"✓ llms.txt saved to: {output_path}")
 
     # Show file statistics
     total_size = sum(f.stat().st_size for f, _ in ordered_files if f.exists())
@@ -691,8 +804,7 @@ def main():
             f"{build_command} {docs_dir} {args.site}", shell=True
         )  # to debug, add -vv
     elif args.format == "text":
-        filename = f"{variables['repository_name']}.md"
-        filename = "summary.md"  # actually better
+        filename = "llms.txt"
         skip_patterns = [
             "wetlab.",
             "clinicore.",
@@ -723,8 +835,14 @@ def main():
             "bionty.tissue",
         ]
         strip_notebook_outputs(str(docs_dir))
-        build_status = generate_single_markdown_file(
-            str(docs_dir), args.site, filename, skip_patterns=skip_patterns
+        build_status = generate_llms_txt(
+            str(docs_dir),
+            args.site,
+            filename,
+            skip_patterns=skip_patterns,
+            base_url="https://docs.lamin.ai",
+            project_name=variables.get("project_name", "Documentation"),
+            summary=variables.get("summary", ""),
         )
         if build_status != 0:
             print("Warning: Text export failed")
