@@ -427,10 +427,22 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
                 # Find all headerlink objects within the same section
                 section = h2.find_parent("section")
                 if section:
+                    h2_text = h2.get_text(strip=True).replace("¶", "")
                     for headerlink in section.find_all("a", class_="headerlink"):
                         # Skip the h2 headerlink itself
                         if headerlink == h2.find("a"):
                             continue
+                        # Skip class/object signature headerlink when it matches section heading
+                        # (redundant - section heading is the class name)
+                        parent_dt = headerlink.find_parent("dt")
+                        if parent_dt:
+                            sig_name = parent_dt.find(
+                                "span", class_=lambda c: c and "sig-name" in c
+                            )
+                            if sig_name and h2_text.endswith(
+                                sig_name.get_text(strip=True)
+                            ):
+                                continue
                         # Create a new li for each headerlink
                         link_li = soup.new_tag("li")
                         # Create a new a tag for each headerlink
