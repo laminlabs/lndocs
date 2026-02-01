@@ -413,37 +413,59 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             for li in target_ul.find_all("li"):
                 li.decompose()
 
-            # Find all h2 elements
+            # Single-class page = H1 ends with a class name (e.g. "SetupSettings").
+            # On single-class pages we show properties/methods in the sidebar; on multi-class
+            # pages we show only top-level objects (classes, functions, modules).
+            h1 = soupbody.find("h1")
+            h1_text = h1.get_text(strip=True).replace("¶", "") if h1 else ""
+            last_part = h1_text.split(".")[-1] if "." in h1_text else h1_text
+            show_attributes = bool(
+                last_part
+                and last_part[0].isupper()
+                and last_part.replace("_", "").isalnum()
+            )
+
+            # Build right-sidebar TOC from H2 sections and their headerlinks
             for h2 in soupbody.find_all("h2"):
-                # Create a new li for the h2 element
+                # One TOC entry per H2 (section heading)
                 h2_li = soup.new_tag("li")
                 h2_link = soup.new_tag("a", href=h2.find("a")["href"])
                 h2_link.string = h2.get_text(strip=True).replace("¶", "")
                 h2_li.append(h2_link)
 
-                # Create a nested ul for this h2 section
                 nested_ul = soup.new_tag("ul")
 
-                # Find all headerlink objects within the same section
+                # Collect headerlinks in this section
                 section = h2.find_parent("section")
                 if section:
                     for headerlink in section.find_all("a", class_="headerlink"):
-                        # Skip the h2 headerlink itself
+                        # Don't add the H2's own headerlink as a nested item
                         if headerlink == h2.find("a"):
                             continue
-                        # Create a new li for each headerlink
+                        # On multi-class/regular pages only: exclude py property, py method, and
+                        # py attribute so the sidebar shows only top-level objects (py class,
+                        # py function, py module). On single-class pages we keep them so the
+                        # sidebar is full.
+                        if not show_attributes:
+                            parent_dl = headerlink.find_parent(
+                                "dl", class_=lambda c: c and "py" in c
+                            )
+                            if parent_dl:
+                                dl_classes = parent_dl.get("class", [])
+                                if (
+                                    "property" in dl_classes
+                                    or "method" in dl_classes
+                                    or "attribute" in dl_classes
+                                ):
+                                    continue
+                        # Add this headerlink to the section TOC
                         link_li = soup.new_tag("li")
-                        # Create a new a tag for each headerlink
                         link = soup.new_tag("a", href=headerlink["href"])
                         link.string = headerlink["href"].split(".")[-1]
-                        # Add the a tag to the li
                         link_li.append(link)
-                        # Add the li to the nested ul
                         nested_ul.append(link_li)
 
-                # Add the nested ul to the h2 li
                 h2_li.append(nested_ul)
-                # Add the h2 li to the root ul
                 target_ul.append(h2_li)
 
         # finish added by Alex -----------
