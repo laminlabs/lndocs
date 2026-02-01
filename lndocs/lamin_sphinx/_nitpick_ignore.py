@@ -152,4 +152,17 @@ nitpick_ignore = [
     ("py:class", "collections.abc.Mapping"),
     ("py:class", "pyarrow._dataset.Dataset"),
     ("py:class", "polars.LazyFrame"),
+    # Forward references only in TYPE_CHECKING (Artifact, curators, examples)
+    ("py:class", "LabelManager"),
+    ("py:class", "lamindb.models._label_manager.LabelManager"),
+    ("py:class", "Transform"),
+    ("py:class", "lamindb.models.transform.Transform"),
+    ("py:class", "SpatialData"),
+    ("py:class", "SOMAExperiment"),
+    ("py:class", "tiledbsoma._experiment.Experiment"),
+    ("py:class", "AnnDataAccessor"),
+    ("py:class", "lamindb.core.storage._backed_access.AnnDataAccessor"),
+    ("py:class", "lamindb.core.storage._anndata_accessor.AnnDataAccessor"),
+    ("py:class", "ScverseDataStructures"),
+    ("py:class", "lamindb.core.types.ScverseDataStructures"),
 ]
