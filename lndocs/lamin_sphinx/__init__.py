@@ -753,9 +753,9 @@ def process_docstring(app, what, name, obj, options, lines):
             "lookup",
             "connect",
         ]
-        for name in METHOD_NAMES:
-            attach_func_to_class_method(name, BaseSQLRecord, globals())
-            attach_func_to_class_method(name, SQLRecord, globals())
+        for method_name in METHOD_NAMES:
+            attach_func_to_class_method(method_name, BaseSQLRecord, globals())
+            attach_func_to_class_method(method_name, SQLRecord, globals())
 
     except ImportError as err:
         BaseSQLRecord = int
@@ -772,14 +772,18 @@ def process_docstring(app, what, name, obj, options, lines):
             os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
         )
         if what == "class":
-            mod = getattr(obj, "__module__", "") or ""
-            if mod.startswith("lamindb.models.") or mod.startswith("pertdb."):
+            # for deeply nested classes, never show inherited members
+            # also not for pertdb classes
+            if name.count(".") > 1 or name.startswith("pertdb."):
                 show_inherited = False
         field_lines = []
-        attributes_to_exclude = set()
+        attributes_to_exclude = {
+            "Meta",
+        }
 
         if issubclass(obj, BaseSQLRecord):
-            if obj not in {BaseSQLRecord, SQLRecord}:
+            # if we show_inherited like on single-class pages, we also want headings
+            if obj not in {BaseSQLRecord, SQLRecord} and show_inherited:
                 add_headings = True
             registry_info = SQLRecordInfo(obj)
             simple_fields = registry_info.get_simple_fields()
@@ -854,7 +858,6 @@ def process_docstring(app, what, name, obj, options, lines):
             attributes_to_exclude.update(
                 [
                     "MultipleObjectsReturned",
-                    "Meta",
                     "DoesNotExist",
                     "pk",
                     "objects",
@@ -943,7 +946,7 @@ def process_docstring(app, what, name, obj, options, lines):
                 attr_lines.append("")
 
         # class methods
-        if issubclass(obj, (models.Field, PublicOntology)):
+        if issubclass(obj, (models.Field, PublicOntology)) or obj is SQLRecord:
             class_methods = []
         elif show_inherited:
             class_methods = get_class_methods(obj)
@@ -962,7 +965,7 @@ def process_docstring(app, what, name, obj, options, lines):
             filtered_class_methods.append(method_name)
 
         # instance methods
-        if issubclass(obj, (models.Field, PublicOntology)):
+        if issubclass(obj, (models.Field, PublicOntology)) or obj is Registry:
             methods = []
         elif show_inherited:
             methods = get_instance_methods(obj)
