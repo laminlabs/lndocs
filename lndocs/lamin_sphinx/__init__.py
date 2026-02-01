@@ -101,8 +101,6 @@ building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
     "inherited-members": False,
 }
-show_inherited = os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
-print("show inherited members:", show_inherited)
 autodoc_mock_imports = [
     "vitessce",
     "mudata",
@@ -770,6 +768,13 @@ def process_docstring(app, what, name, obj, options, lines):
 
     add_headings = False
     if inspect.isclass(obj):
+        show_inherited = (
+            os.getenv("LNDOCS_SHOW_INHERITED_MEMBERS", "true").lower() != "false"
+        )
+        if what == "class":
+            mod = getattr(obj, "__module__", "") or ""
+            if mod.startswith("lamindb.models.") or mod.startswith("pertdb."):
+                show_inherited = False
         field_lines = []
         attributes_to_exclude = set()
 
@@ -778,6 +783,15 @@ def process_docstring(app, what, name, obj, options, lines):
                 add_headings = True
             registry_info = SQLRecordInfo(obj)
             simple_fields = registry_info.get_simple_fields()
+            core_relations, _ = registry_info.get_relational_fields()
+            if not show_inherited:
+                base_field_names = set(registry_info._get_base_class_fields())
+                simple_fields = [
+                    f for f in simple_fields if f.name not in base_field_names
+                ]
+                core_relations = [
+                    f for f in core_relations if f.name not in base_field_names
+                ]
             if simple_fields and add_headings:
                 field_lines.append("")
                 field_lines.append("Simple fields")
@@ -790,10 +804,6 @@ def process_docstring(app, what, name, obj, options, lines):
                 }:
                     continue
                 field_lines.append(f".. autoattribute:: {field.name}\n")
-            (
-                core_relations,
-                _,
-            ) = registry_info.get_relational_fields()
             if core_relations and add_headings:
                 field_lines.append("")
                 field_lines.append("Relational fields")
