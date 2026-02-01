@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "datetime.timedelta"),
     ("py:class", "zarr.core.group.Group"),
     ("py:class", "zarr.core.group.Group"),
     ("py:class", "h5py._hl.files.File"),
