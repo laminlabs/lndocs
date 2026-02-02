@@ -1,5 +1,6 @@
 import inspect
 import os
+import re
 import sys
 from datetime import datetime
 
@@ -456,6 +457,11 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
                                     or "attribute" in dl_classes
                                 ):
                                     continue
+                        # Skip auto-generated id anchors (e.g. #id1, #id5) in the TOC
+                        href = headerlink.get("href", "")
+                        fragment = href.split("#")[-1] if "#" in href else ""
+                        if fragment and re.match(r"^id\d+$", fragment):
+                            continue
                         # Add this headerlink to the section TOC
                         link_li = soup.new_tag("li")
                         link = soup.new_tag("a", href=headerlink["href"])
