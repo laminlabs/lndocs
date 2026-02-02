@@ -156,6 +156,7 @@ from ._cite_commands import register_cite
 from ._footnote_title import visit_footnote_reference
 from ._html_tags import html_lamin_page_context
 from ._nitpick_ignore import nitpick_ignore
+from ._source_badge import inject_source_badge
 
 
 # when upgrading beyond pydata-sphinx-theme, note that this function moved to
@@ -1055,6 +1056,7 @@ def setup(app: Sphinx):
 
     app.warningiserror = os.getenv("LNDOCS_WARNING_IS_ERROR") is not None
     app.add_css_file("custom.css")
+    app.connect("doctree-resolved", inject_source_badge)
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
