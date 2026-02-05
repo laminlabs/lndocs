@@ -326,6 +326,15 @@ def _extract_document_title(content: str) -> str:
     return ""
 
 
+# Regex for stripping useless Sphinx text-builder image refs like [image: llms.txt][image]
+_IMAGE_REF_PATTERN = re.compile(r"\s*\[image:[^\]]*\]\[image\]")
+
+
+def _strip_image_refs(text: str) -> str:
+    """Remove image references that have no URL (useless in plain text)."""
+    return _IMAGE_REF_PATTERN.sub("", text)
+
+
 def _is_toc_only(content: str) -> bool:
     """True if content has no paragraph, only a bullet/list (TOC-only page)."""
     lines = content.strip().split("\n")
@@ -486,7 +495,7 @@ def generate_llms_txt(
                     content = infile.read().strip()
             except Exception:
                 continue
-            doc_title = _extract_document_title(content)
+            doc_title = _strip_image_refs(_extract_document_title(content)).strip()
             section_key = current_section_key
             if depth == 1:
                 current_section_key = page_path
@@ -630,6 +639,9 @@ def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
         # Clean up box-drawing characters and convert to markdown tables
         if "|" in line or re.match(r"^[\s\-\+]+$", line):
             line = clean_table_line(line)
+
+        # Strip useless image references like [image: llms.txt][image] that have no URL.
+        line = _strip_image_refs(line).rstrip()
 
         # Clean up excessive whitespace
         line = re.sub(r" {3,}", " ", line)
