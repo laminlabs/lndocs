@@ -835,13 +835,27 @@ def process_docstring(app, what, name, obj, options, lines):
                     else None
                 )
                 field_lines.append(f".. attribute:: {field.name}")
-                if field.name in {"space", "branch"}:
-                    attr_type = "Space" if field.name == "space" else "Branch"
+                if field.name in {"space", "branch", "run", "created_by"}:
+                    attr_type = (
+                        "Space"
+                        if field.name == "space"
+                        else "Branch"
+                        if field.name == "branch"
+                        else "Run"
+                        if field.name == "run"
+                        else "User"
+                        if field.name == "created_by"
+                        else None
+                    )
                 if attr_type is not None:
                     field_lines.append(f"   :type: {attr_type}")
                 field_lines.append("")
                 if field.name in {"space", "branch"}:
                     docstring = f"The {field.name}."
+                elif field.name == "run":
+                    docstring = "The run that created the object."
+                elif field.name == "created_by":
+                    docstring = "The user that created the object."
                 else:
                     docstring = get_attribute_docstring(obj, field.name)
                 for line in docstring.split("\n"):
