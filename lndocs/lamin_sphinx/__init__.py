@@ -851,14 +851,15 @@ def process_docstring(app, what, name, obj, options, lines):
                     field_lines.append(f"   :type: {attr_type}")
                 field_lines.append("")
                 if field.name in {"space", "branch"}:
-                    docstring = f"The {field.name}."
+                    in_on = "in" if field.name == "space" else "on"
+                    docstring = f"The {field.name} {in_on} which the object is defined."
                 else:
                     docstring = get_attribute_docstring(obj, field.name)
                 if not docstring:
                     if field.name == "run":
-                        docstring = "The run that created the object."
+                        docstring = "Run that created the object."
                     elif field.name == "created_by":
-                        docstring = "The user that created the object."
+                        docstring = "User that created the object."
                 for line in docstring.split("\n"):
                     field_lines.append(f"   {line.strip()}")
                 field_lines.append("")
