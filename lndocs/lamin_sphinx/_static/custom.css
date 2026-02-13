@@ -163,8 +163,9 @@ div[class*="highlight-"] {
 /* no frame around output toggle */
 /* ----------------------------- */
 
-.cell.tag_remove-input details.below-input,
-.cell.tag_remove-input details.below-input > summary {
+.cell.tag_remove-input.tag_hide-output details,
+.cell.tag_remove-input.tag_hide-output details > summary,
+.cell.tag_remove-input.tag_hide-output.docutils.container {
   border: unset;
   border-left-color: unset;
   border-left-width: unset;
