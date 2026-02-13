@@ -158,35 +158,26 @@ div[class*="highlight-"] {
   margin: 0 0; /* was 1em 0 */
 }
 
-/* ------------------------- */
-/* Hide code in hidden cells */
-/* ------------------------- */
+/* ----------------------------- */
+/* remove-input + hide-output:   */
+/* no frame around output toggle */
+/* ----------------------------- */
 
-.cell.tag_hide-cell .cell_input {
-  display: none;
-  height: 0;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  border: 0;
+.cell.tag_remove-input details.below-input,
+.cell.tag_remove-input details.below-input > summary {
+  border: unset;
+  border-left-color: unset;
+  border-left-width: unset;
+  box-shadow: unset;
 }
 
-/* Additional specificity to ensure it takes effect */
-.cell.tag_hide-cell details .cell_input {
-  position: absolute;
-  visibility: hidden;
-  height: 0;
-  width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-}
-
-/* Ensure the parent doesn't reserve space for it */
-.cell.tag_hide-cell details .cell_input * {
-  display: none;
-  height: 0;
+/* hide-input: no frame around input toggle (match hide-output look) */
+.cell.tag_hide-input details.above-input,
+.cell.tag_hide-input details.above-input > summary {
+  border: unset;
+  border-left-color: unset;
+  border-left-width: unset;
+  box-shadow: unset;
 }
 
 /* --------- */
