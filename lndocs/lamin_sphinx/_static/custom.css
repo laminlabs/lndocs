@@ -163,22 +163,9 @@ div[class*="highlight-"] {
 /* no frame around output toggle */
 /* ----------------------------- */
 
-.cell.tag_remove-input.tag_hide-output details,
-.cell.tag_remove-input.tag_hide-output details > summary,
-.cell.tag_remove-input.tag_hide-output.docutils.container {
+div.cell details.above-output > summary {
   border: unset;
-  border-left-color: unset;
-  border-left-width: unset;
-  box-shadow: unset;
-}
-
-/* hide-input: no frame around input toggle (match hide-output look) */
-.cell.tag_hide-input details.above-input,
-.cell.tag_hide-input details.above-input > summary {
-  border: unset;
-  border-left-color: unset;
-  border-left-width: unset;
-  box-shadow: unset;
+  margin-top: -0.8em;
 }
 
 /* --------- */
