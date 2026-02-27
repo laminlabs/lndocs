@@ -401,13 +401,10 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
         else:
             target_ul = soup.ul.li.ul
         if build_toc is None:
-            # determines whether its an autodoc-generated page or not
-            # autodoc uses the docutils StateMachine to build the object graph
-            # and automatically adds objects in the index to the TOC
-            if "docutils" in str(target_ul):
-                build_toc = True
-            else:
-                build_toc = False
+            # Build a custom right-sidebar TOC only on autodoc/API-like pages.
+            # This avoids false positives on regular markdown pages that happen
+            # to contain "docutils" fragments in their generated TOC HTML.
+            build_toc = soupbody.select_one("dl.py") is not None
 
         if build_toc:
             for li in target_ul.find_all("li"):
