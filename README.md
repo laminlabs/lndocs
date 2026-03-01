@@ -18,6 +18,12 @@ Build the docs by running `lndocs` in the root of your project repository:
 lndocs
 ```
 
+Useful flags:
+
+- `--strict`: fail on warnings
+- `--blog`: enable blog layout overrides (loads `blog.css` on top of `custom.css`)
+- `--format text`: export text output (`llms.txt`) instead of HTML
+
 Acknowledgements:
 
 `lndocs` builds on docutils, Sphinx, Bootstrap, `pydata-sphinx-theme`, and several other open-source tools.
