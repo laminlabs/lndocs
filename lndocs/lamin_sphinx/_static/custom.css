@@ -735,6 +735,7 @@ body {
   --link-color: var(--color-primary);
   --font-size-base: 100%;
   --line-height-base: 1.65;
+  --pst-font-weight-caption: 400;
   --font-family-base:
     system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
     sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
