@@ -353,6 +353,10 @@ a.headerlink {
   color: var(--color-primary);
 }
 
+h1 a.headerlink {
+  display: none;
+}
+
 h1,
 h2,
 h3,
