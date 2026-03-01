@@ -1,5 +1,21 @@
 /* Blog-specific typography overrides loaded on top of custom.css */
 
+.bd-main .bd-content .bd-article-container .bd-article {
+  /* Substack-like reading typography: serif in article content only. */
+  --lndocs-blog-serif:
+    ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino,
+    "Times New Roman", Times, serif;
+}
+
+.bd-main .bd-content .bd-article-container .bd-article h1,
+.bd-main .bd-content .bd-article-container .bd-article .ablog-post-title,
+.bd-main .bd-content .bd-article-container .bd-article .ablog-post-title a,
+.bd-main .bd-content .bd-article-container .bd-article p,
+.bd-main .bd-content .bd-article-container .bd-article li,
+.bd-main .bd-content .bd-article-container .bd-article blockquote {
+  font-family: var(--lndocs-blog-serif);
+}
+
 .bd-main .bd-content .bd-article-container .bd-article h2,
 .bd-main .bd-content .bd-article-container .bd-article h3,
 .bd-main .bd-content .bd-article-container .bd-article h4,
