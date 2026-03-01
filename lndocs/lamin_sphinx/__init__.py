@@ -1057,6 +1057,12 @@ def skip_deprecated(app, what, name, obj, skip, options):
     return hasattr(obj, "__deprecated") or skip
 
 
+def add_packaged_templates_path(app, config):
+    packaged_templates = str(Path(__file__).parent / "_templates")
+    if packaged_templates not in config.templates_path:
+        config.templates_path.append(packaged_templates)
+
+
 def setup(app: Sphinx):
     try:
         # fix UPath.open docs
@@ -1073,6 +1079,7 @@ def setup(app: Sphinx):
         app.add_css_file("blog.css")
     app.connect("doctree-resolved", inject_source_badge)
     app.connect("html-page-context", html_lamin_page_context)
+    app.connect("config-inited", add_packaged_templates_path)
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
     app.connect("autodoc-skip-member", skip_deprecated)
