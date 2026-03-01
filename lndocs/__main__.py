@@ -709,6 +709,7 @@ def main():
     aa("--site", type=str, default="_build/html", help="output directory")
     aa("--live", action="store_true", help="use autobuild")
     aa("--strict", action="store_true", help="error upon warning")
+    aa("--blog", action="store_true", help="enable blog layout styling")
     aa(
         "--error-on-index",
         action="store_true",
@@ -723,13 +724,14 @@ def main():
     args = parser.parse_args()
 
     if args.clean:
-        paths_to_delete = ["lamin_sphinx", "_docs_tmp"]
+        paths_to_delete = ["lamin_sphinx", "_docs_tmp", "_build"]
         for path in paths_to_delete:
             path = Path(f"{Path.cwd()}/{path}")
             print(f"Removing directory: {path}")
             import shutil
 
-            shutil.rmtree(path)
+            if path.exists():
+                shutil.rmtree(path)
 
         return
 
@@ -796,6 +798,8 @@ def main():
 
     if args.strict:
         os.environ["LNDOCS_WARNING_IS_ERROR"] = "1"
+    if args.blog:
+        os.environ["LNDOCS_BLOG"] = "1"
     if args.format == "html":
         build_status = call(
             f"{build_command} {docs_dir} {args.site}", shell=True
@@ -846,6 +850,8 @@ def main():
         raise ValueError(f"Unknown format: {args.format}. Use 'html' or 'text'.")
     if args.strict:
         del os.environ["LNDOCS_WARNING_IS_ERROR"]
+    if args.blog:
+        os.environ.pop("LNDOCS_BLOG", None)
 
     if args.format == "html":
         # remove db_args from registries documentation
