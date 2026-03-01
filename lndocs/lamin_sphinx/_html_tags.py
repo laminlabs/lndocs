@@ -62,11 +62,11 @@ def add_scholar_tags(
         fix_og_type(context, config)
         add_authors(context, fields)
         tags["citation_publication_date"] = fields["date"].replace("-", "/")
-        tags["citation_journal_title"] = "Lamin Reports"
+        tags["citation_journal_title"] = "Lamin Blog"
         tags["citation_publisher"] = "Lamin Labs"
         tags["citation_article_type"] = "Article"
         tags["citation_language"] = "en"
-        tags["citation_firstpage"] = fields["number"]
+        # tags["citation_firstpage"] = fields["number"]
         tags["citation_doi"] = fields["doi"]
         tags["DOI"] = fields["doi"]
 
