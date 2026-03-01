@@ -10,6 +10,13 @@ from sphinxext.opengraph import make_tag  # see below for implementation
 #     return f'<meta property="{property}" content="{content}" />'
 
 
+def make_name_tag(name: str, content: Any) -> str:
+    # Google Scholar reads Highwire/Scholar metadata from `name="citation_*"` tags,
+    # not from OpenGraph-style `property="..."` tags.
+    value = str(content).replace('"', "&quot;")
+    return f'<meta name="{name}" content="{value}" />'
+
+
 def fix_og_url(context: dict[str, Any], config: dict[str, Any]):
     old_url = urljoin(
         config["ogp_site_url"], context["pagename"] + context["file_suffix"]
@@ -34,7 +41,7 @@ def add_authors(context, fields):
     if "author" in fields:
         for key in fields["author"].split(", "):
             # does not work with tag dict as key is the same for all authors
-            context["metatags"] += "\n" + make_tag(
+            context["metatags"] += "\n" + make_name_tag(
                 "citation_author", lndocs.authors[key.rstrip("*")][0]
             )
 
@@ -56,22 +63,36 @@ def add_scholar_tags(
         "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
     )
 
-    # add citation tags and overwrite ogp tags
-    if "doi" in fields:
+    # Use title/author/date as the minimum gate so posts without DOI still get
+    # Scholar metadata and can be considered for indexing.
+    required_fields = ("title", "author", "date")
+    if all(key in fields for key in required_fields):
         tags["citation_title"] = fields["title"]
         fix_og_type(context, config)
         add_authors(context, fields)
-        tags["citation_publication_date"] = fields["date"].replace("-", "/")
+        tags["citation_publication_date"] = str(fields["date"]).replace("-", "/")
         tags["citation_journal_title"] = "Lamin Blog"
         tags["citation_publisher"] = "Lamin Labs"
         tags["citation_article_type"] = "Article"
         tags["citation_language"] = "en"
-        # tags["citation_firstpage"] = fields["number"]
-        tags["citation_doi"] = fields["doi"]
-        tags["DOI"] = fields["doi"]
+        tags["citation_abstract_html_url"] = (
+            config["ogp_site_url"] + "/" + context["pagename"]
+        )
+        if "doi" in fields:
+            tags["citation_doi"] = fields["doi"]
+            tags["DOI"] = fields["doi"]
+        if "pdf" in fields:
+            tags["citation_pdf_url"] = fields["pdf"]
 
     context["metatags"] += (
-        "\n" + "\n".join([make_tag(k, v) for k, v in tags.items()]) + "\n"
+        "\n"
+        + "\n".join(
+            [
+                make_name_tag(k, v) if k.startswith("citation_") else make_tag(k, v)
+                for k, v in tags.items()
+            ]
+        )
+        + "\n"
     )
 
 
