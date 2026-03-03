@@ -303,18 +303,22 @@ html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
 /* Footnotes */
 /* --------- */
 
-/* The top border is as for footnotes. */
 .prev-next-area {
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: var(--pst-color-border);
   margin-top: 2rem;
   padding-top: 0.5rem;
+  /* Keep a stable paragraph-sized font regardless of nearby context. */
+  font-size: 1rem;
+  font-family: var(--lndocs-blog-serif);
 }
 
 .prev-next-area a p.prev-next-title {
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 1em; /* override theme's 1.1em so parent size applies */
+}
+
+/* Hide empty fallback prev/next containers emitted by theme internals. */
+.prev-next-area:empty {
+  display: none;
 }
 
 aside.footnote span.label {
