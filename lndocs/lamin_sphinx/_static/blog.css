@@ -1,7 +1,7 @@
 /* Blog-specific typography overrides loaded on top of custom.css */
 
-.bd-main .bd-content .bd-article-container .bd-article {
-  /* Substack-like reading typography: serif in article content only. */
+:root {
+  /* Defined at root so it's available outside .bd-article (e.g. prev-next nav). */
   --lndocs-blog-serif:
     ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino,
     "Times New Roman", Times, serif;
@@ -51,4 +51,24 @@
 
 .lndocs-landing-post .lndocs-post-authors {
   margin-bottom: 0.5rem;
+}
+
+.ablog-postnav {
+  font-size: 80%;
+  font-family: var(--lndocs-blog-serif);
+  margin-top: 1.5rem;
+}
+
+.ablog-postnav::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.ablog-postnav-prev {
+  float: left;
+}
+
+.ablog-postnav-next {
+  float: right;
 }
