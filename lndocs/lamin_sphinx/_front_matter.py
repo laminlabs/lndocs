@@ -68,14 +68,14 @@ def render_front_matter(self, token: SyntaxTreeNode) -> None:
         if html != "" and not html.endswith(" · "):
             html += " · "
         html += f"<a href={data['repo']}>Repository</a>"
-    if data.get("tweet"):
-        if html != "" and not html.endswith(" · "):
-            html += " · "
-        html += f"<a href={data['tweet']}>Tweet</a>"
     if data.get("linkedin"):
         if html != "" and not html.endswith(" · "):
             html += " · "
         html += f"<a href={data['linkedin']}>LinkedIn</a>"
+    if data.get("tweet"):
+        if html != "" and not html.endswith(" · "):
+            html += " · "
+        html += f"<a href={data['tweet']}>Tweet</a>"
     if data.get("bsky"):
         if html != "" and not html.endswith(" · "):
             html += " · "
