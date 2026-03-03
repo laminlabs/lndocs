@@ -42,6 +42,12 @@
   margin-bottom: 2rem;
 }
 
+/* Keep collection overview titles black instead of link-colored. */
+.lndocs-landing-post h1 a,
+.lndocs-landing-post h1 a:visited {
+  color: var(--pst-text-color-base);
+}
+
 .ablog-postnav {
   font-size: 80%;
   font-family: var(--lndocs-blog-serif);
