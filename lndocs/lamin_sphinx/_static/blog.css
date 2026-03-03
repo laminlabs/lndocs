@@ -42,21 +42,10 @@
   margin-bottom: 2rem;
 }
 
-.lndocs-landing-post .lndocs-post-date,
-.lndocs-landing-post .lndocs-post-authors {
-  padding-left: 0;
-}
-
-.lndocs-landing-post .lndocs-post-date {
-  margin-bottom: 0.25rem;
-}
-
-.lndocs-landing-post .ablog-post-title {
-  margin-top: 0;
-}
-
-.lndocs-landing-post .lndocs-post-authors {
-  margin-bottom: 0.5rem;
+/* Keep collection overview titles black instead of link-colored. */
+.lndocs-landing-post h1 a,
+.lndocs-landing-post h1 a:visited {
+  color: var(--pst-text-color-base);
 }
 
 .ablog-postnav {

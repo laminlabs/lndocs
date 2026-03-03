@@ -1,17 +1,17 @@
 {%- extends "page.html" %} {% block body %} {% for post in collection %}
 <div class="section ablog-post lndocs-landing-post">
-  <ul class="ablog-archive lndocs-post-date">
+  <ul class="ablog-archive" style="padding-left: 0px">
     <li>
       {% if post.published %}⸻ {{ post.date.strftime(ablog.post_date_format) }}
       {% else %}⸻ Draft {% endif %}
     </li>
   </ul>
-  <h1 class="ablog-post-title">
+  <h1>
     <a href="{{ pathto(post.docname) }}{{ anchor(post) }}">{{ post.title }}</a>
   </h1>
 
   {% if post.author %}
-  <ul class="ablog-archive lndocs-post-authors">
+  <ul class="ablog-archive" style="padding-left: 0px">
     <li id="author">
       {% for coll in post.author %} {% if coll|length %}
       <a href="{{ pathto(coll.docname) }}">{{ coll }}</a>{% if loop.index <
