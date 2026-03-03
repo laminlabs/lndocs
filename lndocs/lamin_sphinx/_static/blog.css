@@ -42,23 +42,6 @@
   margin-bottom: 2rem;
 }
 
-.lndocs-landing-post .lndocs-post-date,
-.lndocs-landing-post .lndocs-post-authors {
-  padding-left: 0;
-}
-
-.lndocs-landing-post .lndocs-post-date {
-  margin-bottom: 0.25rem;
-}
-
-.lndocs-landing-post .ablog-post-title {
-  margin-top: 0;
-}
-
-.lndocs-landing-post .lndocs-post-authors {
-  margin-bottom: 0.5rem;
-}
-
 .ablog-postnav {
   font-size: 80%;
   font-family: var(--lndocs-blog-serif);
