@@ -32,6 +32,12 @@
   font-size: 1.25rem;
 }
 
+/* Keep both article and collection post titles at a consistent size. */
+.bd-main .bd-content .bd-article-container .bd-article h1,
+.bd-main .bd-content .bd-article-container .bd-article .ablog-post-title a {
+  font-size: 2.5rem;
+}
+
 .lndocs-landing-post {
   margin-bottom: 2rem;
 }
