@@ -832,12 +832,12 @@ def process_docstring(app, what, name, obj, options, lines):
                     else None
                 )
                 field_lines.append(f".. attribute:: {field.name}")
-                if field.name in {"space", "branch", "run", "created_by"}:
+                if field.name in {"space", "branch", "run", "created_by", "created_on"}:
                     attr_type = (
                         "Space"
                         if field.name == "space"
                         else "Branch"
-                        if field.name == "branch"
+                        if field.name in {"branch", "created_on"}
                         else "Run"
                         if field.name == "run"
                         else "User"
@@ -857,6 +857,8 @@ def process_docstring(app, what, name, obj, options, lines):
                         docstring = "Run that created the object."
                     elif field.name == "created_by":
                         docstring = "User that created the object."
+                    elif field.name == "created_on":
+                        docstring = "Branch on which the object was created."
                 for line in docstring.split("\n"):
                     field_lines.append(f"   {line.strip()}")
                 field_lines.append("")
