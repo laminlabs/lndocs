@@ -494,6 +494,11 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
                 a = li.find("a")
                 a["class"] = a.get("class", []) + ["nav-link"]
 
+        # Normalize inline-code text in TOC labels so formatting whitespace
+        # does not become visible as extra space inside code pills.
+        for span in soup.select("code > span.pre"):
+            span.string = span.get_text().strip()
+
         # If we only have one h1 header, assume it's a title
         h1_headers = soup.select(".toc-h1")
         if len(h1_headers) == 1:
@@ -502,10 +507,13 @@ def add_toctree_functions(app, pagename, templatename, context, doctree):
             if not title.select(".toc-h2"):
                 out = ""
             else:
-                out = title.find("ul").prettify()
+                # Use compact HTML to avoid prettify()-inserted whitespace
+                # showing up inside inline code spans in the sidebar TOC.
+                out = str(title.find("ul"))
         # Else treat the h1 headers as sections
         else:
-            out = soup.prettify()
+            # Keep whitespace stable in TOC labels (especially inline code).
+            out = str(soup)
 
         # Return the toctree object
         if kind == "html":
