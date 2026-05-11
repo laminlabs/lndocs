@@ -91,6 +91,8 @@ myst_enable_extensions = [
 ]
 myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
+# Do not append return/backreference links in footnotes.
+footnote_backlinks = False
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_type_aliases = {
