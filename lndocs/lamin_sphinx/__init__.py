@@ -91,8 +91,6 @@ myst_enable_extensions = [
 ]
 myst_title_to_header = True  # allow frontmatter titles
 myst_heading_anchors = 2  # create anchors for headings
-# Do not append return/backreference links in footnotes.
-footnote_backlinks = False
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_type_aliases = {
@@ -159,6 +157,15 @@ from ._footnote_title import visit_footnote_reference
 from ._html_tags import html_lamin_page_context
 from ._nitpick_ignore import nitpick_ignore
 from ._source_badge import inject_source_badge
+
+
+def visit_label_no_backlinks(self, node):
+    self.body.append('<span class="label">')
+    self.body.append('<span class="fn-bracket">[</span>')
+
+
+def depart_label_no_backlinks(self, node):
+    self.body.append('<span class="fn-bracket">]</span></span>\n')
 
 
 # when upgrading beyond pydata-sphinx-theme, note that this function moved to
@@ -1095,3 +1102,8 @@ def setup(app: Sphinx):
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
     app.connect("autodoc-skip-member", skip_deprecated)
+
+    # Docutils generates footnote/citation backlinks in HTML labels
+    # (e.g. "(1,2)") in depart_label; disable them globally.
+    HTMLTranslator.visit_label = visit_label_no_backlinks
+    HTMLTranslator.depart_label = depart_label_no_backlinks
