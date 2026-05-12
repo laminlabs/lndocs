@@ -299,6 +299,10 @@ html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
   background: transparent;
 }
 
+html[data-theme="light"] .bd-content img {
+  border-radius: 0.25rem;
+}
+
 /* --------- */
 /* Footnotes */
 /* --------- */
