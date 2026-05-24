@@ -67,6 +67,11 @@ html[data-theme="light"] .highlight .s2 {
 }
 
 /* python code operator */
+html[data-theme="light"] .highlight .o {
+  color: #f97316;
+  font-weight: bold;
+}
+
 html[data-theme="light"] .highlight .kn {
   color: #f67107;
 }
