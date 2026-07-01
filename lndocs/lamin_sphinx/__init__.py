@@ -759,7 +759,7 @@ def process_docstring(app, what, name, obj, options, lines):
             User,
         )
         from lamindb.models._feature_manager import FeatureManager
-        from lamindb.models.query_set import BiontyDB, PertdbDB
+        from lamindb.models.db import BiontyDB, PertdbDB
         from lamindb.models.sqlrecord import SQLRecordInfo
         from lamindb_setup.errors import ModuleWasntConfigured
 
