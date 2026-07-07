@@ -119,17 +119,30 @@ NEW_ANSI = '''\
                         elif value == 107:
                             self.bg_color = "White"'''
 
+ORIG_ANSI_TOKENS = """\
+    tokens = {
+        "root": [(r"\\x1b\\[([^\\x1b]*)", process), (r"[^\\x1b]+", pygments.token.Text)],
+    }"""
+
+NEW_ANSI_TOKENS = """\
+    tokens = {
+        "root": [
+            (r"\\x1b\\[([^\\x1b]*)", process),
+            (r"[^\\x1b]+", pygments.token.Text),
+            (r"\\x1b", pygments.token.Text),
+        ],
+    }"""
+
 
 def additional_ansi_colors():
     import myst_nb.core.lexers
 
     content = Path(myst_nb.core.lexers.__file__).read_text()
-    if NEW_ANSI in content:
-        return
-    # Be tolerant across myst-nb versions where this exact snippet may differ.
-    if ORIG_ANSI not in content:
-        return
-    Path(myst_nb.core.lexers.__file__).write_text(content.replace(ORIG_ANSI, NEW_ANSI))
+    if NEW_ANSI not in content and ORIG_ANSI in content:
+        content = content.replace(ORIG_ANSI, NEW_ANSI)
+    if NEW_ANSI_TOKENS not in content and ORIG_ANSI_TOKENS in content:
+        content = content.replace(ORIG_ANSI_TOKENS, NEW_ANSI_TOKENS)
+    Path(myst_nb.core.lexers.__file__).write_text(content)
 
 
 def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
