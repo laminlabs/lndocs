@@ -1,4 +1,7 @@
 nitpick_ignore = [
+    ("py:class", "upath.types.UPathParser"),
+    ("py:class", "upath.types.StatResultType"),
+    ("py:class", "upath.types.StatResultType"),
     ("py:class", "pathlib_abc.PathInfo"),
     ("py:class", "pathlib_abc.ReadablePath"),
     ("py:class", "pathlib_abc.WritablePath"),
