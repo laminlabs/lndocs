@@ -1,4 +1,8 @@
 nitpick_ignore = [
+    ("py:class", "pathlib_abc.PathInfo"),
+    ("py:class", "pathlib_abc.ReadablePath"),
+    ("py:class", "pathlib_abc.WritablePath"),
+    ("py:class", "upath.core._UPathMixin"),
     ("py:class", "AnyPathStr"),
     ("py:class", "SimpleDtype"),
     ("py:class", "SimpleDtypeStr"),
