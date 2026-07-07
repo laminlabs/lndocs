@@ -86,21 +86,50 @@ ORIG_ANSI = """\
 NEW_ANSI = '''\
                         elif value == 49:
                             self.bg_color = None
-                        elif value == 92:  # Special case for bright green
+                        elif value == 90:
+                            self.fg_color = "Black"
+                        elif value == 91:
+                            self.fg_color = "Red"
+                        elif value == 92:
                             self.fg_color = "Green"
-                        elif value == 94:  # Special case for bright blue
-                            self.fg_color = "Blue"'''
+                        elif value == 93:
+                            self.fg_color = "Yellow"
+                        elif value == 94:
+                            self.fg_color = "Blue"
+                        elif value == 95:
+                            self.fg_color = "Magenta"
+                        elif value == 96:
+                            self.fg_color = "Cyan"
+                        elif value == 97:
+                            self.fg_color = "White"
+                        elif value == 100:
+                            self.bg_color = "Black"
+                        elif value == 101:
+                            self.bg_color = "Red"
+                        elif value == 102:
+                            self.bg_color = "Green"
+                        elif value == 103:
+                            self.bg_color = "Yellow"
+                        elif value == 104:
+                            self.bg_color = "Blue"
+                        elif value == 105:
+                            self.bg_color = "Magenta"
+                        elif value == 106:
+                            self.bg_color = "Cyan"
+                        elif value == 107:
+                            self.bg_color = "White"'''
 
 
 def additional_ansi_colors():
     import myst_nb.core.lexers
 
     content = Path(myst_nb.core.lexers.__file__).read_text()
-    if NEW_ANSI not in content:
-        assert ORIG_ANSI in content
-        Path(myst_nb.core.lexers.__file__).write_text(
-            content.replace(ORIG_ANSI, NEW_ANSI)
-        )
+    if NEW_ANSI in content:
+        return
+    # Be tolerant across myst-nb versions where this exact snippet may differ.
+    if ORIG_ANSI not in content:
+        return
+    Path(myst_nb.core.lexers.__file__).write_text(content.replace(ORIG_ANSI, NEW_ANSI))
 
 
 def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
