@@ -24,8 +24,6 @@ nitpick_ignore = [
     ("py:attr", "lamindb.ArtifactBlock.artifact"),
     ("py:attr", "lamindb.CollectionBlock.collection"),
     ("py:attr", "lamindb.FeatureBlock.feature"),
-    ("py:attr", "lamindb.BranchULabel.ulabel"),
-    ("py:attr", "lamindb.BranchProject.project"),
     ("py:attr", "lamindb.BranchBlock.branch"),
     ("py:attr", "lamindb.RecordBlock.record"),
     ("py:attr", "lamindb.RunArtifact.artifact"),
