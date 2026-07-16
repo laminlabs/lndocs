@@ -743,6 +743,34 @@ def strip_notebook_outputs(directory="."):
     print(f"Processed {len(notebook_files)} notebooks")
 
 
+def strip_bash_from_notebooks(directory="."):
+    """Strip %%bash magic from notebooks before rendering."""
+    try:
+        import nbformat
+    except ImportError:
+        print("nbformat not installed, skipping bash stripping")
+        return
+
+    notebook_files = list(Path(directory).rglob("*.ipynb"))
+    for nb_path in notebook_files:
+        if ".ipynb_checkpoints" in str(nb_path):
+            continue
+        try:
+            nb = nbformat.read(nb_path, as_version=4)
+            modified = False
+            for cell in nb.cells:
+                if cell.cell_type == "code" and cell.source.startswith("%%bash"):
+                    if cell.source.startswith("%%bash\n"):
+                        cell.source = cell.source.replace("%%bash\n", "", 1)
+                    else:
+                        cell.source = cell.source.replace("%%bash", "", 1)
+                    modified = True
+            if modified:
+                nbformat.write(nb, nb_path)
+        except Exception as e:
+            print(f"Error processing {nb_path} for bash stripping: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build Lamin docs site.")
     aa = parser.add_argument
@@ -834,6 +862,8 @@ def main():
                 # path.with_stem() is >3.9
                 new_path = path.with_name(f"{new_stem}{path.suffix}")
                 path.rename(new_path)
+
+    strip_bash_from_notebooks(docs_dir)
 
     sluggify_autosummary()
     additional_ansi_colors()
