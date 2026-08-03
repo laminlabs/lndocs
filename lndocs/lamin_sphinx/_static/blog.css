@@ -24,12 +24,15 @@
   margin-top: 1.25rem;
 }
 
-.bd-main .bd-content .bd-article-container .bd-article h2,
+.bd-main .bd-content .bd-article-container .bd-article h2 {
+  font-size: 1.25rem;
+}
+
 .bd-main .bd-content .bd-article-container .bd-article h3,
 .bd-main .bd-content .bd-article-container .bd-article h4,
 .bd-main .bd-content .bd-article-container .bd-article h5,
 .bd-main .bd-content .bd-article-container .bd-article h6 {
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
 /* Keep both article and collection post titles at a consistent size. */
