@@ -1,4 +1,5 @@
 nitpick_ignore = [
+    ("py:class", "UPath"),
     ("py:class", "upath.types.UPathParser"),
     ("py:class", "upath.types.StatResultType"),
     ("py:class", "upath.types.StatResultType"),
