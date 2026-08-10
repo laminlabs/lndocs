@@ -129,6 +129,7 @@ nitpick_ignore = [
     ("py:class", "pandas.DataFrame"),
     ("py:class", "pandas.core.series.Series"),
     ("py:class", "pandas.core.indexes.base.Index"),
+    ("py:class", "pandas.Index"),
     ("py:class", "numpy.array"),
     ("py:class", "lamindb.base.mocks.BackedAccessor"),
     ("py:class", "lamindb.base.mocks.AnnDataAccessor"),
