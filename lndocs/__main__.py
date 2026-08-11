@@ -453,6 +453,42 @@ def _is_toc_only(content: str) -> bool:
     return True
 
 
+def _extract_myst_toctree_group_starts(content: str) -> dict[str, str]:
+    """Map first entry of a toctree block to that block's caption."""
+    group_starts: dict[str, str] = {}
+    toctree_pattern = r"```\{toctree\}([^`]*?)```"
+    matches = re.finditer(toctree_pattern, content, re.DOTALL)
+
+    for match in matches:
+        caption = ""
+        first_entry = ""
+        for raw_line in match.group(1).split("\n"):
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith(":caption:"):
+                caption = line.split(":caption:", 1)[1].strip().strip("\"'")
+                continue
+            if line.startswith(":"):
+                continue
+            if not first_entry:
+                entry = line
+                if "<" in entry and entry.endswith(">"):
+                    entry = entry.split("<", 1)[1].rstrip(">").strip()
+                entry = entry.lstrip("/")
+                for ext in (".md", ".rst", ".ipynb", ".txt"):
+                    if entry.endswith(ext):
+                        entry = entry[: -len(ext)]
+                        break
+                first_entry = entry
+                break
+
+        if caption and first_entry:
+            group_starts[first_entry] = caption
+
+    return group_starts
+
+
 def generate_llms_txt(
     docs_dir: str,
     site: str,
@@ -603,6 +639,15 @@ def generate_llms_txt(
                     sections_order.append(("api", "API Reference"))
             entries.append((page_path, doc_title, section_key or "", depth))
 
+        guide_group_starts: dict[str, str] = {}
+        guide_doc = Path(docs_dir) / "guide.md"
+        if guide_doc.exists():
+            try:
+                guide_content = guide_doc.read_text(encoding="utf-8")
+                guide_group_starts = _extract_myst_toctree_group_starts(guide_content)
+            except Exception:
+                guide_group_starts = {}
+
         first_section = True
         for section_key, section_title in sections_order:
             section_entries = [e for e in entries if e[2] == section_key]
@@ -613,6 +658,8 @@ def generate_llms_txt(
             outfile.write(f"## {section_title}\n\n")
             first_section = False
             for page_path, doc_title, sk, depth in section_entries:
+                if sk == "guide" and page_path in guide_group_starts:
+                    outfile.write(f"### {guide_group_starts[page_path]}\n\n")
                 if sk == "api" and "." in page_path:
                     indent = "  "
                 else:
