@@ -659,7 +659,7 @@ def generate_llms_txt(
             first_section = False
             for page_path, doc_title, sk, depth in section_entries:
                 if sk == "guide" and page_path in guide_group_starts:
-                    outfile.write(f"### {guide_group_starts[page_path]}\n\n")
+                    outfile.write(f"\n### {guide_group_starts[page_path]}\n\n")
                 if sk == "api" and "." in page_path:
                     indent = "  "
                 else:
