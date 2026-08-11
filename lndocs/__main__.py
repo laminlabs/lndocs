@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -210,7 +211,12 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                 for ext in [".rst", ".md", ".ipynb"]:
                     entry_path = docs_path / (entry + ext)
                     if entry_path.exists() and entry_path.is_file():
-                        parse_rst_file(entry_path, current_depth + 1)
+                        if entry_path.suffix == ".md":
+                            parse_md_file(entry_path, current_depth + 1)
+                        elif entry_path.suffix == ".ipynb":
+                            parse_ipynb_file(entry_path, current_depth + 1)
+                        else:
+                            parse_rst_file(entry_path, current_depth + 1)
                         found_file = True
                         break
 
@@ -218,14 +224,24 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                 if not found_file:
                     entry_path = docs_path / entry
                     if entry_path.exists() and entry_path.is_file():
-                        parse_rst_file(entry_path, current_depth + 1)
+                        if entry_path.suffix == ".md":
+                            parse_md_file(entry_path, current_depth + 1)
+                        elif entry_path.suffix == ".ipynb":
+                            parse_ipynb_file(entry_path, current_depth + 1)
+                        else:
+                            parse_rst_file(entry_path, current_depth + 1)
                         found_file = True
                     elif entry_path.is_dir():
                         # Look for index files in the directory
                         for index_name in ["index.rst", "index.md", "index.ipynb"]:
                             index_path = entry_path / index_name
                             if index_path.exists():
-                                parse_rst_file(index_path, current_depth + 1)
+                                if index_path.suffix == ".md":
+                                    parse_md_file(index_path, current_depth + 1)
+                                elif index_path.suffix == ".ipynb":
+                                    parse_ipynb_file(index_path, current_depth + 1)
+                                else:
+                                    parse_rst_file(index_path, current_depth + 1)
                                 found_file = True
                                 break
 
@@ -235,24 +251,8 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                     if base_name not in [item[0] for item in toctree_order]:
                         toctree_order.append((base_name, current_depth + 1))
 
-    def parse_md_file(file_path: Path, current_depth: int = 0):
-        """Parse Markdown files for MyST toctree directives."""
-        if not file_path.exists():
-            return
-
-        try:
-            with open(file_path, encoding="utf-8") as f:
-                content = f.read()
-        except Exception as e:
-            print(f"Warning: Could not read {file_path}: {e}")
-            return
-
-        # Add the current file to the order
-        stem = file_path.stem
-        if stem not in [item[0] for item in toctree_order]:
-            toctree_order.append((stem, current_depth))
-
-        # Find MyST toctree directives - more flexible pattern
+    def _parse_myst_toctrees_from_content(content: str, current_depth: int):
+        """Parse MyST toctree blocks from markdown-like content."""
         # Matches ```{toctree} followed by optional options, then entries
         toctree_pattern = r"```\{toctree\}([^`]*?)```"
         matches = re.finditer(toctree_pattern, content, re.DOTALL)
@@ -290,6 +290,8 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                     if test_path.exists() and test_path.is_file():
                         if test_path.suffix == ".md":
                             parse_md_file(test_path, current_depth + 1)
+                        elif test_path.suffix == ".ipynb":
+                            parse_ipynb_file(test_path, current_depth + 1)
                         else:
                             parse_rst_file(test_path, current_depth + 1)
                         found_file = True
@@ -301,6 +303,8 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                     if test_path.exists() and test_path.is_file():
                         if test_path.suffix == ".md":
                             parse_md_file(test_path, current_depth + 1)
+                        elif test_path.suffix == ".ipynb":
+                            parse_ipynb_file(test_path, current_depth + 1)
                         else:
                             parse_rst_file(test_path, current_depth + 1)
                         found_file = True
@@ -311,6 +315,8 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                             if index_path.exists():
                                 if index_name.endswith(".md"):
                                     parse_md_file(index_path, current_depth + 1)
+                                elif index_name.endswith(".ipynb"):
+                                    parse_ipynb_file(index_path, current_depth + 1)
                                 else:
                                     parse_rst_file(index_path, current_depth + 1)
                                 found_file = True
@@ -321,6 +327,55 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
                     base_name = entry.split(".")[0] if "." in entry else entry
                     if base_name not in [item[0] for item in toctree_order]:
                         toctree_order.append((base_name, current_depth + 1))
+
+    def parse_md_file(file_path: Path, current_depth: int = 0):
+        """Parse Markdown files for MyST toctree directives."""
+        if not file_path.exists():
+            return
+
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return
+
+        # Add the current file to the order
+        stem = file_path.stem
+        if stem not in [item[0] for item in toctree_order]:
+            toctree_order.append((stem, current_depth))
+
+        _parse_myst_toctrees_from_content(content, current_depth)
+
+    def parse_ipynb_file(file_path: Path, current_depth: int = 0):
+        """Parse Jupyter notebooks for MyST toctree directives in markdown cells."""
+        if not file_path.exists():
+            return
+
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                notebook = json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return
+
+        stem = file_path.stem
+        if stem not in [item[0] for item in toctree_order]:
+            toctree_order.append((stem, current_depth))
+
+        markdown_cells = []
+        for cell in notebook.get("cells", []):
+            if cell.get("cell_type") != "markdown":
+                continue
+            source = cell.get("source", "")
+            if isinstance(source, list):
+                source = "".join(source)
+            markdown_cells.append(source)
+
+        if markdown_cells:
+            _parse_myst_toctrees_from_content(
+                "\n\n".join(markdown_cells), current_depth
+            )
 
     # Start with index file
     index_files = ["index.rst", "index.md"]
