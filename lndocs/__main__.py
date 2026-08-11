@@ -653,17 +653,47 @@ def generate_llms_txt(
             section_entries = [e for e in entries if e[2] == section_key]
             if not section_entries:
                 continue
+            api_parent_by_path: dict[str, str] = {}
+            api_children_by_parent: dict[str, list[str]] = {}
+            api_group_prefixes = ("lamindb.", "bionty.", "pertdb.")
+            if section_key == "api":
+                api_entries_by_path = {
+                    page_path: entry for page_path, *entry in section_entries
+                }
+                for page_path, _, _, _ in section_entries:
+                    should_group_api_page = "." in page_path and page_path.startswith(
+                        api_group_prefixes
+                    )
+                    if not should_group_api_page:
+                        continue
+                    parent_path = ""
+                    candidate = page_path.rsplit(".", 1)[0]
+                    while candidate:
+                        if candidate in api_entries_by_path:
+                            parent_path = candidate
+                            break
+                        if "." not in candidate:
+                            break
+                        candidate = candidate.rsplit(".", 1)[0]
+                    if parent_path:
+                        api_parent_by_path[page_path] = parent_path
+                        api_children_by_parent.setdefault(parent_path, []).append(
+                            page_path
+                        )
+
             if not first_section:
                 outfile.write("\n")
             outfile.write(f"## {section_title}\n\n")
             first_section = False
-            for page_path, doc_title, sk, depth in section_entries:
-                if sk == "guide" and page_path in guide_group_starts:
-                    outfile.write(f"\n### {guide_group_starts[page_path]}\n\n")
-                if sk == "api" and "." in page_path:
-                    indent = "  "
-                else:
-                    indent = "  " * (depth - 1) if depth >= 1 else ""
+            section_titles_by_path = {
+                page_path: doc_title for page_path, doc_title, _, _ in section_entries
+            }
+
+            def _write_entry(
+                page_path: str,
+                doc_title: str,
+                indent_level: int,
+            ) -> None:
                 if (
                     doc_title
                     and len(doc_title) >= 2
@@ -675,7 +705,41 @@ def generate_llms_txt(
                 line = (
                     f"- {rel_link} - {doc_title}\n" if doc_title else f"- {rel_link}\n"
                 )
-                outfile.write(f"{indent}{line}")
+                outfile.write(f"{'  ' * indent_level}{line}")
+
+            def _write_api_children(
+                parent_path: str,
+                parent_indent_level: int,
+                *,
+                children_by_parent: dict[str, list[str]] = api_children_by_parent,
+                titles_by_path: dict[str, str] = section_titles_by_path,
+            ) -> None:
+                for child_path in children_by_parent.get(parent_path, []):
+                    child_doc_title = titles_by_path.get(child_path, "")
+                    _write_entry(
+                        child_path,
+                        child_doc_title,
+                        parent_indent_level + 1,
+                    )
+                    _write_api_children(child_path, parent_indent_level + 1)
+
+            for page_path, doc_title, sk, depth in section_entries:
+                if sk == "guide" and page_path in guide_group_starts:
+                    outfile.write(f"\n### {guide_group_starts[page_path]}\n\n")
+                if sk == "api" and page_path in api_parent_by_path:
+                    continue
+                should_group_api_page = (
+                    sk == "api"
+                    and "." in page_path
+                    and page_path.startswith(api_group_prefixes)
+                )
+                if should_group_api_page:
+                    indent_level = 1
+                else:
+                    indent_level = depth - 1 if depth >= 1 else 0
+                _write_entry(page_path, doc_title, indent_level)
+                if sk == "api":
+                    _write_api_children(page_path, indent_level)
 
     print(f"✓ Per-page .md files written to: {html_dir}")
     print(f"✓ llms.txt saved to: {output_path}")
