@@ -596,8 +596,19 @@ p {
 blockquote {
   border-left: none;
   border-radius: 0;
+  margin: inherit;
   padding: 0;
+  padding-left: 0;
   position: static;
+  color: var(--pst-color-text-muted);
+}
+
+blockquote p {
+  color: var(--pst-color-text-muted);
+}
+
+blockquote:before {
+  content: none;
 }
 
 .bd-main .bd-content .bd-article-container .bd-article {
