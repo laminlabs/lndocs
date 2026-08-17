@@ -593,6 +593,13 @@ p {
   margin-top: 1.15rem;
 }
 
+blockquote {
+  border-left: none;
+  border-radius: 0;
+  padding: 0;
+  position: static;
+}
+
 .bd-main .bd-content .bd-article-container .bd-article {
   padding-left: 0rem;
   padding-top: 0rem;
