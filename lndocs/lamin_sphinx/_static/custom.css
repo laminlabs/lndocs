@@ -594,11 +594,11 @@ p {
 }
 
 blockquote {
-  border-left: none;
+  border-left: 0.1rem solid var(--pst-color-border);
   border-radius: 0;
   margin: inherit;
   padding: 0;
-  padding-left: 0;
+  padding-left: 1rem;
   position: static;
   color: var(--pst-color-text-muted);
 }
