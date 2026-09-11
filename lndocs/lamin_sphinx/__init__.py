@@ -149,6 +149,7 @@ from pydata_sphinx_theme import (
     urlparse,
 )
 from sphinx.addnodes import toctree as toctree_node
+from sphinx.domains.std import StandardDomain
 from sphinx.environment.adapters.toctree import TocTree
 
 from . import _front_matter
@@ -1082,6 +1083,28 @@ def add_packaged_templates_path(app, config):
         config.templates_path.append(packaged_templates)
 
 
+def patch_doc_role_whitespace() -> None:
+    """Patch Sphinx doc-role resolver to remove trailing caption whitespace."""
+    if getattr(StandardDomain, "_lndocs_doc_space_patch", False):
+        return
+
+    original = StandardDomain._resolve_doc_xref
+
+    def patched(self, env, fromdocname, builder, typ, target, node, contnode):
+        refnode = original(self, env, fromdocname, builder, typ, target, node, contnode)
+        if refnode is not None:
+            for inline in refnode.findall(nodes.inline):
+                if "doc" in inline.get("classes", []):
+                    for child in inline.children:
+                        if isinstance(child, nodes.Text):
+                            child.parent.replace(child, nodes.Text(str(child).rstrip()))
+                            break
+        return refnode
+
+    StandardDomain._resolve_doc_xref = patched
+    StandardDomain._lndocs_doc_space_patch = True
+
+
 def setup(app: Sphinx):
     try:
         # fix UPath.open docs
@@ -1096,6 +1119,7 @@ def setup(app: Sphinx):
     app.add_css_file("custom.css")
     if os.getenv("LNDOCS_BLOG") is not None:
         app.add_css_file("blog.css")
+    patch_doc_role_whitespace()
     app.connect("doctree-resolved", inject_source_badge)
     app.connect("html-page-context", html_lamin_page_context)
     app.connect("config-inited", add_packaged_templates_path)
