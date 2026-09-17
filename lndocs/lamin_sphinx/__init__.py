@@ -1096,6 +1096,33 @@ def add_packaged_templates_path(app, config):
         config.templates_path.append(packaged_templates)
 
 
+def resolve_autodoc_type_aliases(app, env, node, contnode):
+    """Resolve short type-alias names emitted by autodoc signatures.
+
+    `autodoc_typehints_format = "short"` creates unqualified `:py:class:`
+    xrefs. `autodoc_type_aliases` does not rewrite those, so map them here.
+    """
+    if node.get("refdomain") != "py":
+        return None
+    target = node.get("reftarget")
+    qualified = app.config.autodoc_type_aliases.get(target)
+    if not qualified or qualified == target:
+        return None
+    python = env.get_domain("py")
+    original_target = node["reftarget"]
+    node["reftarget"] = qualified
+    try:
+        for reftype in (node.get("reftype") or "class", "class", "data", "obj"):
+            ref = python.resolve_xref(
+                env, node["refdoc"], app.builder, reftype, qualified, node, contnode
+            )
+            if ref is not None:
+                return ref
+    finally:
+        node["reftarget"] = original_target
+    return None
+
+
 def setup(app: Sphinx):
     try:
         # fix UPath.open docs
@@ -1116,6 +1143,7 @@ def setup(app: Sphinx):
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
     app.connect("autodoc-skip-member", skip_deprecated)
+    app.connect("missing-reference", resolve_autodoc_type_aliases)
 
     # Docutils generates footnote/citation backlinks in HTML labels
     # (e.g. "(1,2)") in depart_label; disable them globally.
