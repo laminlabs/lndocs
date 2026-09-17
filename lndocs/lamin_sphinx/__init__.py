@@ -97,6 +97,20 @@ autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
     "Ontology": "bionty.base._ontology.Ontology",
     "InspectResult": "bionty.base.dev.InspectResult",
+    "AnyPathStr": "lamindb.base.types.AnyPathStr",
+    "ArtifactKind": "lamindb.base.types.ArtifactKind",
+    "ArtifactType": "lamindb.base.types.ArtifactKind",
+    "Dtype": "lamindb.base.types.DtypeStr",
+    "DtypeStr": "lamindb.base.types.DtypeStr",
+    "FieldAttr": "lamindb.base.types.FieldAttr",
+    "ListLike": "lamindb.base.types.ListLike",
+    "SimpleDtype": "lamindb.base.types.SimpleDtype",
+    "SimpleDtypeStr": "lamindb.base.types.SimpleDtypeStr",
+    "SimpleDvalue": "lamindb.base.types.SimpleDvalue",
+    "SQLRecordFieldName": "lamindb.base.types.SQLRecordFieldName",
+    "StrField": "lamindb.base.types.StrField",
+    "TransformKind": "lamindb.base.types.TransformKind",
+    "TransformType": "lamindb.base.types.TransformKind",
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
@@ -1082,6 +1096,33 @@ def add_packaged_templates_path(app, config):
         config.templates_path.append(packaged_templates)
 
 
+def resolve_autodoc_type_aliases(app, env, node, contnode):
+    """Resolve short type-alias names emitted by autodoc signatures.
+
+    `autodoc_typehints_format = "short"` creates unqualified `:py:class:`
+    xrefs. `autodoc_type_aliases` does not rewrite those, so map them here.
+    """
+    if node.get("refdomain") != "py":
+        return None
+    target = node.get("reftarget")
+    qualified = app.config.autodoc_type_aliases.get(target)
+    if not qualified or qualified == target:
+        return None
+    python = env.get_domain("py")
+    original_target = node["reftarget"]
+    node["reftarget"] = qualified
+    try:
+        for reftype in (node.get("reftype") or "class", "class", "data", "obj"):
+            ref = python.resolve_xref(
+                env, node["refdoc"], app.builder, reftype, qualified, node, contnode
+            )
+            if ref is not None:
+                return ref
+    finally:
+        node["reftarget"] = original_target
+    return None
+
+
 def setup(app: Sphinx):
     try:
         # fix UPath.open docs
@@ -1102,6 +1143,7 @@ def setup(app: Sphinx):
     app.connect("config-inited", register_cite)
     app.connect("autodoc-process-docstring", process_docstring)
     app.connect("autodoc-skip-member", skip_deprecated)
+    app.connect("missing-reference", resolve_autodoc_type_aliases)
 
     # Docutils generates footnote/citation backlinks in HTML labels
     # (e.g. "(1,2)") in depart_label; disable them globally.
