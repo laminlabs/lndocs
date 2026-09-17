@@ -97,6 +97,20 @@ autodoc_type_aliases = {
     "UPathStr": "lamindb.core.types.UPathStr",
     "Ontology": "bionty.base._ontology.Ontology",
     "InspectResult": "bionty.base.dev.InspectResult",
+    "AnyPathStr": "lamindb.base.types.AnyPathStr",
+    "ArtifactKind": "lamindb.base.types.ArtifactKind",
+    "ArtifactType": "lamindb.base.types.ArtifactKind",
+    "Dtype": "lamindb.base.types.DtypeStr",
+    "DtypeStr": "lamindb.base.types.DtypeStr",
+    "FieldAttr": "lamindb.base.types.FieldAttr",
+    "ListLike": "lamindb.base.types.ListLike",
+    "SimpleDtype": "lamindb.base.types.SimpleDtype",
+    "SimpleDtypeStr": "lamindb.base.types.SimpleDtypeStr",
+    "SimpleDvalue": "lamindb.base.types.SimpleDvalue",
+    "SQLRecordFieldName": "lamindb.base.types.SQLRecordFieldName",
+    "StrField": "lamindb.base.types.StrField",
+    "TransformKind": "lamindb.base.types.TransformKind",
+    "TransformType": "lamindb.base.types.TransformKind",
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
