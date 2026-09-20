@@ -135,6 +135,9 @@ always_use_bars_union = True
 ogp_image = (
     "https://raw.githubusercontent.com/laminlabs/lamin-about/main/assets/logo.svg"
 )
+# Avoid "matplotlib is not installed, social cards will not be generated".
+# Open Graph tags still use ogp_image; we do not generate per-page card PNGs.
+ogp_social_cards = {"enable": False}
 
 intersphinx_mapping = {
     "docs": ("https://docs.lamin.ai", None),
