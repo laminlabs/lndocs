@@ -111,6 +111,15 @@ autodoc_type_aliases = {
     "StrField": "lamindb.base.types.StrField",
     "TransformKind": "lamindb.base.types.TransformKind",
     "TransformType": "lamindb.base.types.TransformKind",
+    # Short names emitted by autodoc-typehints / attribute :type: on satellite
+    # packages (bionty, …). Resolve to the public LaminDB registry pages.
+    "Artifact": "lamindb.Artifact",
+    "Branch": "lamindb.Branch",
+    "Record": "lamindb.Record",
+    "Run": "lamindb.Run",
+    "Schema": "lamindb.Schema",
+    "Space": "lamindb.Space",
+    "User": "lamindb.User",
 }
 building_text = any(arg in sys.argv for arg in ["text"])
 autodoc_default_options = {
@@ -752,6 +761,25 @@ def get_attribute_docstring(cls, attr_name):
     return ""
 
 
+_LAMINDB_REGISTRY_TYPES = {
+    "Artifact": "~lamindb.Artifact",
+    "Branch": "~lamindb.Branch",
+    "Record": "~lamindb.Record",
+    "Run": "~lamindb.Run",
+    "Schema": "~lamindb.Schema",
+    "Space": "~lamindb.Space",
+    "User": "~lamindb.User",
+}
+
+
+def _qualify_registry_type(attr_type):
+    """Turn short LaminDB registry names into intersphinx-resolvable types."""
+    if attr_type is None:
+        return None
+    name = attr_type.__name__ if isinstance(attr_type, type) else str(attr_type)
+    return _LAMINDB_REGISTRY_TYPES.get(name, name)
+
+
 def process_docstring(app, what, name, obj, options, lines):
     # https://gist.github.com/abulka/48b54ea4cbc7eb014308
     try:
@@ -868,16 +896,18 @@ def process_docstring(app, what, name, obj, options, lines):
                 field_lines.append(f".. attribute:: {field.name}")
                 if field.name in {"space", "branch", "run", "created_by", "created_on"}:
                     attr_type = (
-                        "Space"
+                        "~lamindb.Space"
                         if field.name == "space"
-                        else "Branch"
+                        else "~lamindb.Branch"
                         if field.name in {"branch", "created_on"}
-                        else "Run"
+                        else "~lamindb.Run"
                         if field.name == "run"
-                        else "User"
+                        else "~lamindb.User"
                         if field.name == "created_by"
                         else None
                     )
+                else:
+                    attr_type = _qualify_registry_type(attr_type)
                 if attr_type is not None:
                     field_lines.append(f"   :type: {attr_type}")
                 field_lines.append("")
@@ -1099,12 +1129,42 @@ def add_packaged_templates_path(app, config):
         config.templates_path.append(packaged_templates)
 
 
+# Inherited lamindb docstrings use these local names; satellite packages
+# (bionty, …) do not ship the pages, so resolve them via docs.lamin.ai.
+_DOCS_FALLBACK_PAGES = {
+    "query-search",
+    "manage-ontologies",
+    "manage-changes",
+    "permissions",
+}
+
+
+def _try_intersphinx(app, env, node, contnode, target):
+    from sphinx.ext.intersphinx import missing_reference as intersphinx_missing
+
+    original_target = node["reftarget"]
+    node["reftarget"] = target
+    try:
+        return intersphinx_missing(app, env, node, contnode)
+    finally:
+        node["reftarget"] = original_target
+
+
 def resolve_autodoc_type_aliases(app, env, node, contnode):
     """Resolve short type-alias names emitted by autodoc signatures.
 
     `autodoc_typehints_format = "short"` creates unqualified `:py:class:`
     xrefs. `autodoc_type_aliases` does not rewrite those, so map them here.
+
+    Satellite packages (bionty, …) also inherit docstrings that use local
+    document names such as ``query-search``. Remap those onto the
+    ``docs.lamin.ai`` inventory.
     """
+    if node.get("refdomain") == "std" and node.get("reftype") == "doc":
+        target = node.get("reftarget")
+        if target in _DOCS_FALLBACK_PAGES:
+            return _try_intersphinx(app, env, node, contnode, f"docs:{target}")
+        return None
     if node.get("refdomain") != "py":
         return None
     target = node.get("reftarget")
@@ -1121,9 +1181,12 @@ def resolve_autodoc_type_aliases(app, env, node, contnode):
             )
             if ref is not None:
                 return ref
+        ref = _try_intersphinx(app, env, node, contnode, qualified)
+        if ref is not None:
+            return ref
+        return _try_intersphinx(app, env, node, contnode, f"docs:{qualified}")
     finally:
         node["reftarget"] = original_target
-    return None
 
 
 def setup(app: Sphinx):
