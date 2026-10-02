@@ -21,6 +21,7 @@ dependencies = [
     "sphinx_toolbox",
     "sphinx-design>=0.6.0",  # dropdowns etc.
     "sphinxcontrib-jquery",
+    "sphinxcontrib-mermaid>=2,<3",
     "sphinx-copybutton",
     "linkify-it-py"
 ]

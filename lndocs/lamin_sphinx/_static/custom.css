@@ -1,5 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
 #instantclick {
   display: none;
+}
+
+/* Mermaid diagrams sit in a pre. Drop the code-block chrome. */
+pre.mermaid {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+pre.mermaid,
+pre.mermaid svg,
+pre.mermaid .nodeLabel,
+pre.mermaid .edgeLabel {
+  font-family: Inter, sans-serif;
+}
+/* Dark mode sets mermaid darkMode, which lightens HTML labels. Keep the
+   header-bar look: light box, dark type. Edge labels are the field names
+   drawn on arrows; give them the same box and type as the nodes. */
+pre.mermaid .nodeLabel,
+pre.mermaid .nodeLabel *,
+pre.mermaid .edgeLabel,
+pre.mermaid .edgeLabel * {
+  color: #111111 !important;
+}
+pre.mermaid .edgeLabel,
+pre.mermaid .edgeLabel p,
+pre.mermaid .edgeLabel span,
+pre.mermaid .labelBkg {
+  background-color: #cbcbcb !important;
+  border-radius: 4px;
+}
+pre.mermaid .node rect,
+pre.mermaid .edgeLabel rect,
+pre.mermaid g.edgeLabel rect {
+  rx: 5px;
+  ry: 5px;
+}
+pre.mermaid .edgeLabel rect,
+pre.mermaid g.edgeLabel rect {
+  fill: #cbcbcb !important;
+  stroke: #666666 !important;
+}
+html[data-theme="dark"] pre.mermaid .node rect,
+html[data-theme="dark"] pre.mermaid .node polygon,
+html[data-mode="dark"] pre.mermaid .node rect,
+html[data-mode="dark"] pre.mermaid .node polygon {
+  fill: #cbcbcb !important;
+  stroke: #666666 !important;
+}
+pre.mermaid > svg {
+  height: auto !important;
+}
+pre.mermaid svg rect.background {
+  fill: transparent !important;
 }
 
 /* Heading badges (reference external) aligned to bottom of line */
