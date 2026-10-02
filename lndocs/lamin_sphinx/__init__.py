@@ -23,6 +23,7 @@ extensions = [
     "myst_nb",
     "sphinxext.opengraph",
     "sphinx_copybutton",
+    "sphinxcontrib.mermaid",
 ]
 
 try:
@@ -159,6 +160,32 @@ intersphinx_mapping = {
 nb_execution_mode = "off"
 nb_render_text_lexer = "myst-ansi"
 
+# Render in the browser. CI does not have the mermaid CLI.
+mermaid_output_format = "raw"
+mermaid_fullscreen = False
+# The extension default is a fixed 500px svg height, which leaves empty
+# space above and below a shorter diagram.
+mermaid_height = "auto"
+# The renderer overwrites `theme` from these two settings after mermaid_init_config.
+mermaid_light_theme = "base"
+mermaid_dark_theme = "base"
+mermaid_init_config = {
+    "startOnLoad": False,
+    "themeVariables": {
+        "background": "transparent",
+        "primaryColor": "#cbcbcb",
+        "primaryBorderColor": "#666666",
+        "nodeBorder": "#666666",
+        "primaryTextColor": "#111111",
+        "lineColor": "#666666",
+        "defaultLinkColor": "#666666",
+        "arrowheadColor": "#666666",
+        "secondaryColor": "#cbcbcb",
+        "tertiaryColor": "#cbcbcb",
+        "fontFamily": "Inter, sans-serif",
+    },
+}
+
 
 nitpicky = True  # report broken links
 
@@ -182,6 +209,7 @@ from ._cite_commands import register_cite
 from ._footnote_title import visit_footnote_reference
 from ._html_tags import html_lamin_page_context
 from ._nitpick_ignore import nitpick_ignore
+from ._mermaid import setup as setup_mermaid
 from ._source_badge import inject_source_badge
 
 
@@ -1210,6 +1238,7 @@ def setup(app: Sphinx):
     app.connect("autodoc-process-docstring", process_docstring)
     app.connect("autodoc-skip-member", skip_deprecated)
     app.connect("missing-reference", resolve_autodoc_type_aliases)
+    setup_mermaid(app)
 
     # Docutils generates footnote/citation backlinks in HTML labels
     # (e.g. "(1,2)") in depart_label; disable them globally.
