@@ -22,7 +22,7 @@ Useful flags:
 
 - `--strict`: fail on warnings
 - `--blog`: enable blog layout overrides (loads `blog.css` on top of `custom.css`)
-- `--format text`: export text output (`llms.txt`) instead of HTML
+- `--format text`: export markdown pages and `llms.txt` instead of HTML
 
 Acknowledgements:
 
