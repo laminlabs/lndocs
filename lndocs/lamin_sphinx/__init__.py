@@ -24,7 +24,6 @@ extensions = [
     "sphinxext.opengraph",
     "sphinx_copybutton",
     "sphinxcontrib.mermaid",
-    "lndocs.markdown",
 ]
 
 try:
