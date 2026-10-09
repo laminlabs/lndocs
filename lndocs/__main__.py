@@ -403,12 +403,12 @@ def parse_toctree_structure(docs_dir: str) -> list[tuple[str, int]]:
 
 
 def _extract_document_title(content: str) -> str:
-    """Extract the first heading from a markdown page."""
+    """Extract the first heading/title from Sphinx text builder output.
+
+    Sphinx uses a line of text followed by a line of =, *, -, etc. as headings.
+    The first such heading is typically the document title.
+    """
     lines = content.strip().split("\n")
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith("#"):
-            return stripped.lstrip("#").strip()
     for i in range(len(lines) - 1):
         line = lines[i].strip()
         if not line:
@@ -416,6 +416,7 @@ def _extract_document_title(content: str) -> str:
         next_line = lines[i + 1].strip()
         if re.match(r"^[=*\-~^]{3,}$", next_line):
             return line
+    # Fallback: first non-empty line
     for line in lines:
         if line.strip():
             return line.strip()
@@ -425,12 +426,9 @@ def _extract_document_title(content: str) -> str:
 def _is_toc_only(content: str) -> bool:
     """True if content has no paragraph, only a bullet/list (TOC-only page)."""
     lines = content.strip().split("\n")
+    # Remove first heading (title line + underline) if present
     i = 0
-    while i < len(lines) and not lines[i].strip():
-        i += 1
-    if i < len(lines) and lines[i].strip().startswith("#"):
-        i += 1
-    elif len(lines) >= 2:
+    if len(lines) >= 2:
         for i in range(len(lines) - 1):
             line = lines[i].strip()
             if not line:
@@ -497,12 +495,12 @@ def generate_llms_txt(
     output_filename: str,
     skip_patterns: list[str] | None = None,
     project_name: str = "",
-    description: str = "",
+    summary: str = "",
 ):
     """Generate llms.txt and per-page .md files in _build/html/, following the llms.txt spec.
 
-    Uses the laminmd Sphinx builder, copies each page to html/*.md, and writes one
-    llms.txt with an H1, a blockquote, and markdown links to those pages.
+    Uses Sphinx text builder, copies each page to html/*.md, and writes one llms.txt
+    with H1, blockquote, H2 file list using relative .md links (e.g. "query-search.md - Title").
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
@@ -510,34 +508,33 @@ def generate_llms_txt(
         output_filename: Name of the llms.txt file (e.g. "llms.txt")
         skip_patterns: List of patterns to skip files whose stem contains any of these
         project_name: H1 title for llms.txt
-        description: Optional one-sentence blockquote summary
+        summary: Optional one-sentence blockquote summary
     """
     if skip_patterns is None:
         skip_patterns = []
     build_dir = Path(site).parent  # Get _build directory
-    markdown_build_dir = build_dir / "markdown"
+    text_build_dir = build_dir / "text"
     html_dir = build_dir / "html"
 
-    print("Building documentation in markdown format...")
+    # Build documentation as text using Sphinx text builder
+    print("Building documentation in text format...")
     os.environ["LNDOCS_SHOW_INHERITED_MEMBERS"] = "false"
-    build_status = call(
-        f"sphinx-build -b laminmd {docs_dir} {markdown_build_dir}", shell=True
-    )
+    build_status = call(f"sphinx-build -b text {docs_dir} {text_build_dir}", shell=True)
     del os.environ["LNDOCS_SHOW_INHERITED_MEMBERS"]
 
     if build_status != 0:
-        print("Error: Failed to build markdown documentation")
+        print("Error: Failed to build text documentation")
         return build_status
 
     # Get the toctree order
     print("Parsing toctree structure...")
     toctree_order = parse_toctree_structure(docs_dir)
 
-    # Collect all .md files from the markdown build
-    all_txt_files = {f.stem: f for f in markdown_build_dir.glob("**/*.md")}
+    # Collect all .txt files from the text build
+    all_txt_files = {f.stem: f for f in text_build_dir.glob("**/*.txt")}
 
     if not all_txt_files:
-        print("Warning: No markdown files found in build output")
+        print("Warning: No text files found in build output")
         return 1
 
     # Order files according to toctree structure
@@ -573,14 +570,19 @@ def generate_llms_txt(
             print(f"  - {f.stem}")
         ordered_files.extend(remaining_files)
 
-    # Copy each built page to _build/html/*.md (paired markdown pages per llms.txt spec)
+    # Copy each .txt to _build/html/*.md (paired markdown pages per llms.txt spec)
     html_dir.mkdir(parents=True, exist_ok=True)
-    for txt_file, _depth in ordered_files:
+    for txt_file, depth in ordered_files:
         try:
-            rel_path = txt_file.relative_to(markdown_build_dir)
-            md_path = html_dir / rel_path
+            rel_path = txt_file.relative_to(text_build_dir)
+            md_path = html_dir / rel_path.with_suffix(".md")
             md_path.parent.mkdir(parents=True, exist_ok=True)
-            md_path.write_text(txt_file.read_text(encoding="utf-8"), encoding="utf-8")
+            with open(txt_file, encoding="utf-8") as infile:
+                content = infile.read().strip()
+            if content:
+                cleaned = clean_text_to_markdown(content, base_depth=depth)
+                with open(md_path, "w", encoding="utf-8") as fp:
+                    fp.write(cleaned)
         except Exception as e:
             print(f"Warning: Could not write {txt_file} to .md: {e}")
 
@@ -594,9 +596,9 @@ def generate_llms_txt(
         title = project_name or "Documentation"
         outfile.write(f"# {title}\n\n")
 
-        # Blockquote summary from lamin-project.yaml description
-        if description:
-            outfile.write(f"> {description}\n\n")
+        # Blockquote summary
+        if summary:
+            outfile.write(f"> {summary}\n\n")
 
         # Full list of all pages; top-level entries (depth 1) are H2 sections, index excluded.
         # Pages with "." in path (e.g. lamindb.artifact) are lumped under "API Reference" (api).
@@ -608,7 +610,7 @@ def generate_llms_txt(
         current_section_title = ""
 
         for txt_file, depth in ordered_files:
-            rel_path = txt_file.relative_to(markdown_build_dir)
+            rel_path = txt_file.relative_to(text_build_dir)
             page_path = rel_path.with_suffix("").as_posix()
             if page_path == "index":
                 continue
@@ -681,10 +683,6 @@ def generate_llms_txt(
 
             if not first_section:
                 outfile.write("\n")
-            if section_key == "changelog" or section_title.lower().startswith(
-                "changelog"
-            ):
-                section_title = "Optional"
             outfile.write(f"## {section_title}\n\n")
             first_section = False
             section_titles_by_path = {
@@ -704,8 +702,9 @@ def generate_llms_txt(
                 ):
                     doc_title = doc_title[1:-1]
                 rel_link = f"{page_path}.md"
-                label = doc_title or page_path
-                line = f"- [{label}]({rel_link})\n"
+                line = (
+                    f"- {rel_link} - {doc_title}\n" if doc_title else f"- {rel_link}\n"
+                )
                 outfile.write(f"{'  ' * indent_level}{line}")
 
             def _write_api_children(
@@ -780,6 +779,120 @@ def generate_llms_txt(
     print(f"  Toctree entries found: {len(toctree_order)}")
 
     return 0
+
+
+def clean_text_to_markdown(content: str, base_depth: int = 0) -> str:
+    """Convert Sphinx text builder output to clean markdown.
+
+    Removes excessive dashes and converts to proper markdown syntax.
+
+    Args:
+        content: Raw text content from Sphinx
+        base_depth: Base depth for heading adjustment (from toctree)
+    """
+    lines = content.split("\n")
+    cleaned_lines = []
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # Skip empty lines (will be preserved)
+        if not line.strip():
+            cleaned_lines.append(line)
+            i += 1
+            continue
+
+        # Check for heading patterns (text followed by === or ---)
+        if i + 1 < len(lines):
+            next_line = lines[i + 1]
+            if re.match(r"^[=*\-~^]{3,}$", next_line.strip()):
+                # This is a heading - convert to markdown with proper depth
+                heading_char = next_line.strip()[0]
+
+                # Determine heading level based on Sphinx conventions
+                # = is usually h1, * is h2, - is h3, ~ is h4, ^ is h5
+                sphinx_level = {"=": 1, "*": 2, "-": 3, "~": 4, "^": 5}.get(
+                    heading_char, 2
+                )
+
+                # Adjust level based on toctree depth
+                # Start at h1 for top-level pages (no main title reserved)
+                final_level = min(sphinx_level + base_depth, 6)
+
+                heading_prefix = "#" * final_level
+                cleaned_lines.append(f"{heading_prefix} {line.strip()}")
+                i += 2  # Skip both the heading and underline
+                continue
+
+        # Clean up excessive dashes used for horizontal rules (10+ dashes)
+        if re.match(r"^-{10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up excessive equals signs (10+ equals)
+        if re.match(r"^={10,}$", line.strip()):
+            cleaned_lines.append("---")
+            i += 1
+            continue
+
+        # Clean up box-drawing characters and convert to markdown tables
+        if "|" in line or re.match(r"^[\s\-\+]+$", line):
+            line = clean_table_line(line)
+
+        # Clean up excessive whitespace
+        line = re.sub(r" {3,}", " ", line)
+
+        cleaned_lines.append(line)
+        i += 1
+
+    # Join lines and clean up multiple consecutive blank lines
+    content = "\n".join(cleaned_lines)
+    content = re.sub(r"\n{3,}", "\n\n", content)
+
+    return content.strip()
+
+
+def clean_table_line(line: str) -> str:
+    """Clean up table formatting to be markdown-friendly.
+
+    Converts ASCII table borders to markdown table syntax.
+    """
+    # If line is mostly dashes, pipes, and plus signs, it's likely a table border
+    if re.match(r"^[\s\-\+\|]+$", line):
+        # Count the number of columns based on pipes or plus signs
+        column_indicators = line.count("|") + line.count("+")
+        if column_indicators > 1:
+            # Create a clean markdown table separator
+            # Subtract 1 because markdown table separators have n-1 pipes for n columns
+            return "|" + " --- |" * (column_indicators - 1)
+        else:
+            # Single column or not a table, convert to horizontal rule
+            return "---"
+
+    # If line has pipes, clean up spacing for table rows
+    if "|" in line:
+        # Split by pipes and clean each cell
+        parts = line.split("|")
+        cleaned_parts = []
+
+        for part in parts:
+            # Clean up whitespace and remove box-drawing characters
+            cleaned_part = re.sub(r"[┌┐└┘├┤┬┴┼─│]", "", part)
+            cleaned_part = cleaned_part.strip()
+            cleaned_parts.append(cleaned_part)
+
+        # Filter out empty parts at the beginning and end
+        while cleaned_parts and not cleaned_parts[0]:
+            cleaned_parts.pop(0)
+        while cleaned_parts and not cleaned_parts[-1]:
+            cleaned_parts.pop()
+
+        if cleaned_parts:
+            return "| " + " | ".join(cleaned_parts) + " |"
+
+    return line
 
 
 def strip_notebook_outputs(directory="."):
@@ -967,10 +1080,10 @@ def main():
             filename,
             skip_patterns=skip_patterns,
             project_name=variables.get("project_name", "Documentation"),
-            description=variables.get("description", ""),
+            summary=variables.get("summary", ""),
         )
         if build_status != 0:
-            print("Warning: Markdown export failed")
+            print("Warning: Text export failed")
     else:
         raise ValueError(f"Unknown format: {args.format}. Use 'html' or 'text'.")
     if args.strict:
