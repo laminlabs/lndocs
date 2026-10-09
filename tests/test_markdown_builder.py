@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from lndocs.__main__ import generate_llms_txt
+from lndocs.__main__ import _clean_document_title, generate_llms_txt
 
 CONF = """\
 extensions = ["myst_parser", "sphinx_design", "lndocs.markdown"]
@@ -18,8 +18,15 @@ changelog
 ```
 """
 
-TUTORIAL = """\
-# Tutorial
+_TUTORIAL_TITLE = (
+    "# Tutorial"
+    " [![llms.txt](https://img.shields.io/badge/llms.txt-orange)]"
+    "(https://docs.lamin.ai/llms.txt)"
+    " [.md](https://github.com/laminlabs/lamindb/blob/main/docs/tutorial.md)"
+)
+TUTORIAL = (
+    _TUTORIAL_TITLE
+    + """
 
 ```python
 ln.track()
@@ -59,6 +66,7 @@ ln$track()
 
 See {doc}`changelog`.
 """
+)
 
 CHANGELOG = """\
 # Changelog
@@ -70,6 +78,26 @@ DESCRIPTION = (
     "LaminDB documentation for tracking, querying, curating, and versioning"
     " multimodal biological data."
 )
+
+
+def test_clean_document_title_strips_badge_links() -> None:
+    title = (
+        "Introduction [llms.txt](https://docs.lamin.ai/llms.txt)"
+        " [pypi](https://pypi.org/project/lamindb)"
+        " [cran](https://cran.r-project.org/package=laminr)"
+        " [.md](https://github.com/laminlabs/lamindb/blob/main/docs/tutorial.md)"
+    )
+    assert _clean_document_title(title) == "Introduction"
+    schema_title = (
+        "Curate `AnnData` based on the CELLxGENE schema"
+        " [.md](https://github.com/laminlabs/cellxgene-lamin/blob/main/docs/"
+        "cellxgene-curate.md)"
+    )
+    assert (
+        _clean_document_title(schema_title)
+        == "Curate `AnnData` based on the CELLxGENE schema"
+    )
+    assert _clean_document_title("Install & setup") == "Install & setup"
 
 
 def test_markdown_export_preserves_code_and_index(tmp_path: Path) -> None:
