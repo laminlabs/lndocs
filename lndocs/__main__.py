@@ -532,6 +532,19 @@ def _extract_myst_toctree_group_starts(content: str) -> dict[str, str]:
     return group_starts
 
 
+def _format_llms_txt_entry(page_path: str, doc_title: str, indent_level: int) -> str:
+    """Format one llms.txt bullet as a markdown link."""
+    if (
+        doc_title
+        and len(doc_title) >= 2
+        and doc_title[0] == '"'
+        and doc_title[-1] == '"'
+    ):
+        doc_title = doc_title[1:-1]
+    label = doc_title or page_path
+    return f"{'  ' * indent_level}- [{label}]({page_path}.md)\n"
+
+
 def generate_llms_txt(
     docs_dir: str,
     site: str,
@@ -543,7 +556,7 @@ def generate_llms_txt(
     """Generate llms.txt and per-page .md files in _build/html/, following the llms.txt spec.
 
     Uses Sphinx text builder, copies each page to html/*.md, and writes one llms.txt
-    with H1, blockquote, H2 file list using relative .md links (e.g. "query-search.md - Title").
+    with H1, blockquote, and an H2 file list of markdown links (e.g. "[Query & search](query-search.md)").
 
     Args:
         docs_dir: Source documentation directory (e.g., "_docs_tmp")
@@ -629,7 +642,7 @@ def generate_llms_txt(
         except Exception as e:
             print(f"Warning: Could not write {txt_file} to .md: {e}")
 
-    # Write llms.txt (H1, blockquote, H2 file list with relative .md - title)
+    # Write llms.txt (H1, blockquote, H2 file list of markdown links)
     output_path = html_dir / output_filename
 
     print(f"Writing {output_path}...")
@@ -735,18 +748,9 @@ def generate_llms_txt(
                 doc_title: str,
                 indent_level: int,
             ) -> None:
-                if (
-                    doc_title
-                    and len(doc_title) >= 2
-                    and doc_title[0] == '"'
-                    and doc_title[-1] == '"'
-                ):
-                    doc_title = doc_title[1:-1]
-                rel_link = f"{page_path}.md"
-                line = (
-                    f"- {rel_link} - {doc_title}\n" if doc_title else f"- {rel_link}\n"
+                outfile.write(
+                    _format_llms_txt_entry(page_path, doc_title, indent_level)
                 )
-                outfile.write(f"{'  ' * indent_level}{line}")
 
             def _write_api_children(
                 parent_path: str,
