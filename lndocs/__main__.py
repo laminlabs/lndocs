@@ -415,55 +415,12 @@ def _extract_document_title(content: str) -> str:
             continue
         next_line = lines[i + 1].strip()
         if re.match(r"^[=*\-~^]{3,}$", next_line):
-            return _clean_document_title(line)
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith("#"):
-            return _clean_document_title(stripped.lstrip("#").strip())
+            return line
     # Fallback: first non-empty line
     for line in lines:
         if line.strip():
-            return _clean_document_title(line.strip())
+            return line.strip()
     return ""
-
-
-def _clean_document_title(title: str) -> str:
-    """Drop badge and source links so a heading can be a link label."""
-    title = re.sub(r"\s*\[image:[^\]]*\]\[image\]", "", title)
-    title = _strip_markdown_links(title)
-    return re.sub(r"\s+", " ", title).strip()
-
-
-def _strip_markdown_links(text: str) -> str:
-    """Remove inline markdown links and images, including their labels."""
-    out: list[str] = []
-    i = 0
-    n = len(text)
-    while i < n:
-        is_image = text[i] == "!" and i + 1 < n and text[i + 1] == "["
-        bracket = i + 1 if is_image else i
-        if text[bracket] == "[":
-            label_end = text.find("]", bracket + 1)
-            if label_end != -1 and label_end + 1 < n and text[label_end + 1] == "(":
-                url_end = _matching_paren(text, label_end + 1)
-                if url_end != -1:
-                    i = url_end + 1
-                    continue
-        out.append(text[i])
-        i += 1
-    return "".join(out)
-
-
-def _matching_paren(text: str, open_index: int) -> int:
-    depth = 0
-    for i in range(open_index, len(text)):
-        if text[i] == "(":
-            depth += 1
-        elif text[i] == ")":
-            depth -= 1
-            if depth == 0:
-                return i
-    return -1
 
 
 def _is_toc_only(content: str) -> bool:
@@ -675,7 +632,9 @@ def generate_llms_txt(
                     content = infile.read().strip()
             except Exception:
                 continue
-            doc_title = _extract_document_title(content)
+            doc_title = re.sub(
+                r"\s*\[image:[^\]]*\]\[image\]", "", _extract_document_title(content)
+            ).strip()
             section_key = current_section_key
             if depth == 1:
                 current_section_key = page_path
