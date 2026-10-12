@@ -134,6 +134,9 @@ autodoc_mock_imports = [
     "lightning",
     "tiledbsoma",
     "polars",
+    # Importing pandera's polars API registers polars.Decimal. The mocked
+    # Decimal is not a class, so that registration raises TypeError.
+    "pandera.api.polars",
 ]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False
