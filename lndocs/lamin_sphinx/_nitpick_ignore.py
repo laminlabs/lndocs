@@ -193,6 +193,8 @@ nitpick_ignore = [
     ("py:class", "collections.abc.Mapping"),
     ("py:class", "pyarrow._dataset.Dataset"),
     ("py:class", "polars.LazyFrame"),
+    ("py:class", "PolarsDataFrame"),
+    ("py:class", "PolarsLazyFrame"),
     # Forward references only in TYPE_CHECKING (Artifact, curators, examples)
     ("py:class", "LabelManager"),
     ("py:class", "lamindb.models._label_manager.LabelManager"),
