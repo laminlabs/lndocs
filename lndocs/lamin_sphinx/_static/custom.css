@@ -4,8 +4,12 @@
   display: none;
 }
 
-/* Mermaid diagrams sit in a pre. Drop the code-block chrome. */
+/* Mermaid diagrams sit in a pre. Drop the code-block chrome.
+   Width lives here because the extension's stylesheet is injected from the
+   module script, which does not run after an InstantClick navigation. */
 pre.mermaid {
+  display: block;
+  width: 100%;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -52,6 +56,8 @@ html[data-mode="dark"] pre.mermaid .node polygon {
 }
 pre.mermaid > svg {
   height: auto !important;
+  width: 100%;
+  max-width: 100% !important;
 }
 pre.mermaid svg rect.background {
   fill: transparent !important;

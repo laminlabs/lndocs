@@ -95,5 +95,84 @@
   data-no-instant
 ></script>
 <script data-no-instant>
+  // sphinxcontrib-mermaid renders from a type="module" script on window
+  // "load". InstantClick swaps the body and reinserts scripts without copying
+  // type="module", so that script never runs and "load" does not fire again.
+  var laminMermaidUrl = {{ mermaid_browser_url_json|safe }};
+  var laminMermaidInit = {{ mermaid_init_config_json|safe }};
+  var laminMermaidLight = {{ mermaid_light_theme_json|safe }};
+  var laminMermaidDark = {{ mermaid_dark_theme_json|safe }};
+  var laminMermaidLoader;
+
+  function laminLoadMermaid() {
+    if (!laminMermaidLoader) {
+      laminMermaidLoader = import(laminMermaidUrl).then(function (mod) {
+        return mod.default;
+      });
+    }
+    return laminMermaidLoader;
+  }
+
+  function laminRenderMermaid() {
+    var pending = Array.prototype.filter.call(
+      document.querySelectorAll(".mermaid"),
+      function (el) {
+        return el.getAttribute("data-processed") !== "true";
+      }
+    );
+    if (!pending.length) return;
+    laminLoadMermaid()
+      .then(function (mermaid) {
+        var dark = document.documentElement.dataset.theme === "dark";
+        var config = Object.assign({}, laminMermaidInit, {
+          darkMode: dark,
+          theme: dark ? laminMermaidDark : laminMermaidLight,
+        });
+        mermaid.initialize(config);
+        var visible = [];
+        var hidden = [];
+        pending.forEach(function (el) {
+          if (el.offsetParent !== null || el.getClientRects().length > 0) {
+            visible.push(el);
+          } else {
+            hidden.push(el);
+          }
+        });
+        var jobs = [];
+        if (visible.length) jobs.push(mermaid.run({ nodes: visible }));
+        if (hidden.length && typeof IntersectionObserver !== "undefined") {
+          var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              if (entry.target.getAttribute("data-processed") === "true") return;
+              observer.unobserve(entry.target);
+              mermaid.run({ nodes: [entry.target] }).catch(function (err) {
+                console.error("Mermaid rendering failed:", err);
+              });
+            });
+          });
+          hidden.forEach(function (el) {
+            observer.observe(el);
+          });
+        }
+        return Promise.all(jobs);
+      })
+      .catch(function (err) {
+        console.error("Mermaid rendering failed:", err);
+      });
+  }
+
+  InstantClick.on("receive", function (url, body) {
+    var scripts = body.querySelectorAll('script[type="module"]');
+    for (var i = 0; i < scripts.length; i++) {
+      if (scripts[i].textContent.indexOf("runMermaid") !== -1) {
+        scripts[i].setAttribute("data-no-instant", "");
+      }
+    }
+  });
+  InstantClick.on("change", function (isInitialLoad) {
+    if (isInitialLoad) return;
+    laminRenderMermaid();
+  });
   InstantClick.init();
 </script>
