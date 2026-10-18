@@ -174,17 +174,20 @@ mermaid_light_theme = "base"
 mermaid_dark_theme = "base"
 mermaid_init_config = {
     "startOnLoad": False,
+    # Default node padding is 15. A little less, so the boxes are not as tall.
+    "flowchart": {"padding": 12},
     "themeVariables": {
         "background": "transparent",
-        "primaryColor": "#cbcbcb",
-        "primaryBorderColor": "#666666",
-        "nodeBorder": "#666666",
-        "primaryTextColor": "#111111",
-        "lineColor": "#666666",
-        "defaultLinkColor": "#666666",
-        "arrowheadColor": "#666666",
-        "secondaryColor": "#cbcbcb",
-        "tertiaryColor": "#cbcbcb",
+        "primaryColor": "#eeeeee",
+        "primaryBorderColor": "#737373",
+        "nodeBorder": "#737373",
+        "primaryTextColor": "#1f1f1f",
+        "lineColor": "#8a8a8a",
+        "defaultLinkColor": "#8a8a8a",
+        "arrowheadColor": "#8a8a8a",
+        "secondaryColor": "#eeeeee",
+        "tertiaryColor": "#eeeeee",
+        "edgeLabelBackground": "#ffffff",
         "fontFamily": "Inter, sans-serif",
     },
 }
