@@ -20,7 +20,40 @@ def promote_mermaid_code_blocks(
         diagram = mermaid()
         diagram["code"] = node.rawsource or node.astext()
         diagram["options"] = {}
+        for css_class in node.get("classes", []):
+            if css_class not in diagram["classes"]:
+                diagram["classes"].append(css_class)
         node.replace_self(diagram)
+
+
+def _install_mermaid_class_passthrough() -> None:
+    """Keep `:class:` on the rendered `<pre>`.
+
+    sphinxcontrib-mermaid writes `class="mermaid"` itself and ignores classes
+    on the node. Size rules such as `mermaid-medium-fixed-height` need to land
+    on that element.
+    """
+    import sphinxcontrib.mermaid as mermaid_module
+
+    if getattr(mermaid_module, "_lamin_class_passthrough", False):
+        return
+    original = mermaid_module._render_mm_html_raw
+
+    def render(self, node, code, options, prefix="mermaid", imgcls=None, alt=None):
+        try:
+            original(self, node, code, options, prefix=prefix, imgcls=imgcls, alt=alt)
+        except nodes.SkipNode:
+            extra = [c for c in node.get("classes", []) if c != "mermaid"]
+            if extra and self.body and 'class="mermaid' in self.body[-1]:
+                self.body[-1] = self.body[-1].replace(
+                    'class="mermaid',
+                    'class="mermaid ' + " ".join(extra),
+                    1,
+                )
+            raise
+
+    mermaid_module._render_mm_html_raw = render
+    mermaid_module._lamin_class_passthrough = True
 
 
 def _js_literal(value: object) -> str:
@@ -51,5 +84,6 @@ def add_mermaid_instantclick_context(
 
 
 def setup(app: Sphinx) -> None:
+    _install_mermaid_class_passthrough()
     app.connect("doctree-resolved", promote_mermaid_code_blocks)
     app.connect("html-page-context", add_mermaid_instantclick_context)

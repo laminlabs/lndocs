@@ -59,6 +59,16 @@ pre.mermaid > svg {
   width: 100%;
   max-width: 100% !important;
 }
+/* Shared heights. A chart with fewer nodes is narrower, and the rule above
+   stretches it to the column, so it renders taller than a wider chart.
+   Put the class on the code block:
+
+   .. code-block:: mermaid
+      :class: mermaid-medium-fixed-height
+*/
+pre.mermaid.mermaid-medium-fixed-height > svg {
+  height: 10.5rem !important;
+}
 pre.mermaid svg rect.background {
   fill: transparent !important;
 }
