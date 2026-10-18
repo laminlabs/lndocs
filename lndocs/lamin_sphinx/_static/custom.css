@@ -51,6 +51,18 @@ pre.mermaid .nodeLabel * {
      glyphs. Horizontal padding is the flowchart padding and stays as it is. */
   line-height: 1.2 !important;
 }
+/* Mark the root node in a diagram with :::focal. */
+pre.mermaid .node.focal path:not([fill="none"]) {
+  fill: #10b981 !important;
+}
+pre.mermaid .node.focal path[fill="none"] {
+  stroke: #047857 !important;
+}
+pre.mermaid .node.focal .labelBkg,
+pre.mermaid .node.focal .nodeLabel,
+pre.mermaid .node.focal .nodeLabel * {
+  color: #ffffff !important;
+}
 pre.mermaid .edgeLabel,
 pre.mermaid .edgeLabel *,
 pre.mermaid .labelBkg {
