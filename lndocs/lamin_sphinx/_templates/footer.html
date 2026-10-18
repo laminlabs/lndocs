@@ -113,6 +113,24 @@
     return laminMermaidLoader;
   }
 
+  // Mermaid measures edge labels as upright text. Italic glyphs lean past that
+  // width, and the foreignObject clips the last letter.
+  function laminPadMermaidLabels() {
+    document.querySelectorAll("g.edgeLabel foreignObject").forEach(function (fo) {
+      if (fo.getAttribute("data-lamin-padded") === "1") return;
+      var width = parseFloat(fo.getAttribute("width"));
+      if (!width) return;
+      fo.setAttribute("width", width + 8);
+      fo.setAttribute("data-lamin-padded", "1");
+    });
+  }
+  if (typeof MutationObserver !== "undefined") {
+    new MutationObserver(laminPadMermaidLabels).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
   function laminRenderMermaid() {
     var pending = Array.prototype.filter.call(
       document.querySelectorAll(".mermaid"),
@@ -155,7 +173,7 @@
             observer.observe(el);
           });
         }
-        return Promise.all(jobs);
+        return Promise.all(jobs).then(laminPadMermaidLabels);
       })
       .catch(function (err) {
         console.error("Mermaid rendering failed:", err);

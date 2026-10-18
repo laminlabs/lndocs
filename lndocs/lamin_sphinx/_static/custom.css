@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;1,400&display=swap");
 
 #instantclick {
   display: none;
@@ -20,39 +20,89 @@ pre.mermaid .nodeLabel,
 pre.mermaid .edgeLabel {
   font-family: Inter, sans-serif;
 }
-/* Dark mode sets mermaid darkMode, which lightens HTML labels. Keep the
-   header-bar look: light box, dark type. Edge labels are the field names
-   drawn on arrows; give them the same box and type as the nodes. */
+/* Grey boxes with a readable edge. Mermaid 11 draws a node as a filled path
+   plus a stroke path, and dark mode recolors HTML labels. Field names get an
+   opaque ground so the arrow does not run through the word. */
+pre.mermaid {
+  --mermaid-label-bg: #ffffff;
+  --mermaid-label-color: #666666;
+}
+html[data-theme="dark"] pre.mermaid,
+html[data-mode="dark"] pre.mermaid {
+  --mermaid-label-bg: var(--pst-color-background, #18191a);
+  --mermaid-label-color: #9a9a9a;
+}
+pre.mermaid .node path:not([fill="none"]) {
+  fill: #eeeeee !important;
+}
+pre.mermaid .node path[fill="none"] {
+  fill: none !important;
+  stroke: #737373 !important;
+  stroke-width: 1.5px;
+}
+pre.mermaid .node .labelBkg,
 pre.mermaid .nodeLabel,
-pre.mermaid .nodeLabel *,
-pre.mermaid .edgeLabel,
-pre.mermaid .edgeLabel * {
-  color: #111111 !important;
+pre.mermaid .nodeLabel * {
+  color: #1f1f1f !important;
+  background: transparent !important;
+  font-size: 14px;
+  font-weight: 500;
+  /* Mermaid's label line box is 1.5, which adds space above and below the
+     glyphs. Horizontal padding is the flowchart padding and stays as it is. */
+  line-height: 1.2 !important;
+}
+/* Mark the root node in a diagram with :::focal. */
+pre.mermaid .node.focal path:not([fill="none"]) {
+  fill: #10b981 !important;
+}
+pre.mermaid .node.focal path[fill="none"] {
+  stroke: #047857 !important;
+}
+pre.mermaid .node.focal .labelBkg,
+pre.mermaid .node.focal .nodeLabel,
+pre.mermaid .node.focal .nodeLabel * {
+  color: #ffffff !important;
 }
 pre.mermaid .edgeLabel,
-pre.mermaid .edgeLabel p,
-pre.mermaid .edgeLabel span,
+pre.mermaid .edgeLabel *,
 pre.mermaid .labelBkg {
-  background-color: #cbcbcb !important;
-  border-radius: 4px;
+  color: var(--mermaid-label-color) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 400;
+  padding: 0;
 }
-pre.mermaid .node rect,
+/* Only the word itself. The label container is much taller than the text,
+   and painting that whole box hides the arrow. */
+pre.mermaid .edgeLabel p {
+  display: inline;
+  background: var(--mermaid-label-bg) !important;
+  background-color: var(--mermaid-label-bg) !important;
+  padding: 0 3px;
+  line-height: 1.15;
+}
+/* Mermaid sizes the label from upright text. Italic glyphs lean past that
+   box, and the foreignObject clips the last letter. */
+pre.mermaid g.edgeLabel foreignObject {
+  overflow: visible;
+}
 pre.mermaid .edgeLabel rect,
 pre.mermaid g.edgeLabel rect {
-  rx: 5px;
-  ry: 5px;
+  fill: transparent !important;
+  stroke: none !important;
 }
-pre.mermaid .edgeLabel rect,
-pre.mermaid g.edgeLabel rect {
-  fill: #cbcbcb !important;
-  stroke: #666666 !important;
+pre.mermaid .edgePath path,
+pre.mermaid .flowchart-link {
+  fill: none !important;
+  stroke: #8a8a8a !important;
 }
-html[data-theme="dark"] pre.mermaid .node rect,
-html[data-theme="dark"] pre.mermaid .node polygon,
-html[data-mode="dark"] pre.mermaid .node rect,
-html[data-mode="dark"] pre.mermaid .node polygon {
-  fill: #cbcbcb !important;
-  stroke: #666666 !important;
+pre.mermaid .arrowMarkerPath,
+pre.mermaid .arrowheadPath,
+pre.mermaid marker path {
+  fill: #8a8a8a !important;
+  stroke: #8a8a8a !important;
 }
 pre.mermaid > svg {
   height: auto !important;
