@@ -137,6 +137,10 @@ autodoc_mock_imports = [
     # Importing pandera's polars API registers polars.Decimal. The mocked
     # Decimal is not a class, so that registration raises TypeError.
     "pandera.api.polars",
+    # Optional. Not installed for the docs build, and LanceTable is not in
+    # LanceDB's intersphinx inventory (only lancedb.Table is).
+    "lancedb",
+    "lance",
 ]
 autodoc_inherit_docstrings = False
 napoleon_numpy_docstring = False

@@ -195,6 +195,10 @@ nitpick_ignore = [
     ("py:class", "polars.LazyFrame"),
     ("py:class", "PolarsDataFrame"),
     ("py:class", "PolarsLazyFrame"),
+    # LanceDB documents lancedb.Table, not the concrete LanceTable class.
+    ("py:class", "LanceTable"),
+    ("py:class", "lancedb.table.LanceTable"),
+    ("py:class", "lancedb:lancedb.table.LanceTable"),
     # Forward references only in TYPE_CHECKING (Artifact, curators, examples)
     ("py:class", "LabelManager"),
     ("py:class", "lamindb.models._label_manager.LabelManager"),
