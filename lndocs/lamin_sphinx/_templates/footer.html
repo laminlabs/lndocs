@@ -113,22 +113,152 @@
     return laminMermaidLoader;
   }
 
-  // Mermaid measures edge labels as upright text. Italic glyphs lean past that
-  // width, and the foreignObject clips the last letter.
+  // Screen pixels to the SVG user unit. A scaled diagram would otherwise
+  // look narrower than the foreignObject width attribute.
+  function laminMermaidScale(svg) {
+    if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return 1;
+    var rect = svg.getBoundingClientRect();
+    var vb = svg.viewBox.baseVal;
+    if (!rect.width || !vb.width) return 1;
+    return rect.width / vb.width;
+  }
+
+  // Mermaid sizes the foreignObject to the measured text. Once the SVG is
+  // scaled into the column, that box clips the last glyph. Subgraph titles
+  // are also capped at 200px, and the wrap check uses exact equality, so a
+  // fractional pixel never wraps. Italic edge labels lean past the upright
+  // measurement. Add a little width past the glyphs. The label group is
+  // already centered on the measured box, so the text stays put unless the
+  // real text is wider than that box, in which case it shifts by half the
+  // overflow and the shape grows around the same center.
   function laminPadMermaidLabels() {
-    document.querySelectorAll("g.edgeLabel foreignObject").forEach(function (fo) {
+    if (document.fonts && document.fonts.status !== "loaded") return;
+    var svgs = [];
+    document.querySelectorAll("pre.mermaid foreignObject").forEach(function (fo) {
       if (fo.getAttribute("data-lamin-padded") === "1") return;
+      var div = fo.querySelector("div");
+      if (!div) return;
       var width = parseFloat(fo.getAttribute("width"));
       if (!width) return;
-      fo.setAttribute("width", width + 8);
+      var edge = !!fo.closest(".edgeLabel");
+      var slack = edge ? 8 : 16;
+      var span = div.querySelector("span");
+      if (span && span.scrollWidth > div.clientWidth + 1) {
+        div.style.maxWidth = "none";
+      }
+      var scale = laminMermaidScale(fo.ownerSVGElement);
+      var textWidth = div.getBoundingClientRect().width / scale;
+      if (textWidth < 1) {
+        fo.setAttribute("data-lamin-padded", "1");
+        return;
+      }
+      var target = Math.ceil(Math.max(width, textWidth) + slack);
+      fo.setAttribute("width", target);
+      if (!edge) {
+        var shift = (width - textWidth) / 2;
+        if (Math.abs(shift) > 0.5) {
+          var x = parseFloat(fo.getAttribute("x") || "0");
+          fo.setAttribute("x", x + shift);
+        }
+        laminGrowLabelShape(fo, target - width);
+      }
       fo.setAttribute("data-lamin-padded", "1");
+      if (svgs.indexOf(fo.ownerSVGElement) === -1) svgs.push(fo.ownerSVGElement);
     });
+    svgs.forEach(laminPadMermaidViewBox);
+  }
+
+  function laminGrowLabelShape(fo, grow) {
+    if (fo.closest("g.cluster-label")) {
+      var cluster = fo.closest("g.cluster");
+      if (!cluster) return;
+      var rect = null;
+      for (var i = 0; i < cluster.children.length; i++) {
+        if (cluster.children[i].localName === "rect") {
+          rect = cluster.children[i];
+          break;
+        }
+      }
+      if (!rect) return;
+      var labelWidth = parseFloat(fo.getAttribute("width")) || 0;
+      var rectWidth = parseFloat(rect.getAttribute("width")) || 0;
+      var room = 24;
+      if (labelWidth + room <= rectWidth) return;
+      var extra = labelWidth + room - rectWidth;
+      rect.setAttribute("width", rectWidth + extra);
+      var rx = parseFloat(rect.getAttribute("x") || "0");
+      rect.setAttribute("x", rx - extra / 2);
+      return;
+    }
+    var node = fo.closest("g.node");
+    if (!node) return;
+    var shape =
+      node.querySelector("path.label-container") ||
+      node.querySelector("rect.label-container");
+    if (!shape) return;
+    if (shape.localName === "rect") {
+      var shapeWidth = parseFloat(shape.getAttribute("width"));
+      if (!shapeWidth) return;
+      shape.setAttribute("width", shapeWidth + grow);
+      var sx = parseFloat(shape.getAttribute("x") || "0");
+      shape.setAttribute("x", sx - grow / 2);
+      return;
+    }
+    laminGrowPath(shape, grow);
+  }
+
+  function laminGrowPath(path, grow) {
+    var box = path.getBBox();
+    if (!box.width) return;
+    var cx = box.x + box.width / 2;
+    var cy = box.y + box.height / 2;
+    var sx = (box.width + grow) / box.width;
+    var prev = path.getAttribute("transform") || "";
+    path.setAttribute(
+      "transform",
+      (prev ? prev + " " : "") +
+        "translate(" + cx + " " + cy + ") scale(" + sx + " 1) translate(" +
+        -cx + " " + -cy + ")"
+    );
+    path.setAttribute("vector-effect", "non-scaling-stroke");
+  }
+
+  function laminPadMermaidViewBox(svg) {
+    if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return;
+    var vb = svg.viewBox.baseVal;
+    if (!vb.width || !vb.height) return;
+    var box;
+    try {
+      box = svg.getBBox();
+    } catch (err) {
+      return;
+    }
+    var extra = 8;
+    var minX = Math.min(vb.x, box.x - extra);
+    var minY = Math.min(vb.y, box.y - extra);
+    var maxX = Math.max(vb.x + vb.width, box.x + box.width + extra);
+    var maxY = Math.max(vb.y + vb.height, box.y + box.height + extra);
+    if (
+      minX === vb.x &&
+      minY === vb.y &&
+      maxX === vb.x + vb.width &&
+      maxY === vb.y + vb.height
+    ) {
+      return;
+    }
+    svg.setAttribute(
+      "viewBox",
+      minX + " " + minY + " " + (maxX - minX) + " " + (maxY - minY)
+    );
   }
   if (typeof MutationObserver !== "undefined") {
     new MutationObserver(laminPadMermaidLabels).observe(document.documentElement, {
       childList: true,
       subtree: true,
     });
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(laminPadMermaidLabels);
   }
 
   function laminRenderMermaid() {
@@ -139,7 +269,12 @@
       }
     );
     if (!pending.length) return;
-    laminLoadMermaid()
+    var fontsReady =
+      document.fonts && document.fonts.ready
+        ? document.fonts.ready
+        : Promise.resolve();
+    fontsReady
+      .then(laminLoadMermaid)
       .then(function (mermaid) {
         var dark = document.documentElement.dataset.theme === "dark";
         var config = Object.assign({}, laminMermaidInit, {

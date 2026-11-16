@@ -115,6 +115,7 @@ def test_instantclick_renders_mermaid_on_navigation(tmp_path: Path) -> None:
     index = (out / "index.html").read_text()
     diagram = (out / "diagram.html").read_text()
     assert "laminRenderMermaid" in index
+    assert "maxWidth" in index
     assert 'InstantClick.on("change"' in index
     assert "isInitialLoad" in index
     assert 'script[type="module"]' in index
