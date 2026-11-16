@@ -124,6 +124,184 @@ pre.mermaid svg rect.background {
   fill: transparent !important;
 }
 
+/* Hand-drawn SVG diagrams, inlined with `raw html :file:`. The files hold
+   geometry, text and these classes; all styling lives here. */
+svg.ld-diagram {
+  --ld-node: #ffffff;
+  --ld-node-line: #d1d5dc;
+  --ld-run: #eef2ff;
+  --ld-run-line: #c6d2ff;
+  --ld-run-ink: #372aac;
+  --ld-focal: #ecfdf5;
+  --ld-focal-line: #059669;
+  --ld-focal-ink: #065f46;
+  --ld-text: #1e2939;
+  --ld-muted: #4b5563;
+  --ld-edge: #9ca3af;
+  --ld-group: #f9fafb;
+  --ld-group-line: #d1d5dc;
+  --ld-card-line: rgb(209 213 219 / 0.6);
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+}
+html[data-theme="dark"] svg.ld-diagram,
+html[data-theme="dark"] pre.mermaid {
+  --ld-node: #242526;
+  --ld-node-line: #4a4b4f;
+  --ld-run: #23243d;
+  --ld-run-line: #3f4380;
+  --ld-run-ink: #c6d2ff;
+  --ld-focal: #0b2e24;
+  --ld-focal-line: #10b981;
+  --ld-focal-ink: #a7f3d0;
+  --ld-text: #e5e7eb;
+  --ld-muted: #a1a1aa;
+  --ld-edge: #71717a;
+  --ld-group: #1e1f21;
+  --ld-group-line: #4a4b4f;
+  --ld-card-line: #4a4b4f;
+}
+/* Text: ld-t 14px titles, ld-l 13px edge labels and zone titles, ld-s 13px secondary lines. */
+svg.ld-diagram .ld-t {
+  font: 500 14px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-text);
+}
+svg.ld-diagram .ld-l {
+  font: 500 13px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-muted);
+}
+svg.ld-diagram .ld-s {
+  font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-muted);
+}
+/* Brand marks that are black in their own color follow the text color. */
+svg.ld-diagram .ld-mark {
+  fill: var(--ld-text);
+}
+svg.ld-diagram .ld-code {
+  font-family: SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+svg.ld-diagram .ld-f {
+  fill: var(--ld-focal-ink);
+}
+/* Cards: ld-node records, ld-run transforms, ld-focal the subject, ld-pile
+   the cards of a stack, outlined like an edge so it reads as cards. */
+svg.ld-diagram .ld-node {
+  fill: var(--ld-node);
+  stroke: var(--ld-node-line);
+}
+/* Cards lift off the zones that hold them, with the soft border and shadow-sm
+   of LaminHub's lineage nodes. */
+svg.ld-diagram .ld-card,
+svg.ld-diagram .ld-subject {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+}
+svg.ld-diagram .ld-card {
+  fill: var(--ld-node);
+  stroke: var(--ld-card-line);
+}
+/* The one card a diagram is about. */
+svg.ld-diagram .ld-subject {
+  fill: var(--ld-focal);
+  stroke: var(--ld-focal-line);
+}
+svg.ld-diagram .ld-run {
+  fill: var(--ld-run);
+  stroke: var(--ld-run-line);
+}
+svg.ld-diagram .ld-focal {
+  fill: var(--ld-focal);
+  stroke: var(--ld-focal-line);
+}
+svg.ld-diagram .ld-pile {
+  fill: var(--ld-node);
+  stroke: var(--ld-edge);
+}
+svg.ld-diagram .ld-group {
+  fill: var(--ld-group);
+  stroke: var(--ld-group-line);
+  stroke-dasharray: 4 3;
+}
+/* Nested zones: ld-acct an account boundary, ld-zone a network inside it,
+   ld-pool a service cluster inside that. */
+svg.ld-diagram .ld-acct {
+  fill: none;
+  stroke: var(--ld-group-line);
+  stroke-dasharray: 4 3;
+}
+svg.ld-diagram .ld-zone {
+  fill: var(--ld-group);
+  stroke: var(--ld-group-line);
+}
+svg.ld-diagram .ld-pool {
+  fill: var(--ld-node);
+  stroke: var(--ld-group-line);
+}
+svg.ld-diagram .ld-edge {
+  fill: none;
+  stroke: var(--ld-edge);
+  stroke-width: 1.25;
+}
+svg.ld-diagram .ld-head {
+  fill: var(--ld-edge);
+}
+svg.ld-diagram .ld-life {
+  fill: none;
+  stroke: var(--ld-group-line);
+  stroke-dasharray: 4 3;
+}
+/* The path a diagram is about. */
+svg.ld-diagram .ld-edge.ld-key {
+  stroke: var(--ld-focal-line);
+  stroke-width: 1.5;
+}
+svg.ld-diagram .ld-head.ld-key {
+  fill: var(--ld-focal-line);
+}
+svg.ld-diagram .ld-ico {
+  fill: none;
+  stroke: var(--ld-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+svg.ld-diagram .ld-ico-run {
+  stroke: var(--ld-run-ink);
+}
+svg.ld-diagram .ld-ico-f {
+  stroke: var(--ld-focal-ink);
+}
+/* Service tiles and zone badges, tinted by AWS service category. */
+svg.ld-diagram .ld-tile {
+  fill: var(--k-tint);
+}
+svg.ld-diagram .ld-tile + .ld-ico,
+svg.ld-diagram .ld-badge + .ld-ico {
+  stroke: var(--k-ink);
+}
+svg.ld-diagram .ld-badge {
+  fill: var(--k-tint);
+  stroke: var(--ld-group-line);
+}
+svg.ld-diagram .k-neutral { --k-tint: #f3f4f6; --k-ink: #4b5563; }
+svg.ld-diagram .k-lamin { --k-tint: #d1fae5; --k-ink: #047857; }
+svg.ld-diagram .k-compute { --k-tint: #ffedd5; --k-ink: #c2410c; }
+svg.ld-diagram .k-database { --k-tint: #fae8ff; --k-ink: #a21caf; }
+svg.ld-diagram .k-storage { --k-tint: #ecfccb; --k-ink: #4d7c0f; }
+svg.ld-diagram .k-security { --k-tint: #fee2e2; --k-ink: #b91c1c; }
+svg.ld-diagram .k-network { --k-tint: #ede9fe; --k-ink: #6d28d9; }
+svg.ld-diagram .k-mgmt { --k-tint: #fce7f3; --k-ink: #be185d; }
+html[data-theme="dark"] svg.ld-diagram .k-neutral { --k-tint: #2e2f33; --k-ink: #d4d4d8; }
+html[data-theme="dark"] svg.ld-diagram .k-lamin { --k-tint: #0f3d2e; --k-ink: #6ee7b7; }
+html[data-theme="dark"] svg.ld-diagram .k-compute { --k-tint: #3d2614; --k-ink: #fdba74; }
+html[data-theme="dark"] svg.ld-diagram .k-database { --k-tint: #3a1a3d; --k-ink: #f0abfc; }
+html[data-theme="dark"] svg.ld-diagram .k-storage { --k-tint: #263214; --k-ink: #bef264; }
+html[data-theme="dark"] svg.ld-diagram .k-security { --k-tint: #3f1d1d; --k-ink: #fca5a5; }
+html[data-theme="dark"] svg.ld-diagram .k-network { --k-tint: #2a2142; --k-ink: #c4b5fd; }
+html[data-theme="dark"] svg.ld-diagram .k-mgmt { --k-tint: #3d1a2c; --k-ink: #f9a8d4; }
+
 /* Heading badges (reference external) aligned to bottom of line */
 h1 a.reference.external img,
 h2 a.reference.external img,
