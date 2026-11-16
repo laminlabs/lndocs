@@ -83,9 +83,10 @@ pre.mermaid .edgeLabel p {
   padding: 0 3px;
   line-height: 1.15;
 }
-/* Mermaid sizes the label from upright text. Italic glyphs lean past that
-   box, and the foreignObject clips the last letter. */
-pre.mermaid g.edgeLabel foreignObject {
+/* Mermaid sizes the foreignObject to the measured text. Italic glyphs, a
+   fractional pixel, or a subgraph title capped at 200px land past that box,
+   and the foreignObject clips them. */
+pre.mermaid foreignObject {
   overflow: visible;
 }
 pre.mermaid .edgeLabel rect,

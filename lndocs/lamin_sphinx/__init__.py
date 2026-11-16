@@ -179,7 +179,11 @@ mermaid_dark_theme = "base"
 mermaid_init_config = {
     "startOnLoad": False,
     # Default node padding is 15. A little less, so the boxes are not as tall.
-    "flowchart": {"padding": 12},
+    # wrappingWidth defaults to 200. Mermaid puts that on the HTML label as
+    # max-width and only wraps when the measured width is exactly that
+    # number, so a longer label is clipped at the right edge. Size the box
+    # to the text instead.
+    "flowchart": {"padding": 12, "wrappingWidth": 1200},
     "themeVariables": {
         "background": "transparent",
         "primaryColor": "#eeeeee",
