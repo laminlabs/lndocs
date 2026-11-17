@@ -124,6 +124,104 @@ pre.mermaid svg rect.background {
   fill: transparent !important;
 }
 
+/* Hand-drawn SVG diagrams, inlined with `raw html :file:`. The files hold
+   geometry, text and these classes; all styling lives here. */
+svg.ld-diagram {
+  --ld-node: #ffffff;
+  --ld-node-line: #d1d5dc;
+  --ld-run: #eef2ff;
+  --ld-run-line: #c6d2ff;
+  --ld-run-ink: #372aac;
+  --ld-focal: #ecfdf5;
+  --ld-focal-line: #059669;
+  --ld-focal-ink: #065f46;
+  --ld-text: #1e2939;
+  --ld-muted: #4b5563;
+  --ld-edge: #9ca3af;
+  --ld-group: #f9fafb;
+  --ld-group-line: #d1d5dc;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+}
+html[data-theme="dark"] svg.ld-diagram,
+html[data-theme="dark"] pre.mermaid {
+  --ld-node: #242526;
+  --ld-node-line: #4a4b4f;
+  --ld-run: #23243d;
+  --ld-run-line: #3f4380;
+  --ld-run-ink: #c6d2ff;
+  --ld-focal: #0b2e24;
+  --ld-focal-line: #10b981;
+  --ld-focal-ink: #a7f3d0;
+  --ld-text: #e5e7eb;
+  --ld-muted: #a1a1aa;
+  --ld-edge: #71717a;
+  --ld-group: #1e1f21;
+  --ld-group-line: #4a4b4f;
+}
+/* Text: ld-t 14px titles, ld-l 13px edge labels and group titles, ld-s 13px secondary lines. */
+svg.ld-diagram .ld-t {
+  font: 500 14px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-text);
+}
+svg.ld-diagram .ld-l {
+  font: 500 13px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-muted);
+}
+svg.ld-diagram .ld-s {
+  font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif;
+  fill: var(--ld-muted);
+}
+svg.ld-diagram .ld-code {
+  font-family: SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+svg.ld-diagram .ld-f {
+  fill: var(--ld-focal-ink);
+}
+/* Cards: ld-node records, ld-run transforms, ld-focal the subject, ld-pile
+   the cards of a stack, outlined like an edge so it reads as cards. */
+svg.ld-diagram .ld-node {
+  fill: var(--ld-node);
+  stroke: var(--ld-node-line);
+}
+svg.ld-diagram .ld-run {
+  fill: var(--ld-run);
+  stroke: var(--ld-run-line);
+}
+svg.ld-diagram .ld-focal {
+  fill: var(--ld-focal);
+  stroke: var(--ld-focal-line);
+}
+svg.ld-diagram .ld-pile {
+  fill: var(--ld-node);
+  stroke: var(--ld-edge);
+}
+svg.ld-diagram .ld-group {
+  fill: var(--ld-group);
+  stroke: var(--ld-group-line);
+  stroke-dasharray: 4 3;
+}
+svg.ld-diagram .ld-edge {
+  fill: none;
+  stroke: var(--ld-edge);
+  stroke-width: 1.25;
+}
+svg.ld-diagram .ld-head {
+  fill: var(--ld-edge);
+}
+svg.ld-diagram .ld-ico {
+  fill: none;
+  stroke: var(--ld-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+svg.ld-diagram .ld-ico-run {
+  stroke: var(--ld-run-ink);
+}
+
 /* Heading badges (reference external) aligned to bottom of line */
 h1 a.reference.external img,
 h2 a.reference.external img,
