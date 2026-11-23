@@ -806,6 +806,7 @@ def get_attribute_docstring(cls, attr_name):
 _LAMINDB_REGISTRY_TYPES = {
     "Artifact": "~lamindb.Artifact",
     "Branch": "~lamindb.Branch",
+    "Feature": "~lamindb.Feature",
     "Record": "~lamindb.Record",
     "Run": "~lamindb.Run",
     "Schema": "~lamindb.Schema",
@@ -819,7 +820,9 @@ def _qualify_registry_type(attr_type):
     if attr_type is None:
         return None
     name = attr_type.__name__ if isinstance(attr_type, type) else str(attr_type)
-    return _LAMINDB_REGISTRY_TYPES.get(name, name)
+    return " | ".join(
+        _LAMINDB_REGISTRY_TYPES.get(part, part) for part in name.split(" | ")
+    )
 
 
 def process_docstring(app, what, name, obj, options, lines):
